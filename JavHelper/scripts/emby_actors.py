@@ -138,6 +138,7 @@ def send_emby_images(image_folder_path, ini_name=None):
         print('发生未知错误，请截图给作者：', emby_url, err)
 
     print('\n成功upload', up_num, '个女优头像！\n')
+    return up_num
 
 
 if __name__ == '__main__':

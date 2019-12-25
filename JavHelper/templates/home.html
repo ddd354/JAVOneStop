@@ -1,0 +1,25 @@
+<html>
+<header>
+
+</header>
+<body>
+    <button id="set_actress_images">Upload actress images to Emby</button>
+    <p id="response_json"></p>
+</body>
+<script>
+    const button = document.getElementById('set_actress_images');
+    const response_p = document.getElementById('response_json');
+
+    button.addEventListener('click', async _ => {
+      try {
+        response_p.innerHTML = 'working on the requests';
+        const response = await fetch('/emby_actress/set_actress_images')
+            .then(res => res.json())
+            .then(function(res_json) {response_p.innerHTML = JSON.stringify(res_json, null, 1)});
+      } catch(err) {
+        console.error(`Error: ${err}`);
+        response_p.innerHTML = err;
+      }
+    });
+</script>
+</html>
