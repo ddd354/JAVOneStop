@@ -5,60 +5,7 @@ import requests
 import traceback
 import argparse
 
-DEFAULT_INI = 'settings.ini'
-
-
-def recreate_ini(ini_file_name):
-    config_settings = configparser.RawConfigParser()
-    print('正在重写ini...')
-    config_settings.add_section("收集nfo")
-    config_settings.set("收集nfo", "是否跳过已存在nfo的文件夹？", "否")
-    config_settings.set("收集nfo", "是否收集nfo？", "是")
-    config_settings.set("收集nfo", "是否收集javlibrary上的影评？", "是")
-    config_settings.set("收集nfo", "nfo中title的格式", "车牌+空格+标题")
-    config_settings.set("收集nfo", "是否中字的表现形式", "中字-")
-    config_settings.add_section("重命名影片")
-    config_settings.set("重命名影片", "是否重命名影片？", "是")
-    config_settings.set("重命名影片", "重命名影片的格式", "车牌+空格+标题")
-    config_settings.add_section("修改文件夹")
-    config_settings.set("修改文件夹", "是否重命名或创建独立文件夹？", "是")
-    config_settings.set("修改文件夹", "新文件夹的格式", "【+全部女优+】+车牌")
-    config_settings.add_section("归类影片")
-    config_settings.set("归类影片", "是否归类影片？", "否")
-    config_settings.set("归类影片", "归类的根目录", "所选文件夹")
-    config_settings.set("归类影片", "归类的标准", "首个女优")
-    config_settings.add_section("下载封面")
-    config_settings.set("下载封面", "是否下载封面海报？", "是")
-    config_settings.set("下载封面", "DVD封面的格式", "视频+-fanart.jpg")
-    config_settings.set("下载封面", "海报的格式", "视频+-poster.jpg")
-    config_settings.add_section("kodi专用")
-    config_settings.set("kodi专用", "是否收集女优头像", "否")
-    config_settings.add_section("emby专用")
-    config_settings.set("emby专用", "网址", "http://localhost:8096/")
-    config_settings.set("emby专用", "API ID", "")
-    config_settings.add_section("代理")
-    config_settings.set("代理", "是否使用代理？", "否")
-    config_settings.set("代理", "代理IP及端口", "127.0.0.1:1080")
-    config_settings.add_section("百度翻译API")
-    config_settings.set("百度翻译API", "是否需要日语简介？", "是")
-    config_settings.set("百度翻译API", "是否翻译为中文？", "否")
-    config_settings.set("百度翻译API", "APP ID", "")
-    config_settings.set("百度翻译API", "密钥", "")
-    config_settings.add_section("百度人体分析")
-    config_settings.set("百度人体分析", "是否需要准确定位人脸的poster？", "否")
-    config_settings.set("百度人体分析", "AppID", "")
-    config_settings.set("百度人体分析", "API Key", "")
-    config_settings.set("百度人体分析", "Secret Key", "")
-    config_settings.add_section("其他设置")
-    config_settings.set("其他设置", "简繁中文？", "简")
-    config_settings.set("其他设置", "javlibrary网址", "http://www.h28o.com/")
-    config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")
-    config_settings.set("其他设置", "素人车牌(若有新车牌请自行添加)",
-                        "LUXU、MIUM、GANA、NTK、ARA、DCV、MAAN、HOI、NAMA、SWEET、SIRO、SCUTE、CUTE、SQB、JKZ")
-    config_settings.set("其他设置", "扫描文件类型", "mp4、mkv、avi、wmv、iso、rmvb、MP4")
-    config_settings.set("其他设置", "重命名中的标题长度（50~150）", "50")
-    config_settings.write(open(ini_file_name, "w", encoding='utf-8-sig'))
-    print('写入ini文件成功')
+from JavHelper.ini_file import DEFAULT_INI
 
 
 def list_emby_actress(emby_url, api_key):
@@ -89,10 +36,8 @@ def send_emby_images(image_folder_path, ini_name=None):
         ini_name = DEFAULT_INI
 
     if not os.path.exists(image_folder_path):
+        print('current path: {}'.format(os.getcwd()))
         raise Exception('{} image folder doesn\'t exist, please specify correct path'.format(image_folder_path))
-    if not os.path.isfile(ini_name):
-        print('ini file {} doesn\'t exists, recreate one and apply default settings'.format(ini_name))
-        recreate_ini(ini_name)
 
     # 读取配置文件，这个ini文件用来给用户设置重命名的格式和jav网址
     config_settings = configparser.RawConfigParser()

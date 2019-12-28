@@ -1,0 +1,163 @@
+# -*- coding:utf-8 -*-
+import os
+from urllib.parse import urlparse
+from PIL import Image
+import requests
+
+from JavHelper.core.nfo_parser import EmbyNfo
+
+
+FOLDER_STRUCTURE = '{year}/{car}'
+POSTER_NAME = 'poster'
+FANART_NAME = 'fanart'
+
+
+class EmbyFileStructure:
+    def __init__(self, root_path):
+        if not os.path.exists(root_path):
+            raise Exception(f'{root_path} does not exist')
+        if not os.path.isdir(root_path):
+            raise Exception(f'{root_path} is not a valid directory for scan')
+
+        self.root_path = root_path
+        self.file_list = []
+        self.folder_structure = FOLDER_STRUCTURE
+
+    @staticmethod
+    def write_images(jav_obj):
+        poster_name = POSTER_NAME
+        fanart_name = FANART_NAME
+
+        if 'image' not in jav_obj:
+            raise Exception('no image field in jav_obj')
+        image_url = jav_obj['image']
+
+        if 'directory' not in jav_obj:
+            raise Exception('no directory field in jav_obj')
+        directory = jav_obj['directory']
+
+        # 下载海报的地址 cover
+        url_obj = urlparse(image_url, scheme='http')
+        image_ext = os.path.splitext(url_obj.path)[1]
+
+        poster_path = os.path.join(directory, poster_name+image_ext)
+        fanart_path = os.path.join(directory, fanart_name+image_ext)
+
+        r = requests.get(url_obj.geturl(), stream=True)
+        with open(fanart_path, 'wb') as pic:
+            for chunk in r:
+                pic.write(chunk)
+
+        # 裁剪生成 poster
+        img = Image.open(fanart_path)
+        w, h = img.size  # fanart的宽 高
+        ex = int(w * 0.52625)  # 0.52625是根据emby的poster宽高比较出来的
+        poster = img.crop((ex, 0, w, h))  # （ex，0）是左下角（x，y）坐标 （w, h)是右上角（x，y）坐标
+        poster.save(poster_path, quality=95)  # quality=95 是无损crop，如果不设置，默认75
+
+        return
+
+    @staticmethod
+    def write_nfo(jav_obj: dict):
+        if 'car' not in jav_obj:
+            raise Exception('no car field in jav_obj')
+        car = jav_obj['car']
+        if 'directory' not in jav_obj:
+            raise Exception('no directory field in jav_obj')
+        directory = jav_obj['directory']
+
+        nfo_path = os.path.join(directory, f'{car}.nfo')
+
+        with open(nfo_path, 'w') as f:
+            f.write(
+                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n"
+                "<movie>\n"
+                "  <plot>{plot}</plot>\n"
+                "  <title>{title}</title>\n"
+                "  <director>{director}</director>\n"
+                "  <rating>{score}</rating>\n"
+                # "  <criticrating>" + criticrating + "</criticrating>\n"
+                "  <year>{year}</year>\n"
+                "  <release>{release_date}</release>\n"
+                "  <runtime>{length}</runtime>\n"
+                "  <studio>{studio}</studio>\n"
+                "  <id>{car}</id>\n".format(
+                    plot=jav_obj.get('plot', ''),
+                    title=jav_obj.get('title', ''),
+                    director=jav_obj.get('director', ''),
+                    score=jav_obj.get('score', ''),
+                    year=jav_obj.get('year', ''),
+                    release_date=jav_obj.get('release_date', ''),
+                    length=jav_obj.get('length', ''),
+                    studio=jav_obj.get('studio', ''),
+                    car=jav_obj.get('car', '')
+                )
+            )
+
+            for i in jav_obj.get('genres', []):
+                f.write("  <genre>" + i + "</genre>\n")
+            f.write("  <genre>片商：{}</genre>\n".format(jav_obj.get('studio', '')))
+            for i in jav_obj.get('genres', []):
+                f.write("  <tag>" + i + "</tag>\n")
+            f.write("  <tag>片商：{}</tag>\n".format(jav_obj.get('studio', '')))
+            for i in jav_obj.get('all_actress', []):
+                f.write("  <actor>\n    <name>" + i + "</name>\n    <type>Actor</type>\n  </actor>\n")
+            f.write("</movie>\n")
+
+    def scan_new_root_path(self):
+        """
+        This function is used to scan unprocessed video files
+        which means it only append file object from root path and
+        will not return any sub-directory files.
+        """
+        # fill file list from scan
+        for file_name in os.listdir(self.root_path):
+            # don't care about directory
+            if os.path.isdir(os.path.join(self.root_path, file_name)):
+                continue
+
+            # ini jav obj
+            jav_obj = {'file_name': file_name, 'car': os.path.splitext(file_name)[0]}
+            self.file_list.append(jav_obj)
+
+    def scan_emby_root_path(self):
+        """
+        This function is used to scan processed emby profile, so it will only
+        scan correct directories and their nfo files
+        """
+        for (root, dirs, files) in os.walk(self.root_path):
+            for each_file in files:
+                # we only process nfo file from here
+                # also ignore file starts with . (auto generated by macos)
+                if os.path.splitext(each_file)[1] == '.nfo' and \
+                        not os.path.splitext(each_file)[0].startswith('.'):
+                    nfo_obj = EmbyNfo()
+                    nfo_obj.parse_emby_nfo(os.path.join(root, each_file))
+                    nfo_obj.jav_obj['directory'] = root
+                    self.file_list.append(nfo_obj.jav_obj)
+
+    def put_processed_file(self, jav_obj: dict):
+        # file_name has to be in incoming jav_obj
+        if 'file_name' not in jav_obj:
+            raise Exception(f'file_name has to be in incoming jav object')
+        file_name = jav_obj['file_name']
+
+        if not os.path.exists(os.path.join(self.root_path, file_name)):
+            raise Exception(f'{file_name} does not exist')
+
+        # configure all necessary folders
+        new_full_path = os.path.join(self.root_path, self.folder_structure.format(**jav_obj))
+        os.makedirs(new_full_path, exist_ok=True)
+
+        os.rename(
+            os.path.join(self.root_path, file_name),
+            os.path.join(new_full_path, file_name)
+        )
+        print('move {} to {}'.format(
+            os.path.join(self.root_path, file_name),
+            os.path.join(new_full_path, file_name)
+        ))
+
+        jav_obj['directory'] = new_full_path
+
+        return jav_obj

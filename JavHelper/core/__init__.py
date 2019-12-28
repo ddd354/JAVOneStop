@@ -1,0 +1,2 @@
+class JAVNotFoundException(Exception):
+    pass
