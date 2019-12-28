@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
+import json
 
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import parse_javlib
@@ -61,21 +62,27 @@ def parse_unprocessed_folder():
     emby_folder.scan_new_root_path()
 
     processed = []
+    total = len(emby_folder.file_list)
 
-    for each_jav in emby_folder.file_list:
-        # scrape
-        jav_obj = parse_single_jav(each_jav, sources)
+    def long_process():
+        for each_jav in emby_folder.file_list:
+            # scrape
+            jav_obj = parse_single_jav(each_jav, sources)
 
-        # file structure operations
-        # move video file
-        jav_obj = emby_folder.put_processed_file(jav_obj)
-        # write images
-        emby_folder.write_images(jav_obj)
-        # write nfo
-        emby_folder.write_nfo(jav_obj)
-        processed.append(each_jav['car'])
+            # file structure operations
+            # move video file
+            jav_obj = emby_folder.put_processed_file(jav_obj)
+            # write images
+            emby_folder.write_images(jav_obj)
+            # write nfo
+            emby_folder.write_nfo(jav_obj)
+            processed.append(each_jav['car'])
 
-    return jsonify({'success': processed})
+            yield json.dumps({'success': '{} processed, {} to go'.format(
+                each_jav['car'], total - len(processed)
+            )})+'\n'
+
+    return Response(long_process(), mimetype='text/event-stream')
 
 
 @parse_jav.route('/parse_single', methods=['GET'])

@@ -87,4 +87,8 @@ def parse_javlib(jav_obj: dict, javlib_url=DEFAULT_JAVLIB_URL, config=copy(DEFAU
                 continue
         jav_obj['review'] = plot_review
 
+    # force set year if not detected
+    if not jav_obj.get('year'):
+        jav_obj['year'] = 'unknown'
+
     return jav_obj

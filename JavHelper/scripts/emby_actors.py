@@ -4,6 +4,7 @@ import os
 import requests
 import traceback
 import argparse
+import json
 
 from JavHelper.ini_file import DEFAULT_INI
 
@@ -65,16 +66,21 @@ def send_emby_images(image_folder_path, ini_name=None):
 
             actress_name = actress['Name']
             actress_id = actress['Id']
-            print('女优：', actress_name, 'ID：', actress_id)
+            res_info = {'log': f'processed 女优：{actress_name}, ID：{actress_id}'}
 
             if os.path.isfile(os.path.join(image_folder_path, f'{actress_name}.jpg')):
                 file_path = os.path.join(image_folder_path, f'{actress_name}.jpg')
+                up_num += post_image_to_actress(actress_id, file_path, emby_url, api_key)
+
             elif os.path.isfile(os.path.join(image_folder_path, f'{actress_name}.png')):
                 file_path = os.path.join(image_folder_path, f'{actress_name}.png')
+                up_num += post_image_to_actress(actress_id, file_path, emby_url, api_key)
+
             else:
-                print(f'{actress_name} image file doen\'t exist\n')
-                continue
-            up_num += post_image_to_actress(actress_id, file_path, emby_url, api_key)
+                res_info = {'log': f'{actress_name} image file doen\'t exist'}
+            print(res_info)
+
+            yield json.dumps(res_info)+'\n'
 
     except requests.exceptions.ConnectionError:
         print('emby服务端无法访问，请检查：', emby_url, '\n')
@@ -82,8 +88,8 @@ def send_emby_images(image_folder_path, ini_name=None):
         traceback.print_exc()
         print('发生未知错误，请截图给作者：', emby_url, err)
 
-    print('\n成功upload', up_num, '个女优头像！\n')
-    return up_num
+    print(f'成功upload {up_num} 个女优头像！')
+    yield json.dumps({'log': f'成功upload {up_num} 个女优头像！'})+'\n'
 
 
 if __name__ == '__main__':

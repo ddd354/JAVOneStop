@@ -1,25 +1,12 @@
 <html>
-<header>
-
-</header>
+<head>
+    <meta charset="utf-8">
+    <!-- Latest compiled and minified bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
+    <title>Creating a Full-Stack Python Application with Flask, NPM, React.js and Webpack</title>
+</head>
 <body>
-    <button id="set_actress_images">Upload actress images to Emby</button>
-    <p id="response_json"></p>
+    <div id="content" />
+    <script src="static/js/webHelper.js" type="text/javascript"></script>
 </body>
-<script>
-    const button = document.getElementById('set_actress_images');
-    const response_p = document.getElementById('response_json');
-
-    button.addEventListener('click', async _ => {
-      try {
-        response_p.innerHTML = 'working on the requests';
-        const response = await fetch('/emby_actress/set_actress_images')
-            .then(res => res.json())
-            .then(function(res_json) {response_p.innerHTML = JSON.stringify(res_json, null, 1)});
-      } catch(err) {
-        console.error(`Error: ${err}`);
-        response_p.innerHTML = err;
-      }
-    });
-</script>
 </html>
