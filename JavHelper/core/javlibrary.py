@@ -5,9 +5,9 @@ from copy import copy
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text
 from JavHelper.core.utils import re_parse_html, re_parse_html_list_field
+from JavHelper.ini_file import return_config_string
 
 
-DEFAULT_JAVLIB_URL = 'http://www.h28o.com/cn/'
 DEFAULT_JAVLIB_CONFIG = {
     'search_field': {
         'title': r'<title>([a-zA-Z]{1,6}-\d{1,5}.+?) - JAVLibrary</title>',
@@ -28,7 +28,10 @@ DEFAULT_JAVLIB_CONFIG = {
 }
 
 
-def parse_javlib(jav_obj: dict, javlib_url=DEFAULT_JAVLIB_URL, config=copy(DEFAULT_JAVLIB_CONFIG)) -> dict:
+def parse_javlib(jav_obj: dict, config=copy(DEFAULT_JAVLIB_CONFIG)) -> dict:
+    # force to get url from ini file each time
+    javlib_url = return_config_string(['其他设置', 'javlibrary网址'])
+
     # fill missing parameters
     if config != DEFAULT_JAVLIB_CONFIG:
         config.update(DEFAULT_JAVLIB_CONFIG)

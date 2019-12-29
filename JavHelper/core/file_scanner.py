@@ -3,6 +3,8 @@ import os
 from urllib.parse import urlparse
 from PIL import Image
 import requests
+import re
+import traceback
 
 from JavHelper.core.nfo_parser import EmbyNfo
 
@@ -10,6 +12,7 @@ from JavHelper.core.nfo_parser import EmbyNfo
 FOLDER_STRUCTURE = '{year}/{car}'
 POSTER_NAME = 'poster'
 FANART_NAME = 'fanart'
+DEFAULT_FILENAME_PATTERN = r'^.*?(?P<pre>[a-zA-Z]{2,6})\W*(?P<digit>\d{1,5}).*?$'
 
 
 class EmbyFileStructure:
@@ -103,6 +106,93 @@ class EmbyFileStructure:
             for i in jav_obj.get('all_actress', []):
                 f.write("  <actor>\n    <name>" + i + "</name>\n    <type>Actor</type>\n  </actor>\n")
             f.write("</movie>\n")
+
+    @staticmethod
+    def rename_single_file(file_name, name_pattern=DEFAULT_FILENAME_PATTERN):
+        name_group = re.search(name_pattern, file_name)
+        name_digits = new_digits = name_group.group('digit')
+
+        # only keep 0 under 3 digits
+        # keep 045, 0830 > 830, 1130, 0002 > 002, 005
+        if len(name_digits) > 3:
+            new_digits = ''
+            seen_0 = False
+            r_digits = name_digits[::-1]
+            for digit in r_digits:
+                if digit == '0' and seen_0 and len(new_digits) >= 3:
+                    continue
+                elif digit == '0' and not seen_0:
+                    seen_0 = True
+                    new_digits += digit
+                else:
+                    new_digits += digit
+
+                if len(new_digits) >= 3:
+                    seen_0 = True
+
+            new_digits = new_digits[::-1]
+
+        new_file_name = name_group.group('pre') + '-' + new_digits
+        return new_file_name
+
+    @staticmethod
+    def rename_directory_preview(path, name_pattern=None):
+        # apply default name pattern
+        if not name_pattern:
+            name_pattern = DEFAULT_FILENAME_PATTERN
+
+        res = []
+
+        for ind_file in os.listdir(path):
+            if str(ind_file) == '.DS_Store' or str(ind_file).startswith('.'):
+                continue
+            ind_file_name, ind_ext = os.path.splitext(ind_file)
+            print(ind_file)
+            try:
+                if ind_file_name.startswith('hjd2048.com'):
+                    ind_file_name = ind_file_name[11:]
+                elif ind_file_name.startswith('[Thz.la]'):
+                    ind_file_name = ind_file_name[8:]
+                elif '_' in ind_file_name:
+                    ind_file_name = ind_file_name.replace('_', '-')
+
+                if ind_file_name.startswith('T28'):
+                    # TODO: might need to rename this
+                    continue
+                elif ind_file_name.startswith('T-28'):
+                    ind_file_name = ind_file_name.replace('T-28', 'T28-')
+                    t28_pattern = r'^.*?(?P<pre>T28)\W*(?P<digit>\d{1,5}).*?$'
+                    new_file_name = EmbyFileStructure.rename_single_file(ind_file_name, t28_pattern) + ind_ext
+                else:
+                    # normal case
+                    new_file_name = EmbyFileStructure.rename_single_file(ind_file_name, name_pattern) + ind_ext
+
+            except Exception as e:
+                res.append({'file_name': f'cannot process {ind_file} due to {e}'})
+                continue
+
+            # log before rename
+            if ind_file == new_file_name:
+                res.append({'file_name': ind_file})
+            else:
+                res.append({'file_name': ind_file, 'new_file_name': new_file_name})
+
+        return res
+
+    @staticmethod
+    def rename_directory(path, file_objs):
+        for each_file in file_objs:
+            if not each_file.get('new_file_name'):
+                # not rename unnecessary files
+                continue
+            try:
+                ind_file = each_file['file_name']
+                new_file_name = each_file['new_file_name']
+                # rename
+                os.rename(os.path.join(path, ind_file), os.path.join(path, new_file_name))
+                yield f'renamed {ind_file} to {new_file_name}'
+            except Exception as e:
+                yield f'failed to renamed {ind_file} to due to {e}'
 
     def scan_new_root_path(self):
         """

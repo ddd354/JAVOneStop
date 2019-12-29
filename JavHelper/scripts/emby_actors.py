@@ -6,7 +6,7 @@ import traceback
 import argparse
 import json
 
-from JavHelper.ini_file import DEFAULT_INI
+from JavHelper.ini_file import return_config_string
 
 
 def list_emby_actress(emby_url, api_key):
@@ -29,30 +29,17 @@ def post_image_to_actress(actress_id, image_f, emby_url, api_key):
     return 1
 
 
-def send_emby_images(image_folder_path, ini_name=None):
+def send_emby_images(image_folder_path):
     # init
     num = 0
     up_num = 0
-    if not ini_name:
-        ini_name = DEFAULT_INI
 
     if not os.path.exists(image_folder_path):
         print('current path: {}'.format(os.getcwd()))
         raise Exception('{} image folder doesn\'t exist, please specify correct path'.format(image_folder_path))
 
-    # 读取配置文件，这个ini文件用来给用户设置重命名的格式和jav网址
-    config_settings = configparser.RawConfigParser()
-    print('正在读取ini中的设置...')
-    try:
-        config_settings.read(ini_name, encoding='utf-8-sig')
-        emby_url = config_settings.get("emby专用", "网址")
-        api_key = config_settings.get("emby专用", "api id")
-    except Exception as err:
-        print(err)
-        traceback.print_exc()
-        raise Exception('无法读取ini文件，请修改它为正确格式，或者打开“【ini】重新创建ini.exe”创建全新的ini！')
-
-    print('读取ini文件成功!')
+    emby_url = return_config_string(["emby专用", "网址"])
+    api_key = return_config_string(["emby专用", "api id"])
 
     # try correct emby url with /
     if not emby_url.endswith('/'):

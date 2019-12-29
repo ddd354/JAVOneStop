@@ -69,6 +69,14 @@ def parse_unprocessed_folder():
             # scrape
             jav_obj = parse_single_jav(each_jav, sources)
 
+            # handle error when all sources fail
+            if jav_obj.get('errors') and isinstance(jav_obj['errors'], list) and len(jav_obj['errors']) == len(sources):
+                processed.append(each_jav['car'])
+                yield json.dumps({'log': '{} process failed, cannot find any info in all sources {}, {} to go'.format(
+                    each_jav['car'], sources, total - len(processed)
+                )})+'\n'
+                continue
+
             # file structure operations
             # move video file
             jav_obj = emby_folder.put_processed_file(jav_obj)
@@ -78,7 +86,7 @@ def parse_unprocessed_folder():
             emby_folder.write_nfo(jav_obj)
             processed.append(each_jav['car'])
 
-            yield json.dumps({'success': '{} processed, {} to go'.format(
+            yield json.dumps({'log': '{} processed, {} to go'.format(
                 each_jav['car'], total - len(processed)
             )})+'\n'
 
@@ -101,6 +109,7 @@ def parse_single():
     res = parse_single_jav({'car': car}, sources)
 
     return jsonify({'car': car, 'sources': sources, 'parsed_output': res})
+
 
 # ---------------------------utilities-------------------------------
 

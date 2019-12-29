@@ -2,6 +2,7 @@ import requests
 import re
 
 from JavHelper.core import JAVNotFoundException
+from JavHelper.core.requester_proxy import return_html_text
 
 
 def get_arzon_session_cookie():
@@ -17,7 +18,7 @@ def parse_arzon(jav_obj: dict):
     while 1:
         arz_search_url = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=' + jav_obj['car']
         print('    >正在查找简介：', arz_search_url)
-        search_html = requests.get(arz_search_url, cookies=arzon_cookie).text
+        search_html = return_html_text(arz_search_url, cookies=arzon_cookie)
 
         if plot == '':
             # <dt><a href="https://www.arzon.jp/item_1376110.html" title="限界集落に越してきた人妻 ～村民"><img src=
@@ -28,11 +29,10 @@ def parse_arzon(jav_obj: dict):
                 for i in range(results_num):
                     arz_url = 'https://www.arzon.jp' + AVs[i]  # 第i+1个链接
                     print(f'accessing {arz_url}')
-                    jav_html = requests.get(arz_url, cookies=arzon_cookie)
-                    jav_html.encoding = 'utf-8'
+                    jav_html = return_html_text(arz_url, cookies=arzon_cookie)
                     if plot == '':
                         # 在该arz_url网页上查找简介
-                        plotg = re.search(r'<h2>作品紹介</h2>([\s\S]*?)</div>', jav_html.text)
+                        plotg = re.search(r'<h2>作品紹介</h2>([\s\S]*?)</div>', jav_html)
                         # 成功找到plot
                         if str(plotg) != 'None':
                             plot_br = plotg.group(1)

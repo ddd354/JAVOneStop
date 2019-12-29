@@ -9,31 +9,55 @@ import Button from '@material-ui/core/Button';
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 
-
 export default class App extends Component {
     constructor(props) {
         // Required step: always call the parent class' constructor
         super(props);
 
         this.state = {
+          file_table_header: [],
           files_table: [],
+          form_data: {},
+          settings_form_data: {},
           ui_log: ['Front end loaded']
         };
         this.filePathHandler = this.filePathHandler.bind(this);
         this.embyImageHandler = this.embyImageHandler.bind(this);
+        this.settingsFormHandler = this.settingsFormHandler.bind(this);
+    }
+
+    async componentDidMount () {
+        // load ini from file
+        fetch(`/directory_scan/read_local_ini?filter_dict={
+            'enable_proxy':['代理','是否使用代理？'],
+            'proxy_setup':['代理','代理IP及端口'],
+            'emby_address':['emby专用','网址'],
+            'emby_api':['emby专用','API ID'],
+            'javlibrary_url':['其他设置','javlibrary网址']
+            }`)
+            .then(response => response.json())
+            .then((jsonData) => {
+                console.log(jsonData.local_config);
+                this.setState({ settings_form_data: jsonData.local_config });
+            })
     }
 
     filePathHandler (fileForm) {
         console.log(fileForm);
-        if (fileForm.formData.parse === false) {
+        this.setState({form_data: fileForm.formData});  // retain submitted form data
+        if (fileForm.formData.action === 'preview') {
             fetch('/directory_scan/pre_scan_files?path='+fileForm.formData.filepath)
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
                     console.log(jsonData);
-                    this.setState({files_table: jsonData['response']});
+                    this.setState({files_table: jsonData['response'], file_table_header: jsonData['header']});
+                    if (jsonData['response'].length === 0) {
+                        let new_log = [fileForm.formData.filepath+' scan does not reveal any file', ...this.state.ui_log];
+                        this.setState({ ui_log: new_log });
+                    }
                 })
-        } else {
+        } else if (fileForm.formData.action === 'parse_jav') {
             console.log('start parse on'+fileForm.formData.filepath);
             fetch('/parse_jav/parse_unprocessed_folder?path='+fileForm.formData.filepath)  // make a fetch request to a NDJSON stream service
               .then((response) => {
@@ -46,7 +70,44 @@ export default class App extends Component {
                         return;
                     }
                     console.log(result.value);
-                    let new_log = this.state.ui_log.concat(result.value.success);
+                    let new_log = [result.value.log, ...this.state.ui_log];
+                    this.setState({ ui_log: new_log });
+
+                    exampleRead.read().then(read); //recurse through the stream
+                });
+            });
+        } else if (fileForm.formData.action === 'preview_rename') {
+            console.log('preview renames');
+            fetch('/directory_scan/rename_path_preview?path='+fileForm.formData.filepath)
+                .then(response => response.json())
+                .then((jsonData) => {
+                    // jsonData is parsed json object received from url
+                    console.log(jsonData);
+                    this.setState({files_table: jsonData['response'], file_table_header: jsonData['header']});
+                })
+        } else if (fileForm.formData.action === 'rename') {
+            console.log('posting for rename files: '+ JSON.stringify({
+                        "path": fileForm.formData.filepath,
+                        "file_objs": this.state.files_table
+                   }));
+            fetch('/directory_scan/rename_path_on_json',
+                {method: 'post',
+                body: JSON.stringify({
+                        "path": fileForm.formData.filepath,
+                        "file_objs": this.state.files_table
+                   })
+                })  // make a fetch request to a NDJSON stream service
+              .then((response) => {
+                return ndjsonStream(response.body); //ndjsonStream parses the response.body
+            }).then((exampleStream) => {
+                let read;
+                let exampleRead = exampleStream.getReader();
+                exampleRead.read().then(read = (result) => {
+                    if (result.done) {
+                        return;
+                    }
+                    console.log(result.value);
+                    let new_log = [result.value.log, ...this.state.ui_log];
                     this.setState({ ui_log: new_log });
 
                     exampleRead.read().then(read); //recurse through the stream
@@ -75,12 +136,26 @@ export default class App extends Component {
                     exampleRead.read().then(read); //recurse through the stream
                 });
             });
-            /*fetch('/emby_actress/set_actress_images')
-                .then(res => res.json())
-                .then(function(res_json) {console.log(JSON.stringify(res_json))});*/
         } catch(err) {
             console.error(`Error: ${err}`);
         }
+    }
+
+    settingsFormHandler (settingsForm) {
+        console.log(settingsForm);
+        this.setState({settings_form_data: settingsForm.formData});  // retain submitted form data
+        fetch('/directory_scan/update_local_ini',
+            {method: 'post',
+            body: JSON.stringify({
+                    "update_dict": settingsForm.formData
+            })})
+            .then(response => response.json())
+            .then((jsonData) => {
+                // jsonData is parsed json object received from url
+                console.log(jsonData.status);
+                let new_log = [jsonData.status, ...this.state.ui_log];
+                this.setState({ ui_log: new_log });
+            });
     }
 
     render() {
@@ -88,18 +163,17 @@ export default class App extends Component {
           "type": "object",
           "required": [
             "filepath",
-            "parse"
+            "action"
           ],
           "properties": {
             "filepath": {
               "type": "string",
-              "title": "File Path",
-              "default": "/Volumes/XER/X-emby"
+              "title": "File Path"
             },
-            "parse": {
-              "type": "boolean",
+            "action": {
+              "type": "string",
               "title": "parse files: ",
-              "default": false
+              "enum": ["preview", "preview_rename", "rename", "parse_jav"]
             },
           }
         };
@@ -108,10 +182,51 @@ export default class App extends Component {
             "filepath": {
               "ui:description": "Type in path (Due to restriction of the front end, user has to manually input directory)",
               "ui:autofocus": true,
+              "ui:emptyValue": "/Volumes/XER/X-emby"
             },
-            "parse": {
+            "action": {
+              "ui:widget": "radio",
+              "ui:emptyValue": "preview"
+            },
+        };
+
+        const settings_form_schema = {
+          "type": "object",
+          "required": [
+            "enable_proxy"
+          ],
+          "properties": {
+            "enable_proxy": {
+              "type": "string",
+              "title": "Enable Proxy or Not",
+              "enum": ["是", "否"]
+            },
+            "proxy_setup": {
+              "type": "string",
+              "title": "Proxy address and port"
+            },
+            "emby_address": {
+              "type": "string",
+              "title": "Emby Server Address and Port"
+            },
+            "emby_api": {
+              "type": "string",
+              "title": "Emby API Key"
+            },
+            "javlibrary_url": {
+              "type": "string",
+              "title": "Url for Accessing JavLibrary"
+            }
+          }
+        };
+
+        const settings_form_ui = {
+            "enable_proxy": {
               "ui:widget": "radio"
             },
+            "emby_address": {
+              "ui:description": "Need to enter full address and port; Example: http://localhost:8096/",
+            }
         };
 
         return (
@@ -126,19 +241,21 @@ export default class App extends Component {
 
             <TabPanel>
                 <StyledDiv>
-                <Form schema={form_schema} uiSchema={form_ui} onSubmit={this.filePathHandler}>
+                <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
                     <div>
                       <button type="submit">Preview File / Execute</button>
                     </div>
                 </Form>
                 </StyledDiv>
-                <FileTable file_data={this.state.files_table}/>
+                <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
             </TabPanel>
             <TabPanel>
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>Upload actress images to Emby</Button>
             </TabPanel>
             <TabPanel>
-              <h2>Any content 2</h2>
+              <StyledDiv>
+              <Form schema={settings_form_schema} uiSchema={settings_form_ui} formData={this.state.settings_form_data} onSubmit={this.settingsFormHandler} />
+              </StyledDiv>
             </TabPanel>
             </Tabs>
             </div>
