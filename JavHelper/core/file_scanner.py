@@ -4,7 +4,6 @@ from urllib.parse import urlparse
 from PIL import Image
 import requests
 import re
-import traceback
 
 from JavHelper.core.nfo_parser import EmbyNfo
 
@@ -238,7 +237,12 @@ class EmbyFileStructure:
             raise Exception(f'{file_name} does not exist')
 
         # configure all necessary folders
-        new_full_path = os.path.join(self.root_path, self.folder_structure.format(**jav_obj))
+        try:
+            new_full_path = os.path.join(self.root_path, self.folder_structure.format(**jav_obj))
+        except KeyError as e:
+            raise KeyError('required fields not filled for path {} and parsed {}'.format(
+                self.folder_structure, jav_obj.keys()
+            ))
         os.makedirs(new_full_path, exist_ok=True)
 
         os.rename(
