@@ -4,8 +4,9 @@ import json
 from ast import literal_eval
 from flask import Blueprint, jsonify, request, Response
 
+from JavHelper.core import IniNotFoundException
 from JavHelper.core.file_scanner import EmbyFileStructure
-from JavHelper.ini_file import load_ini_file, return_config_string, set_value_ini_file
+from JavHelper.core.ini_file import load_ini_file, return_config_string, set_value_ini_file
 
 """
 This endpoint is pretty dangerous since it needs permission to r/w no-app directory
@@ -28,10 +29,14 @@ def update_local_ini():
 def read_local_ini():
     if request.args.get('filter_dict'):
         res = {}
+        errors = []
         filter_dict = literal_eval(request.args.get('filter_dict'))
         for k, v in filter_dict.items():
-            res[k] = return_config_string(v)
-        return jsonify({'local_config': res})
+            try:
+                res[k] = return_config_string(v)
+            except IniNotFoundException as e:
+                errors.append(str(e))
+        return jsonify({'local_config': res, 'errors': errors})
     else:
         return jsonify({'local_config': load_ini_file()._sections})  # convert returned obj to dict format
 

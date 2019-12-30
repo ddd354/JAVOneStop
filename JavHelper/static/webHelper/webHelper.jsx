@@ -29,6 +29,7 @@ export default class App extends Component {
     async componentDidMount () {
         // load ini from file
         fetch(`/directory_scan/read_local_ini?filter_dict={
+            'file_path': ["本地设置", "默认填入目录"],
             'enable_proxy':['代理','是否使用代理？'],
             'proxy_setup':['代理','代理IP及端口'],
             'emby_address':['emby专用','网址'],
@@ -38,7 +39,11 @@ export default class App extends Component {
             .then(response => response.json())
             .then((jsonData) => {
                 console.log(jsonData.local_config);
-                this.setState({ settings_form_data: jsonData.local_config });
+                this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
+                if (jsonData.errors) {
+                    let new_log = [jsonData.errors.toString(), ...this.state.ui_log];
+                    this.setState({ ui_log: new_log });
+                }
             })
     }
 
@@ -46,20 +51,20 @@ export default class App extends Component {
         console.log(fileForm);
         this.setState({form_data: fileForm.formData});  // retain submitted form data
         if (fileForm.formData.action === 'preview') {
-            fetch('/directory_scan/pre_scan_files?path='+fileForm.formData.filepath)
+            fetch('/directory_scan/pre_scan_files?path='+fileForm.formData.file_path)
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
                     console.log(jsonData);
                     this.setState({files_table: jsonData['response'], file_table_header: jsonData['header']});
                     if (jsonData['response'].length === 0) {
-                        let new_log = [fileForm.formData.filepath+' scan does not reveal any file', ...this.state.ui_log];
+                        let new_log = [fileForm.formData.file_path+' scan does not reveal any file', ...this.state.ui_log];
                         this.setState({ ui_log: new_log });
                     }
                 })
         } else if (fileForm.formData.action === 'parse_jav') {
-            console.log('start parse on'+fileForm.formData.filepath);
-            fetch('/parse_jav/parse_unprocessed_folder?path='+fileForm.formData.filepath)  // make a fetch request to a NDJSON stream service
+            console.log('start parse on'+fileForm.formData.file_path);
+            fetch('/parse_jav/parse_unprocessed_folder?path='+fileForm.formData.file_path)  // make a fetch request to a NDJSON stream service
               .then((response) => {
                 return ndjsonStream(response.body); //ndjsonStream parses the response.body
             }).then((exampleStream) => {
@@ -78,7 +83,7 @@ export default class App extends Component {
             });
         } else if (fileForm.formData.action === 'preview_rename') {
             console.log('preview renames');
-            fetch('/directory_scan/rename_path_preview?path='+fileForm.formData.filepath)
+            fetch('/directory_scan/rename_path_preview?path='+fileForm.formData.file_path)
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
@@ -87,13 +92,13 @@ export default class App extends Component {
                 })
         } else if (fileForm.formData.action === 'rename') {
             console.log('posting for rename files: '+ JSON.stringify({
-                        "path": fileForm.formData.filepath,
+                        "path": fileForm.formData.file_path,
                         "file_objs": this.state.files_table
                    }));
             fetch('/directory_scan/rename_path_on_json',
                 {method: 'post',
                 body: JSON.stringify({
-                        "path": fileForm.formData.filepath,
+                        "path": fileForm.formData.file_path,
                         "file_objs": this.state.files_table
                    })
                 })  // make a fetch request to a NDJSON stream service
@@ -149,12 +154,25 @@ export default class App extends Component {
             body: JSON.stringify({
                     "update_dict": settingsForm.formData
             })})
-            .then(response => response.json())
-            .then((jsonData) => {
-                // jsonData is parsed json object received from url
-                console.log(jsonData.status);
-                let new_log = [jsonData.status, ...this.state.ui_log];
-                this.setState({ ui_log: new_log });
+            .then(response => {
+                return [response.json(), response.status];
+            })
+            .then((res_list) => {
+                if (res_list[1] === 200) {
+                    // jsonData is parsed json object received from url
+                    res_list[0].then((jsonData) => {
+                        console.log(jsonData.status);
+                        let new_log = [jsonData.status, ...this.state.ui_log];
+                    this.setState({ ui_log: new_log });
+                    })
+                } else {
+                    res_list[0].then((jsonData) => {
+                        console.log(jsonData);
+                        let new_log = jsonData.errors.split("\n");
+                        this.setState({ ui_log: new_log.concat(this.state.ui_log) });
+                    })
+
+                }
             });
     }
 
@@ -162,11 +180,11 @@ export default class App extends Component {
         const form_schema = {
           "type": "object",
           "required": [
-            "filepath",
+            "file_path",
             "action"
           ],
           "properties": {
-            "filepath": {
+            "file_path": {
               "type": "string",
               "title": "File Path"
             },
@@ -179,7 +197,7 @@ export default class App extends Component {
         };
 
         const form_ui = {
-            "filepath": {
+            "file_path": {
               "ui:description": "Type in path (Due to restriction of the front end, user has to manually input directory)",
               "ui:autofocus": true,
               "ui:emptyValue": "/Volumes/XER/X-emby"
@@ -196,6 +214,10 @@ export default class App extends Component {
             "enable_proxy"
           ],
           "properties": {
+            "file_path": {
+              "type": "string",
+              "title": "File path"
+            },
             "enable_proxy": {
               "type": "string",
               "title": "Enable Proxy or Not",
@@ -221,6 +243,9 @@ export default class App extends Component {
         };
 
         const settings_form_ui = {
+            "file_path": {
+                "ui:description": "Default file path in the main tool"
+            },
             "enable_proxy": {
               "ui:widget": "radio"
             },

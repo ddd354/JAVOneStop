@@ -5,7 +5,7 @@ from copy import copy
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text
 from JavHelper.core.utils import re_parse_html, re_parse_html_list_field
-from JavHelper.ini_file import return_config_string
+from JavHelper.core.ini_file import return_config_string
 
 
 DEFAULT_JAVLIB_CONFIG = {

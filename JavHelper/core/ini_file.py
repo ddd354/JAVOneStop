@@ -1,9 +1,11 @@
 import configparser
 
 from JavHelper.utils import resource_path
+from JavHelper.core import IniNotFoundException
 
 DEFAULT_INI = resource_path('settings.ini')
 DEFAULT_UPDATE_MAPPING = {
+    'file_path': ["本地设置", "默认填入目录"],
     'enable_proxy': ['代理', '是否使用代理？'],
     'proxy_setup': ['代理', '代理IP及端口'],
     'emby_address': ['emby专用', '网址'],
@@ -25,7 +27,11 @@ def write_ini_file(config_obj, ini_file_name=DEFAULT_INI):
     return f'successfully write {ini_file_name}'
 
 
-def set_value_ini_file(update_dict: dict, config=load_ini_file()):
+def set_value_ini_file(update_dict: dict, config=None):
+    # reload ini file content
+    if not config:
+        config = load_ini_file()
+
     for k, v in update_dict.items():
         if k not in DEFAULT_UPDATE_MAPPING:
             raise Exception(f'{k} is not a valid key field')
@@ -35,26 +41,24 @@ def set_value_ini_file(update_dict: dict, config=load_ini_file()):
     return write_ini_file(config)
 
 
-def return_config_string(field_path: list, config=load_ini_file()):
+def return_config_string(field_path: list, config=None):
+    if not config:
+        config = load_ini_file()
     print(f'loading {field_path} from ini file')
     temp = config
     for each_level in field_path:
         if each_level not in temp:
-            raise Exception(f'{each_level} not in {temp} config')
-        temp = temp[each_level]
+            raise IniNotFoundException(f'{each_level} is not in the config file, config will be missing in form')
 
+        temp = temp[each_level]
     return temp
 
 
 def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings = configparser.RawConfigParser()
     print('正在重写ini...')
-    config_settings.add_section("收集nfo")
-    config_settings.set("收集nfo", "是否跳过已存在nfo的文件夹？", "否")
-    config_settings.set("收集nfo", "是否收集nfo？", "是")
-    config_settings.set("收集nfo", "是否收集javlibrary上的影评？", "是")
-    config_settings.set("收集nfo", "nfo中title的格式", "车牌+空格+标题")
-    config_settings.set("收集nfo", "是否中字的表现形式", "中字-")
+    config_settings.add_section("本地设置")
+    config_settings.set("本地设置", "默认填入目录", "")
     config_settings.add_section("重命名影片")
     config_settings.set("重命名影片", "是否重命名影片？", "是")
     config_settings.set("重命名影片", "重命名影片的格式", "车牌+空格+标题")

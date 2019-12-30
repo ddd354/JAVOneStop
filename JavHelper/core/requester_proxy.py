@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 import requests
 
-from JavHelper.ini_file import return_config_string
+from JavHelper.core.ini_file import return_config_string
 
 
 def return_html_text(url, cookies=None, proxies=None, encoding='utf-8'):

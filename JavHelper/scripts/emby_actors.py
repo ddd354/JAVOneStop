@@ -1,12 +1,11 @@
 import base64
-import configparser
 import os
 import requests
 import traceback
 import argparse
 import json
 
-from JavHelper.ini_file import return_config_string
+from JavHelper.core.ini_file import return_config_string
 
 
 def list_emby_actress(emby_url, api_key):
