@@ -21,7 +21,7 @@
 * 浏览表单下方的表格, 确定所有文件都被正确地重命名.
 * 选择 preview_rename 选项并按下 Execute 按钮, 观察上方的运行记录, 确保重命名正确.
 * 选择 preview 选项并按下 Execute 按钮来刷新下方的表格, 确定路径和文件正确.
-* 选择 parse_jav 选项并按下 Execute 按钮, 后台将会爬取javLibrary和arzon的视频文件信息.
+* 选择 parse_jav 选项并按下 Execute 按钮, 后台将会爬取 javLibrary 和 arzon 的视频文件信息.
 * 观察上方的运行记录, 确保文件被正确地处理.
 
 
