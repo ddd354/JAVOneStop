@@ -1,0 +1,11 @@
+# Changelog
+JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
+communicate with Emby to add actresses images.
+
+## [0.0.1] - 2019-12-29
+### Added
+- Basic Architecture for front and back end
+- javLibrary parser
+- arzon plot parser
+- emby actress image upload
+- jav file organization and generate nfo
