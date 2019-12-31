@@ -1,6 +1,9 @@
-baidu-aip==2.2.18.0
 certifi==2019.11.28
 chardet==3.0.4
 idna==2.8
 requests==2.22.0
 urllib3==1.25.7
+ipdb==0.12.3
+pillow==6.2.1
+PyInstaller==3.5
+Flask==1.1.1

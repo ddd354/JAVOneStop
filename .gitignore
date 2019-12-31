@@ -1,1 +1,4 @@
-nv
+build
+dist
+JavHelper/static/nv
+node_modules
