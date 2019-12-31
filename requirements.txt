@@ -7,4 +7,3 @@ ipdb==0.12.3
 pillow==6.2.1
 PyInstaller==3.5
 Flask==1.1.1
-flaskwebgui==0.1.2

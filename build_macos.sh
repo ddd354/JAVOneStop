@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-pyinstaller run.py --onedir \
+pyinstaller --onedir \
     --add-data="JavHelper/templates:JavHelper/templates" \
     --add-data="JavHelper/static:JavHelper/static" \
     --exclude-module="FixTk" \
@@ -9,4 +9,8 @@ pyinstaller run.py --onedir \
     --exclude-module="_tkinter" \
     --exclude-module="tkinter" \
     --exclude-module="Tkinter" \
-    --noconfirm
+    --noconfirm \
+    --distpath dist-python \
+    JavHelper/run.py
+
+tar -czf dist-python.tar.gz dist-python
