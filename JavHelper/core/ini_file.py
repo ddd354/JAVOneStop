@@ -21,7 +21,7 @@ def load_ini_file(ini_file_name=DEFAULT_INI):
 
 
 def write_ini_file(config_obj, ini_file_name=DEFAULT_INI):
-    with open(ini_file_name, 'w') as config_f:
+    with open(ini_file_name, 'w', encoding='utf-8-sig') as config_f:
         config_obj.write(config_f)
 
     return f'successfully write {ini_file_name}'
