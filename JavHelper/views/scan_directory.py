@@ -51,7 +51,7 @@ def rename_path_preview():
     if not os.path.isdir(path):
         return jsonify({'response': [{'file_name': f'{path} is not a valid directory for scan'}]}), 400
 
-    res = EmbyFileStructure.rename_directory_preview(path)
+    res = EmbyFileStructure(path).rename_directory_preview()
 
     return jsonify({'response': res,
                     'header': [

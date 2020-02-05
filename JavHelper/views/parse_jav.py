@@ -63,6 +63,7 @@ def parse_unprocessed_folder():
 
     processed = []
     total = len(emby_folder.file_list)
+    #print(emby_folder.file_list)
 
     def long_process():
         yield json.dumps({'log': 'start bulk jav parses for {} items'.format(len(emby_folder.file_list))}) + '\n'
@@ -79,9 +80,8 @@ def parse_unprocessed_folder():
                 continue
 
             # file structure operations
-            # move video file
             try:
-                jav_obj = emby_folder.put_processed_file(jav_obj)
+                jav_obj = emby_folder.create_new_folder(jav_obj)
             except KeyError as e:
                 _car = each_jav.get('car', 'Unknown')
                 yield json.dumps({'log': f'error: {e}, skipping {_car}'})+'\n'
@@ -90,6 +90,9 @@ def parse_unprocessed_folder():
             emby_folder.write_images(jav_obj)
             # write nfo
             emby_folder.write_nfo(jav_obj)
+             # move video file
+            jav_obj = emby_folder.put_processed_file(jav_obj)
+            
             processed.append(each_jav['car'])
 
             yield json.dumps({'log': '{} processed, {} to go'.format(

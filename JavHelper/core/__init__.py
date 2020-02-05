@@ -4,3 +4,7 @@ class JAVNotFoundException(Exception):
 
 class IniNotFoundException(Exception):
     pass
+
+
+class ActorNotFoundException(Exception):
+    pass

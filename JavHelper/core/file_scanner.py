@@ -4,14 +4,16 @@ from urllib.parse import urlparse
 from PIL import Image
 import requests
 import re
+import traceback
 
 from JavHelper.core.nfo_parser import EmbyNfo
+from JavHelper.core.ini_file import return_default_config_string
 
 
 FOLDER_STRUCTURE = '{year}/{car}'
 POSTER_NAME = 'poster'
 FANART_NAME = 'fanart'
-DEFAULT_FILENAME_PATTERN = r'^.*?(?P<pre>[a-zA-Z]{2,6})\W*(?P<digit>\d{1,5}).*?$'
+DEFAULT_FILENAME_PATTERN = r'^.*?(?P<pre>[a-zA-Z]{2,6})\W*(?P<digit>\d{1,6}).*?$'
 
 
 class EmbyFileStructure:
@@ -24,6 +26,11 @@ class EmbyFileStructure:
         self.root_path = root_path
         self.file_list = []
         self.folder_structure = FOLDER_STRUCTURE
+
+        # settings from ini file
+        self.handle_multi_cds = ( return_default_config_string('handle_multi_cds')== '是' )
+        self.preserve_subtitle_filename = ( return_default_config_string('preserve_subtitle_filename')== '是' )
+        self.subtitle_filename_postfix = return_default_config_string('subtitle_filename_postfix').split(',')
 
     @staticmethod
     def write_images(jav_obj):
@@ -55,22 +62,34 @@ class EmbyFileStructure:
         w, h = img.size  # fanart的宽 高
         ex = int(w * 0.52625)  # 0.52625是根据emby的poster宽高比较出来的
         poster = img.crop((ex, 0, w, h))  # （ex，0）是左下角（x，y）坐标 （w, h)是右上角（x，y）坐标
-        poster.save(poster_path, quality=95)  # quality=95 是无损crop，如果不设置，默认75
+        try:
+            # quality=95 是无损crop，如果不设置，默认75
+            poster.save(poster_path, quality=95)  
+        except OSError:
+            # handle RGBA error
+            if poster.mode in ('RGBA', 'LA'):
+                background = Image.new(poster.mode[:-1], poster.size, '#ffffff')
+                background.paste(poster, poster.split()[-1])
+                poster = background
+            poster.save(poster_path, quality=95)  
 
         return
 
     @staticmethod
     def write_nfo(jav_obj: dict):
-        if 'car' not in jav_obj:
-            raise Exception('no car field in jav_obj')
-        car = jav_obj['car']
+        if 'file_name' not in jav_obj:
+            raise Exception('no file_name field in jav_obj')
+        file_name = jav_obj['file_name']
         if 'directory' not in jav_obj:
             raise Exception('no directory field in jav_obj')
         directory = jav_obj['directory']
 
-        nfo_path = os.path.join(directory, f'{car}.nfo')
+        nfo_file_name = os.path.splitext(file_name)[0] + '.nfo'
+        nfo_path = os.path.join(directory, nfo_file_name)
 
         with open(nfo_path, 'w') as f:
+            if not jav_obj.get('title'):
+                import ipdb; ipdb.set_trace()
             f.write(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n"
                 "<movie>\n"
@@ -106,43 +125,66 @@ class EmbyFileStructure:
                 f.write("  <actor>\n    <name>" + i + "</name>\n    <type>Actor</type>\n  </actor>\n")
             f.write("</movie>\n")
 
-    @staticmethod
-    def rename_single_file(file_name, name_pattern=DEFAULT_FILENAME_PATTERN):
+    def extract_subtitle_postfix_filename(self, file_name: str):
+        subtitle_postfix = ''
+        
+        if self.preserve_subtitle_filename:
+            for postfix in self.subtitle_filename_postfix:
+                if file_name.endswith(postfix):
+                    print(f'find subtitle postfix {postfix} in {file_name}')
+                    subtitle_postfix = postfix
+                    file_name = file_name.replace(postfix, '')
+                    break
+        return subtitle_postfix, file_name
+
+    def extract_CDs_postfix_filename(self, file_name: str):
+        """
+        Cannot have -C or -CD2 in the sametime
+        """
+        allowed_postfixes = {
+            r'^(.+?)([ABCabc])$': {'a': 'cd1', 'b': 'cd2', 'c': 'cd3'},
+            r'^(.+?)(CD\d|cd\d)$': None,
+        }
+        cd_postfix = ''
+        if not self.handle_multi_cds:
+            return cd_postfix, file_name
+        
+        for pattern, part_map in allowed_postfixes.items():
+            file_name_match = re.match(pattern, file_name)
+            if file_name_match:
+                file_name = file_name_match.group(1)
+                cd_postfix = file_name_match.group(2).lower()
+                print(file_name, cd_postfix)
+                if part_map:
+                    cd_postfix = part_map[cd_postfix]
+                break
+        return cd_postfix, file_name
+
+    def rename_single_file(self, file_name: str, name_pattern=DEFAULT_FILENAME_PATTERN):
+        subtitle_postfix, file_name = self.extract_subtitle_postfix_filename(file_name)
+        cd_postfix, file_name = self.extract_CDs_postfix_filename(file_name)
+
         name_group = re.search(name_pattern, file_name)
-        name_digits = new_digits = name_group.group('digit')
+        name_digits = name_group.group('digit')
 
         # only keep 0 under 3 digits
         # keep 045, 0830 > 830, 1130, 0002 > 002, 005
-        if len(name_digits) > 3:
-            new_digits = ''
-            seen_0 = False
-            r_digits = name_digits[::-1]
-            for digit in r_digits:
-                if digit == '0' and seen_0 and len(new_digits) >= 3:
-                    continue
-                elif digit == '0' and not seen_0:
-                    seen_0 = True
-                    new_digits += digit
-                else:
-                    new_digits += digit
+        if name_digits.isdigit():
+            name_digits = str(int(name_digits))
+        while len(name_digits) < 3:
+            name_digits = '0' + name_digits
 
-                if len(new_digits) >= 3:
-                    seen_0 = True
-
-            new_digits = new_digits[::-1]
-
-        new_file_name = name_group.group('pre') + '-' + new_digits
+        new_file_name = name_group.group('pre') + '-' + name_digits + subtitle_postfix + cd_postfix
         return new_file_name
 
-    @staticmethod
-    def rename_directory_preview(path, name_pattern=None):
+    def rename_directory_preview(self, name_pattern=None):
         # apply default name pattern
         if not name_pattern:
             name_pattern = DEFAULT_FILENAME_PATTERN
 
         res = []
 
-        for ind_file in os.listdir(path):
+        for ind_file in os.listdir(self.root_path):
             if str(ind_file) == '.DS_Store' or str(ind_file).startswith('.'):
                 continue
             ind_file_name, ind_ext = os.path.splitext(ind_file)
@@ -161,12 +203,13 @@ class EmbyFileStructure:
                 elif ind_file_name.startswith('T-28'):
                     ind_file_name = ind_file_name.replace('T-28', 'T28-')
                     t28_pattern = r'^.*?(?P<pre>T28)\W*(?P<digit>\d{1,5}).*?$'
-                    new_file_name = EmbyFileStructure.rename_single_file(ind_file_name, t28_pattern) + ind_ext
+                    new_file_name = self.rename_single_file(ind_file_name, t28_pattern) + ind_ext
                 else:
                     # normal case
-                    new_file_name = EmbyFileStructure.rename_single_file(ind_file_name, name_pattern) + ind_ext
+                    new_file_name = self.rename_single_file(ind_file_name, name_pattern) + ind_ext
 
             except Exception as e:
+                traceback.print_exc()
                 res.append({'file_name': f'cannot process {ind_file} due to {e}'})
                 continue
 
@@ -208,7 +251,12 @@ class EmbyFileStructure:
                 continue
 
             # ini jav obj
-            jav_obj = {'file_name': file_name, 'car': os.path.splitext(file_name)[0]}
+            # fill car
+            postfix, car_str = self.extract_subtitle_postfix_filename(os.path.splitext(file_name)[0])
+            _, car_str = self.extract_CDs_postfix_filename(car_str)
+            jav_obj = {'file_name': file_name, 'car': car_str}
+            if postfix:
+                jav_obj.setdefault('genres', []).append('中字')
             self.file_list.append(jav_obj)
 
     def scan_emby_root_path(self):
@@ -227,7 +275,7 @@ class EmbyFileStructure:
                     nfo_obj.jav_obj['directory'] = root
                     self.file_list.append(nfo_obj.jav_obj)
 
-    def put_processed_file(self, jav_obj: dict):
+    def create_new_folder(self, jav_obj: dict):
         # file_name has to be in incoming jav_obj
         if 'file_name' not in jav_obj:
             raise Exception(f'file_name has to be in incoming jav object')
@@ -239,11 +287,23 @@ class EmbyFileStructure:
         # configure all necessary folders
         try:
             new_full_path = os.path.join(self.root_path, self.folder_structure.format(**jav_obj))
-        except KeyError as e:
+        except KeyError:
             raise KeyError('required fields not filled for path {} and parsed {}'.format(
                 self.folder_structure, jav_obj.keys()
             ))
         os.makedirs(new_full_path, exist_ok=True)
+        jav_obj['directory'] = new_full_path
+        return jav_obj
+
+    def put_processed_file(self, jav_obj: dict):
+        # file_name has to be in incoming jav_obj
+        if 'file_name' not in jav_obj or 'directory' not in jav_obj:
+            raise Exception(f'required file_name or directoy has to be in incoming {jav_obj} object')
+        file_name = jav_obj['file_name']
+        new_full_path = jav_obj['directory']
+
+        if not os.path.exists(os.path.join(self.root_path, file_name)):
+            raise Exception(f'{file_name} does not exist')
 
         os.rename(
             os.path.join(self.root_path, file_name),
@@ -253,7 +313,5 @@ class EmbyFileStructure:
             os.path.join(self.root_path, file_name),
             os.path.join(new_full_path, file_name)
         ))
-
-        jav_obj['directory'] = new_full_path
 
         return jav_obj
