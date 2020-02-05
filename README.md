@@ -1,4 +1,4 @@
-# JAVHelper V0.0.1
+# JAVHelper V0.3.0
 
 本工具将致力于提供一个All-in-One的使用环境, 便于用户整理本地JAV文件. 
 
