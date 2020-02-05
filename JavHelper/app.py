@@ -2,7 +2,7 @@
 import os
 from flask import Flask, render_template, jsonify
 from werkzeug.exceptions import HTTPException
-from traceback import format_exc
+from traceback import format_exc, print_exc
 
 from JavHelper.views.emby_actress import emby_actress
 from JavHelper.views.parse_jav import parse_jav
@@ -35,6 +35,7 @@ def create_app():
         if isinstance(e, HTTPException):
             return e
 
+        print_exc()
         # now you're handling non-HTTP exceptions only
         return jsonify({'errors': format_exc()}), 500
 

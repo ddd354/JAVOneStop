@@ -2,3 +2,13 @@ build
 dist
 JavHelper/static/nv
 node_modules
+.idea
+dist-python
+__pycache__
+test.py
+.vscode
+.ipynb_checkpoints
+*.gz
+yarn-error.log
+yarn.lock
+*.ipynb

@@ -2,13 +2,21 @@
 JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
-## [0.0.2] - 2019-12-31
+## [0.3.0] - 2019-02-05
+### Added
+
+### Updated
+
+### Removed
+
+
+## [0.2.0] - 2019-12-31
 ### Updated
 - update README for new usage
 ### Removed
 - remove flaskwebgui package usage
 
-## [0.0.1] - 2019-12-29
+## [0.1.0] - 2019-12-29
 ### Added
 - Basic Architecture for front and back end
 - javLibrary parser

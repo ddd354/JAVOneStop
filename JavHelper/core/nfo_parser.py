@@ -1,4 +1,5 @@
 import xml.etree.ElementTree as Et
+import os
 
 
 class EmbyNfo:
@@ -23,6 +24,9 @@ class EmbyNfo:
 
     def parse_emby_nfo(self, file_path):
         print(file_path)
+        # record file_name
+        self.jav_obj['file_name'] = os.path.split(file_path)[1]
+
         tree = Et.parse(file_path)
         for k, v in self.single_field_mapping.items():
             self.jav_obj[k] = tree.find(v).text

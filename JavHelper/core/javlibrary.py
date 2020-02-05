@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 import re
-from copy import copy
+from copy import deepcopy
 
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text
@@ -20,21 +20,21 @@ DEFAULT_JAVLIB_CONFIG = {
         'score': r'&nbsp;<span class="score">\((.+?)\)</span>',
     },
     'search_list_field': {
-        'genres': r'category tag">(.+?)</a>',
-        'all_actress': r'<a href=\"vl_star\.php\?s=.+?\" rel=\"tag\">(.+?)</a>'
+        'genres': r'category tag">(.+?)</a>'
     },
     'proxies': None,
     'cookies': None
 }
 
 
-def parse_javlib(jav_obj: dict, config=copy(DEFAULT_JAVLIB_CONFIG)) -> dict:
+def parse_javlib(jav_obj: dict, config=None) -> dict:
     # force to get url from ini file each time
     javlib_url = return_config_string(['其他设置', 'javlibrary网址'])
 
     # fill missing parameters
-    if config != DEFAULT_JAVLIB_CONFIG:
-        config.update(DEFAULT_JAVLIB_CONFIG)
+    if config == None:
+        config = deepcopy(DEFAULT_JAVLIB_CONFIG)
+
     # perform search first
     lib_search_url = javlib_url + 'vl_searchbyid.php?keyword=' + jav_obj['car']
     print(f'accessing {lib_search_url}')
@@ -45,6 +45,8 @@ def parse_javlib(jav_obj: dict, config=copy(DEFAULT_JAVLIB_CONFIG)) -> dict:
     if jav_obj['car'].startswith('T28'):
         # special filter for T28
         title_re = re.search(r'<title>(T28-\d{1,5}.+?) - JAVLibrary</title>', jav_html)
+        # update title re
+        config['search_field']['title'] = r'<title>(T28-\d{1,5}.+?) - JAVLibrary</title>'
     else:
         title_re = re.search(r'<title>([a-zA-Z]{1,6}-\d{1,5}.+?) - JAVLibrary</title>', jav_html)  # 匹配处理“标题”
     # 搜索结果就是AV的页面
@@ -64,15 +66,20 @@ def parse_javlib(jav_obj: dict, config=copy(DEFAULT_JAVLIB_CONFIG)) -> dict:
 
     print('>>正在处理：', jav_obj['car'])
     # process standard fields
+    # we can use update here since each field only allows one value
     jav_obj.update(re_parse_html(config['search_field'], jav_html))
     # process list fields
-    jav_obj.update(re_parse_html_list_field(config['search_list_field'], jav_html))
+    for k, v in config['search_list_field'].items():
+        for each_v in re.findall(v, jav_html):
+            jav_obj.setdefault(k, []).append(each_v)
 
     # get rid of car in title
     if 'title' in jav_obj:
         title_re = re.search(r'(.+?) (.+)', jav_obj['title'])
         if title_re:
             jav_obj['title'] = title_re.group(2)
+    else:
+        import ipdb; ipdb.set_trace()
 
     # process score to make it more realistic
     if 'score' in jav_obj:
@@ -81,18 +88,34 @@ def parse_javlib(jav_obj: dict, config=copy(DEFAULT_JAVLIB_CONFIG)) -> dict:
             score = '%.1f' % score
         jav_obj['score'] = str(float(score) * 10)
 
-    # javlibrary的精彩影评   (.+?\s*.*?\s*.*?\s*.*?) 下面的匹配可能很奇怪，没办法，就这么奇怪
-    review = re.findall(
-        r'(hidden">.+?</textarea>)</td>\s*?<td class="scores"><table>\s*?<tr><td><span class="scoreup">\d\d+?</span>',
-        jav_html, re.DOTALL)
-    if len(review) != 0:
-        plot_review = '\n【精彩影评】：'
-        for rev in review:
-            right_review = re.findall(r'hidden">(.+?)</textarea>', rev, re.DOTALL)
-            if len(right_review) != 0:
-                plot_review = plot_review + right_review[-1] + '////'
+    # extra processing for actress names for japanese name
+    jav_obj['all_actress'] = []
+    actress_jav_ids = r'<a href=\"vl_star\.php\?s=(.+?)\" rel=\"tag\">(.+?)</a>'
+    if True and 'ja' not in javlib_url:  # read from ini file
+        javlib_url_jp = javlib_url.replace('cn', 'ja')
+        for act_id_re in re.findall(actress_jav_ids, jav_html):
+            if len(act_id_re) != 2:
+                print(f'skipping {act_id_re}, not enough info')
                 continue
-        jav_obj['review'] = plot_review
+
+            ind_url_jp = javlib_url_jp + f'vl_star.php?s={act_id_re[0]}'
+            print(f'requesting {ind_url_jp} for jp name')
+            jp_html_text = return_html_text(ind_url_jp)
+
+            # compare jp with cn name
+            try:
+                jp_name_filter = r'<div class="boxtitle">(.+?)のビデオ</div>'
+                jp_name = re.search(jp_name_filter, jp_html_text).group(1)
+                act_name = act_id_re[1]
+            except:
+                import ipdb; ipdb.set_trace()
+
+            # merge jp into cn name
+            if jp_name != act_name:
+                act_name = '{}[{}]'.format(act_name, jp_name)
+
+            jav_obj['all_actress'].append(act_name)
+            
 
     # force set year if not detected
     if not jav_obj.get('year'):
