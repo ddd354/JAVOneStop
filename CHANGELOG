@@ -4,11 +4,12 @@ communicate with Emby to add actresses images.
 
 ## [0.3.0] - 2019-02-05
 ### Added
-
+- warashi scraper which is used for emby actor images
+- Handle multiple CD filename postfix
+- Handle Chinese subtitle filename postfix
 ### Updated
-
-### Removed
-
+- Fix bug when writing images
+- Fix read from ini file so no restart is needed
 
 ## [0.2.0] - 2019-12-31
 ### Updated

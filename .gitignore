@@ -12,3 +12,6 @@ test.py
 yarn-error.log
 yarn.lock
 *.ipynb
+*.pyc
+settings.ini
+115_cookie.json
