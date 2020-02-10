@@ -6,6 +6,7 @@ import requests
 import re
 import traceback
 
+from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.nfo_parser import EmbyNfo
 from JavHelper.core.ini_file import return_default_config_string
 
@@ -31,6 +32,8 @@ class EmbyFileStructure:
         self.handle_multi_cds = ( return_default_config_string('handle_multi_cds')== '是' )
         self.preserve_subtitle_filename = ( return_default_config_string('preserve_subtitle_filename')== '是' )
         self.subtitle_filename_postfix = return_default_config_string('subtitle_filename_postfix').split(',')
+
+        self.jav_manage = JavManagerDB()
 
     @staticmethod
     def write_images(jav_obj):
@@ -132,7 +135,8 @@ class EmbyFileStructure:
             for postfix in self.subtitle_filename_postfix:
                 if file_name.endswith(postfix):
                     print(f'find subtitle postfix {postfix} in {file_name}')
-                    subtitle_postfix = postfix
+                    #subtitle_postfix = postfix
+                    subtitle_postfix = '-C'
                     file_name = file_name.replace(postfix, '')
                     break
         return subtitle_postfix, file_name
@@ -142,7 +146,7 @@ class EmbyFileStructure:
         Cannot have -C or -CD2 in the sametime
         """
         allowed_postfixes = {
-            r'^(.+?)([ABCabc])$': {'a': 'cd1', 'b': 'cd2', 'c': 'cd3'},
+            r'^(.+?)([ABab])$': {'a': 'cd1', 'b': 'cd2'},
             r'^(.+?)(CD\d|cd\d)$': None,
         }
         cd_postfix = ''
@@ -273,6 +277,8 @@ class EmbyFileStructure:
                     nfo_obj = EmbyNfo()
                     nfo_obj.parse_emby_nfo(os.path.join(root, each_file))
                     nfo_obj.jav_obj['directory'] = root
+                    nfo_obj.jav_obj['stat'] = 3
+                    self.jav_manage.upcreate_jav(nfo_obj.jav_obj)
                     self.file_list.append(nfo_obj.jav_obj)
 
     def create_new_folder(self, jav_obj: dict):
@@ -309,6 +315,11 @@ class EmbyFileStructure:
             os.path.join(self.root_path, file_name),
             os.path.join(new_full_path, file_name)
         )
+        # default to exists locally
+        jav_obj.setdefault('stat', 3)
+        # write to db
+        self.jav_manage.upcreate_jav(jav_obj)
+
         print('move {} to {}'.format(
             os.path.join(self.root_path, file_name),
             os.path.join(new_full_path, file_name)

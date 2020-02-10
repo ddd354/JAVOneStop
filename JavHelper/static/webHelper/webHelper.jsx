@@ -6,6 +6,8 @@ import 'react-tabs/style/react-tabs.css';
 import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
 
+import JavlibBroswer from "./javlibBroswer"
+import LocalJavBroswer from "./localJavBrowser"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 
@@ -260,6 +262,8 @@ export default class App extends Component {
             <Tabs>
             <TabList>
               <Tab>Main Tool</Tab>
+              <Tab>Local Jav Manager</Tab>
+              <Tab>JavLibrary Manager</Tab>
               <Tab>Handy Features</Tab>
               <Tab>Settings</Tab>
             </TabList>
@@ -273,6 +277,12 @@ export default class App extends Component {
                 </Form>
                 </StyledDiv>
                 <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
+            </TabPanel>
+            <TabPanel>
+              <LocalJavBroswer />
+            </TabPanel>
+            <TabPanel>
+              <JavlibBroswer />
             </TabPanel>
             <TabPanel>
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>Upload actress images to Emby</Button>

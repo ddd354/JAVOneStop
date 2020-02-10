@@ -3,6 +3,21 @@ import requests
 from PIL import Image
 
 
+class defaultlist(list):
+    def __init__(self, fx):
+        self._fx = fx
+
+    def __setitem__(self, index, value):
+        while len(self) <= index:
+            self.append(self._fx())
+        list.__setitem__(self, index, value)
+
+    def __getitem__(self, index):
+        while len(self) <= index:
+            self.append(self._fx())
+        return super(defaultlist, self).__getitem__(index)
+
+
 def re_parse_html(config, html_text):
     info = {}
     for k, v in config.items():
