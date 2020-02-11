@@ -78,11 +78,12 @@ def download_via_aria():
         return jsonify({'error': 'required fields are not found in posted json'}), 400
 
     oof_downloader = OOFDownloader()
-    try:
-        jav_obj = oof_downloader.handle_jav_download(car, magnet)
+
+    jav_obj = oof_downloader.handle_jav_download(car, magnet)
+    if not jav_obj.get('error'):
         return jsonify({'success': jav_obj})
-    except Exception as e:
-        return jsonify({'error': e}), 400
+    else:
+        return jsonify({'error': jav_obj.get('error')}), 400
 
 @jav_browser.route('/search_magnet_link', methods=['GET'])
 @cache.cached(timeout=3600, query_string=True)
@@ -91,6 +92,26 @@ def search_magnet_link():
 
     rt = []
     # check whether magnet is available
+    try:
+        # torrent kitty is good for chinese subtitled movies
+        respBT = requests.get('https://www.torrentkitty.tv/search/' + car)
+        BTTree = html.fromstring(respBT.content)
+        bt_xpath = '//html/body//table[@id="archiveResult"]//td[@class="action"]/a[2]/@href'
+        if len(BTTree.xpath(bt_xpath)) > 0:
+            print(f'{car} found in torrentkitty')
+            name_xpath = '//html/body//table[@id="archiveResult"]//td[@class="name"]/text()'
+            titles = [ind[0:25] for ind in BTTree.xpath(name_xpath)]
+
+            file_xpath = '//html/body//table[@id="archiveResult"]//td[@class="size"]/text()'
+            file_sizes = [ind for ind in BTTree.xpath(file_xpath)]
+            magnets = BTTree.xpath(bt_xpath)
+            
+            for i in range(len(titles)):
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
+            return jsonify({'success': rt[:10]})
+    except Exception:
+        pass
+
     try:
         respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
         BTTree = html.fromstring(respBT.content)

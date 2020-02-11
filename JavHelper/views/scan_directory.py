@@ -36,7 +36,7 @@ def read_local_ini():
                 res[k] = return_config_string(v)
             except IniNotFoundException as e:
                 errors.append(str(e))
-        return jsonify({'local_config': res, 'errors': errors})
+        return jsonify({'local_config': res, 'error': errors})
     else:
         return jsonify({'local_config': load_ini_file()._sections})  # convert returned obj to dict format
 

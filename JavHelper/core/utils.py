@@ -3,6 +3,12 @@ import requests
 from PIL import Image
 
 
+def byte_to_MB(some_input):
+    if isinstance(some_input, int) or str(some_input).isdigit():
+        return int(some_input)/1024/1024
+    else:
+        return 0
+
 class defaultlist(list):
     def __init__(self, fx):
         self._fx = fx

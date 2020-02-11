@@ -5,6 +5,9 @@ from JavHelper.core import IniNotFoundException
 
 DEFAULT_INI = resource_path('settings.ini')
 DEFAULT_UPDATE_MAPPING = {
+    'aria_address': ["Aria2设置", "Aria2地址"],
+    'aria_port': ["Aria2设置", "Aria2端口"],
+    'aria_token': ["Aria2设置", "Aria2 Token"],
     'file_path': ["本地设置", "默认填入目录"],
     'preserve_subtitle_filename': ["本地设置", '保留中文字幕文件名'],
     'subtitle_filename_postfix': ["本地设置", '中文字幕文件名后缀'],
@@ -68,6 +71,10 @@ def return_config_string(field_path: list, config=None):
 def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings = configparser.RawConfigParser()
     print('正在重写ini...')
+    config_settings.add_section("Aria2设置")
+    config_settings.set("Aria2设置", "Aria2地址", "")
+    config_settings.set("Aria2设置", "Aria2端口", "")
+    config_settings.set("Aria2设置", "Aria2 Token", "")
     config_settings.add_section("本地设置")
     config_settings.set("本地设置", "默认填入目录", "")
     config_settings.set("本地设置", "保留中文字幕文件名", "是")
