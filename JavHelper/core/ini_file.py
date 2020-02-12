@@ -114,7 +114,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("百度人体分析", "Secret Key", "")
     config_settings.add_section("其他设置")
     config_settings.set("其他设置", "简繁中文？", "简")
-    config_settings.set("其他设置", "javlibrary网址", "http://www.h28o.com/cn/")  # supported
+    config_settings.set("其他设置", "javlibrary网址", "http://www.p42u.com/cn/")  # supported
     config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")
     config_settings.set("其他设置", "素人车牌(若有新车牌请自行添加)",
                         "LUXU、MIUM、GANA、NTK、ARA、DCV、MAAN、HOI、NAMA、SWEET、SIRO、SCUTE、CUTE、SQB、JKZ")
