@@ -3,12 +3,12 @@ import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const StatButtonGroup = ({ stat, car }) => {
-  const [button_group_value, setButtonGroupValue] = useState(String(stat)+'_'+car); 
+const StatButtonGroup = (props) => {
+  const [button_group_value, setButtonGroupValue] = useState(String(props.stat)+'_'+props.car); 
 
   useEffect(() => {
-    setButtonGroupValue(String(stat)+'_'+car);
-  }, [stat]);
+    setButtonGroupValue(String(props.stat)+'_'+props.car);
+  }, [props.stat]);
   
   // event handler
   const buttonClicked = (event) => {
@@ -24,15 +24,16 @@ const StatButtonGroup = ({ stat, car }) => {
             console.log('Update DB Stat: ', resp_json.success);
           });
     setButtonGroupValue(event);
+    props.setbutstat(Number(event[0]));
   };
 
   return(
     <ToggleButtonGroup size="sm" type="radio" value={button_group_value} name="javStat" onChange={buttonClicked}>
-      <ToggleButton value={'0_'+car}>wanted</ToggleButton>
-      <ToggleButton value={'1_'+car}>viewed</ToggleButton>
-      <ToggleButton value={'2_'+car}>no opinion</ToggleButton>
-      <ToggleButton value={'3_'+car}>local</ToggleButton>
-      <ToggleButton value={'4_'+car}>downloading</ToggleButton>
+      <ToggleButton value={'0_'+props.car}>wanted</ToggleButton>
+      <ToggleButton value={'1_'+props.car}>viewed</ToggleButton>
+      <ToggleButton value={'2_'+props.car}>no opinion</ToggleButton>
+      <ToggleButton value={'3_'+props.car}>local</ToggleButton>
+      <ToggleButton value={'4_'+props.car}>downloading</ToggleButton>
     </ToggleButtonGroup>
 )};
 

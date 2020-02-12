@@ -9,7 +9,6 @@ import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
 
 import JavlibBroswer from "./javlibBrowser"
-import LocalJavBroswer from "./localJavBrowser"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'

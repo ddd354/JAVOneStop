@@ -2,11 +2,10 @@ import React, { useState, useEffect }  from 'react';
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner'
 
-const JavMagnetButton = ({ car, magnet, index, setJavStat }) => {
+const JavMagnetButton = ({ car, magnet, setJavStat }) => {
     const [isLoading, setLoading] = useState(false);
     const _car = car;
     const _magnet = magnet;
-    const _index = index;
   
     useEffect(() => {
         if (isLoading) {
@@ -22,7 +21,7 @@ const JavMagnetButton = ({ car, magnet, index, setJavStat }) => {
               console.log('failed on: ', jsonData.error)
             } else {
               console.log('aria2 downloadeding: ', jsonData.success.car);
-              setJavStat(_index, 4);
+              setJavStat(4);
             }
             setLoading(false);
           })

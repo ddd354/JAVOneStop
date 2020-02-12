@@ -124,6 +124,14 @@ def parse_javlib(jav_obj: dict, config=None) -> dict:
 
     return jav_obj
 
+def find_max_page(search_str: str):
+    search_pattern = r'.*?page=(\d*)'
+    try:
+        search_result = re.match(search_pattern, search_str).groups()[0]
+        return str(search_result)
+    except Exception as e:
+        print(e)
+        return None
 
 def javlib_set_page(page_prefix: str, page_num: int, config=None) -> dict:
     xpath_dict = {
@@ -132,6 +140,7 @@ def javlib_set_page(page_prefix: str, page_num: int, config=None) -> dict:
         'img': '//*[@class="video"]/a/img/@src',
         'car': '//*/div[@class="video"]/a/div[@class="id"]/text()'
     }
+    xpath_max_page = '//*/div[@class="page_selector"]/a[@class="page last"]/@href'
 
     # force to get url from ini file each time
     javlib_url = return_config_string(['其他设置', 'javlibrary网址'])
@@ -148,9 +157,13 @@ def javlib_set_page(page_prefix: str, page_num: int, config=None) -> dict:
 
     jav_objs_raw = defaultlist(dict)
     for k, v in xpath_dict.items():
-        #import ipdb; ipdb.set_trace()
         _values = root.xpath(v)
         for _i, _value in enumerate(_values):
             jav_objs_raw[_i].update({k: _value})
+
+    try:
+        max_page = find_max_page(root.xpath(xpath_max_page)[0])
+    except IndexError:
+        max_page = page_num
     
-    return jav_objs_raw
+    return jav_objs_raw, max_page

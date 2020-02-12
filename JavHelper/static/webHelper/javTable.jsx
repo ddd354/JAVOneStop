@@ -1,40 +1,32 @@
 import React, { useState, useEffect }  from 'react';
 import DataTable from 'react-data-table-component';
+import Spinner from 'react-bootstrap/Spinner'
 
 import './javlibBrowser.css'
 import JavMagnetButton from './javMagnetButton'
 
-/*function addDownloadButton(obj_list, car, index, setJavStat) {
-  var row;
-  for (row of obj_list) {
-    row['action'] = <JavMagnetButton car={car} magnet={row['magnet']} index={index} setJavStat={setJavStat}/>;
-  }
-  return obj_list
-}*/
 
-const JavTable = ({ car, index, stat, setJavStat }) => {
+const JavTable = ({ car, stat, setJavStat }) => {
   const [jav_data, setJavData] = useState([]);
-  const [_car, set_Car] = useState(car);
-  const _index = index;
 
-  const addDownloadButton = (obj_list, car, index) => {
+  const addDownloadButton = (obj_list, car) => {
     var row;
     for (row of obj_list) {
-      row['action'] = <JavMagnetButton car={car} magnet={row['magnet']} index={index} setJavStat={setJavStat}/>;
+      row['action'] = <JavMagnetButton car={car} magnet={row['magnet']} setJavStat={setJavStat}/>;
     }
     return obj_list
   }
 
   useEffect(() => {
     if (stat === 0) {
-    fetch(`jav_browser/search_magnet_link?car=`+String(_car))
+    fetch(`jav_browser/search_magnet_link?car=`+String(car))
         .then(response => response.json())
         .then((jsonData) => {
           //console.log(jsonData);
           if (jsonData.success === undefined) {
             setJavData([{'title': 'not found'}]);
           } else {
-            setJavData(addDownloadButton(jsonData.success, _car, _index));
+            setJavData(addDownloadButton(jsonData.success, car));
           }
         })
     } else {
@@ -56,7 +48,7 @@ const JavTable = ({ car, index, stat, setJavStat }) => {
       dense
       noTableHead
       noHeader
-      noDataComponent={<p>loading...</p>}
+      noDataComponent={<Spinner animation="border" as="span" size="lg" variant="primary" />}
     />
 )};
 

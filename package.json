@@ -1,11 +1,11 @@
 {
-  "name": "jav_helper",
-  "version": "0.0.1",
+  "name": "JAV_ONESTOP",
+  "version": "0.4.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -p --progress --config webpack.config.js",
+    "build": "webpack --config webpack.prod.js",
     "dev-build": "webpack --progress -d --config webpack.config.js",
     "watch": "webpack --progress -d --config webpack.config.js --watch"
   },
@@ -19,7 +19,8 @@
     "react-dom": "^16.12.0",
     "style-loader": "^1.1.2",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-merge": "^4.2.2"
   },
   "dependencies": {
     "@material-ui/core": "^4.8.1",

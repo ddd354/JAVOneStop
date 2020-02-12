@@ -13,7 +13,8 @@ from JavHelper.core.OOF_downloader import OOFDownloader
 
 jav_browser = Blueprint('jav_browser', __name__, url_prefix='/jav_browser')
 SET_TYPE_MAP = {
-    'most_wanted': 'vl_mostwanted.php?&mode=&page='
+    'most_wanted': 'vl_mostwanted.php?&mode=&page=',
+    'best_rated': 'vl_bestrated.php?&mode=&page='
 }
 
 @jav_browser.route('/get_set_javs', methods=['GET'])
@@ -26,7 +27,7 @@ def get_set_javs():
     if set_type not in SET_TYPE_MAP:
         return jsonify({'error': f'{set_type} is not a supported set type'}), 400
 
-    jav_objs = javlib_set_page(SET_TYPE_MAP[set_type], page_num)
+    jav_objs, max_page = javlib_set_page(SET_TYPE_MAP[set_type], page_num)
     db_conn = JavManagerDB()
     for jav_obj in jav_objs:
         if db_conn.pk_exist(str(jav_obj.get('car'))):
@@ -36,7 +37,7 @@ def get_set_javs():
                 )
             )
 
-    return jsonify({'success': jav_objs})
+    return jsonify({'success': {'jav_objs': jav_objs, 'max_page': max_page}})
 
 @jav_browser.route('/get_local_car', methods=['GET'])
 def get_local_car():
