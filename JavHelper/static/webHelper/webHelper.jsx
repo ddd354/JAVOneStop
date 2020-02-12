@@ -1,13 +1,17 @@
 import React, { Component } from "react";
 import ndjsonStream from 'can-ndjson-stream';
 
+import { Hook, Console, Decode } from 'console-feed'
+
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
 
+import JavlibBroswer from "./javlibBrowser"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
+import './webHelper.css'
 
 export default class App extends Component {
     constructor(props) {
@@ -19,7 +23,8 @@ export default class App extends Component {
           files_table: [],
           form_data: {},
           settings_form_data: {},
-          ui_log: ['Front end loaded']
+          ui_log: ['Front end loaded'],
+          logs: []
         };
         this.filePathHandler = this.filePathHandler.bind(this);
         this.embyImageHandler = this.embyImageHandler.bind(this);
@@ -27,8 +32,15 @@ export default class App extends Component {
     }
 
     async componentDidMount () {
+        // init log window
+        Hook(window.console, log => {
+          this.setState(({ logs }) => ({ logs: [Decode(log), ...logs] }))
+        })
         // load ini from file
         fetch(`/directory_scan/read_local_ini?filter_dict={
+            'aria_address': ["Aria2设置", "Aria2地址"],
+            'aria_port': ["Aria2设置", "Aria2端口"],
+            'aria_token': ["Aria2设置", "Aria2 Token"],
             'file_path': ["本地设置", "默认填入目录"],
             'enable_proxy':['代理','是否使用代理？'],
             'proxy_setup':['代理','代理IP及端口'],
@@ -38,32 +50,29 @@ export default class App extends Component {
             }`)
             .then(response => response.json())
             .then((jsonData) => {
-                console.log(jsonData.local_config);
-                this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
-                if (jsonData.errors) {
-                    let new_log = [jsonData.errors.toString(), ...this.state.ui_log];
-                    this.setState({ ui_log: new_log });
-                }
+              if (jsonData.error != undefined && jsonData.error.length > 0) {
+                console.log('Error: ', jsonData.errors);
+              }
+              console.log('Using local config: ', jsonData.local_config);
+              this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
             })
     }
 
     filePathHandler (fileForm) {
-        console.log(fileForm);
+        console.log('Processing request form: ', fileForm);
         this.setState({form_data: fileForm.formData});  // retain submitted form data
         if (fileForm.formData.action === 'preview') {
             fetch('/directory_scan/pre_scan_files?path='+fileForm.formData.file_path)
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
-                    console.log(jsonData);
                     this.setState({files_table: jsonData['response'], file_table_header: jsonData['header']});
                     if (jsonData['response'].length === 0) {
-                        let new_log = [fileForm.formData.file_path+' scan does not reveal any file', ...this.state.ui_log];
-                        this.setState({ ui_log: new_log });
+                        console.log(fileForm.formData.file_path+' scan does not reveal any file');
                     }
                 })
         } else if (fileForm.formData.action === 'parse_jav') {
-            console.log('start parse on'+fileForm.formData.file_path);
+            console.log('start parse on: '+fileForm.formData.file_path);
             fetch('/parse_jav/parse_unprocessed_folder?path='+fileForm.formData.file_path)  // make a fetch request to a NDJSON stream service
               .then((response) => {
                 return ndjsonStream(response.body); //ndjsonStream parses the response.body
@@ -74,27 +83,19 @@ export default class App extends Component {
                     if (result.done) {
                         return;
                     }
-                    console.log(result.value);
-                    let new_log = [result.value.log, ...this.state.ui_log];
-                    this.setState({ ui_log: new_log });
+                    console.log(result.value.log);
 
                     exampleRead.read().then(read); //recurse through the stream
                 });
             });
         } else if (fileForm.formData.action === 'preview_rename') {
-            console.log('preview renames');
             fetch('/directory_scan/rename_path_preview?path='+fileForm.formData.file_path)
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
-                    console.log(jsonData);
                     this.setState({files_table: jsonData['response'], file_table_header: jsonData['header']});
                 })
         } else if (fileForm.formData.action === 'rename') {
-            console.log('posting for rename files: '+ JSON.stringify({
-                        "path": fileForm.formData.file_path,
-                        "file_objs": this.state.files_table
-                   }));
             fetch('/directory_scan/rename_path_on_json',
                 {method: 'post',
                 body: JSON.stringify({
@@ -111,9 +112,8 @@ export default class App extends Component {
                     if (result.done) {
                         return;
                     }
-                    console.log(result.value);
-                    let new_log = [result.value.log, ...this.state.ui_log];
-                    this.setState({ ui_log: new_log });
+                    //console.log(result.value);
+                    console.log(result.value.log);
 
                     exampleRead.read().then(read); //recurse through the stream
                 });
@@ -123,7 +123,7 @@ export default class App extends Component {
 
     embyImageHandler () {
         try {
-            console.log('working on the requests');
+            console.log('working on the emby image update');
             fetch('/emby_actress/set_actress_images')  // make a fetch request to a NDJSON stream service
               .then((response) => {
                 return ndjsonStream(response.body); //ndjsonStream parses the response.body
@@ -134,10 +134,7 @@ export default class App extends Component {
                     if (result.done) {
                         return;
                     }
-                    console.log(result.value);
-                    let new_log = [result.value.log, ...this.state.ui_log];
-                    this.setState({ ui_log: new_log });
-
+                    console.log(result.value.log);
                     exampleRead.read().then(read); //recurse through the stream
                 });
             });
@@ -147,7 +144,7 @@ export default class App extends Component {
     }
 
     settingsFormHandler (settingsForm) {
-        console.log(settingsForm);
+        console.log('Processing request form: ', settingsForm);
         this.setState({settings_form_data: settingsForm.formData});  // retain submitted form data
         fetch('/directory_scan/update_local_ini',
             {method: 'post',
@@ -162,14 +159,10 @@ export default class App extends Component {
                     // jsonData is parsed json object received from url
                     res_list[0].then((jsonData) => {
                         console.log(jsonData.status);
-                        let new_log = [jsonData.status, ...this.state.ui_log];
-                    this.setState({ ui_log: new_log });
                     })
                 } else {
                     res_list[0].then((jsonData) => {
-                        console.log(jsonData);
-                        let new_log = jsonData.errors.split("\n");
-                        this.setState({ ui_log: new_log.concat(this.state.ui_log) });
+                        console.log(jsonData.errors.split("\n"));
                     })
 
                 }
@@ -238,6 +231,18 @@ export default class App extends Component {
             "javlibrary_url": {
               "type": "string",
               "title": "Url for Accessing JavLibrary"
+            },
+            "aria_address": {
+              "type": "string",
+              "title": "Url for Aria2; Example: http://192.168.1.9"
+            },
+            "aria_port": {
+              "type": "string",
+              "title": "Port for Aria2"
+            },
+            "aria_token": {
+              "type": "string",
+              "title": "Aria2 authentication token"
             }
           }
         };
@@ -256,10 +261,13 @@ export default class App extends Component {
 
         return (
             <div>
-            <StyledLogDiv><ul>{this.state.ui_log.map(i => <li>{i}</li>)}</ul></StyledLogDiv>
+            <StyledLogDiv className='javConsole'>
+              <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
+            </StyledLogDiv>
             <Tabs>
             <TabList>
               <Tab>Main Tool</Tab>
+              <Tab>JavLibrary Manager</Tab>
               <Tab>Handy Features</Tab>
               <Tab>Settings</Tab>
             </TabList>
@@ -273,6 +281,9 @@ export default class App extends Component {
                 </Form>
                 </StyledDiv>
                 <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
+            </TabPanel>
+            <TabPanel>
+              <JavlibBroswer />
             </TabPanel>
             <TabPanel>
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>Upload actress images to Emby</Button>

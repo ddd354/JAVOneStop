@@ -2,6 +2,19 @@
 JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.4.0] - 2019-02-12
+### Added
+- local blitzDB to handle jav file status look up
+- jav manager - 115 - aria2 download support
+- flask cache for faster web response
+- new function to parse two javlibrary most wanted and best rated pages
+- new readme with demo gifs
+### Updated
+- nfo parser now by default capitalize "car"
+- production webpack react compile to reduce warnings
+### Removed
+- no longer support "C" as cd postfix
+
 ## [0.3.0] - 2019-02-05
 ### Added
 - warashi scraper which is used for emby actor images

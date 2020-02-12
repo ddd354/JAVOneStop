@@ -14,4 +14,8 @@ yarn.lock
 *.ipynb
 *.pyc
 settings.ini
-115_cookie.json
+115_cookies.json
+*.DS_Store
+jav_manager.db
+run.spec
+rewrite_his.sh

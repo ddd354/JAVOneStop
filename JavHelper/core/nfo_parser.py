@@ -33,3 +33,6 @@ class EmbyNfo:
 
         for k, v in self.list_field_mapping.items():
             self.jav_obj[k] = [ele.text for ele in tree.findall(v)]
+
+        if isinstance(self.jav_obj.get('car', None), str):
+            self.jav_obj['car'] = self.jav_obj['car'].upper()

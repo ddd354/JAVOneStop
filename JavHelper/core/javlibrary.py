@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
+from lxml import etree
 import re
 from copy import deepcopy
 
 from JavHelper.core import JAVNotFoundException
-from JavHelper.core.requester_proxy import return_html_text
-from JavHelper.core.utils import re_parse_html, re_parse_html_list_field
+from JavHelper.core.requester_proxy import return_html_text, return_post_res
+from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
 from JavHelper.core.ini_file import return_config_string
 
 
@@ -122,3 +123,47 @@ def parse_javlib(jav_obj: dict, config=None) -> dict:
         jav_obj['year'] = 'unknown'
 
     return jav_obj
+
+def find_max_page(search_str: str):
+    search_pattern = r'.*?page=(\d*)'
+    try:
+        search_result = re.match(search_pattern, search_str).groups()[0]
+        return str(search_result)
+    except Exception as e:
+        print(e)
+        return None
+
+def javlib_set_page(page_prefix: str, page_num: int, config=None) -> dict:
+    xpath_dict = {
+        'title': '//*[@class="video"]/a/@title',
+        'javid': '//*[@class="video"]/@id',
+        'img': '//*[@class="video"]/a/img/@src',
+        'car': '//*/div[@class="video"]/a/div[@class="id"]/text()'
+    }
+    xpath_max_page = '//*/div[@class="page_selector"]/a[@class="page last"]/@href'
+
+    # force to get url from ini file each time
+    javlib_url = return_config_string(['其他设置', 'javlibrary网址'])
+
+    # fill missing parameters
+    if config == None:
+        config = deepcopy(DEFAULT_JAVLIB_CONFIG)
+
+    lib_url = javlib_url + page_prefix + str(page_num)
+    print(f'accessing {lib_url}')
+
+    res = return_post_res(lib_url, proxies=config['proxies'], cookies=config['cookies']).content
+    root = etree.HTML(res)
+
+    jav_objs_raw = defaultlist(dict)
+    for k, v in xpath_dict.items():
+        _values = root.xpath(v)
+        for _i, _value in enumerate(_values):
+            jav_objs_raw[_i].update({k: _value})
+
+    try:
+        max_page = find_max_page(root.xpath(xpath_max_page)[0])
+    except IndexError:
+        max_page = page_num
+    
+    return jav_objs_raw, max_page

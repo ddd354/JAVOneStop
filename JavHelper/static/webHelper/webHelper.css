@@ -1,0 +1,17 @@
+.javConsole li {
+    line-height: 1.1 !important;
+    font-size: 18px !important;
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
+}
+
+.javConsole span {
+    line-height: 1.1 !important;
+    font-size: 18px !important;
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
+}
+
+.javConsole a {
+    line-height: 1.1 !important;
+    font-size: 18px !important;
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
+}
