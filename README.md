@@ -57,6 +57,7 @@
 ## Road Map
 TBD
 
+电报反馈: [link](https://t.me/joinchat/PBVbLRfEaXOVFifI2nz3Kg)
 部分code来自:[work1](https://github.com/junerain123/JAV-Scraper-and-Rename-local-files)
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
