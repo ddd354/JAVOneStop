@@ -43,11 +43,16 @@ def parse_javlib(jav_obj: dict, config=None) -> dict:
     jav_html = return_html_text(lib_search_url, proxies=config['proxies'], cookies=config['cookies'])
     # 搜索结果的网页，大部分情况就是这个影片的网页，也有可能是多个结果的网页
     # 尝试找标题，第一种情况：找得到，就是这个影片的网页
-    if jav_obj['car'].startswith('T28'):
+    if jav_obj['car'].upper().startswith('T28'):
         # special filter for T28
-        title_re = re.search(r'<title>(T28-\d{1,5}.+?) - JAVLibrary</title>', jav_html)
+        title_re = re.search(r'<title>((T28-|T-28)\d{1,5}.+?) - JAVLibrary<\/title>', jav_html)
         # update title re
-        config['search_field']['title'] = r'<title>(T28-\d{1,5}.+?) - JAVLibrary</title>'
+        config['search_field']['title'] = r'<title>((T28-|T-28)\d{1,5}.+?) - JAVLibrary<\/title>'
+    elif jav_obj['car'].upper().startswith('R18'):
+        # special filter for T28
+        title_re = re.search(r'<title>((R18-|R-18)\d{1,5}.+?) - JAVLibrary<\/title>', jav_html)
+        # update title re
+        config['search_field']['title'] = r'<title>((R18-|R-18)\d{1,5}.+?) - JAVLibrary<\/title>'
     else:
         title_re = re.search(r'<title>([a-zA-Z]{1,6}-\d{1,5}.+?) - JAVLibrary</title>', jav_html)  # 匹配处理“标题”
     # 搜索结果就是AV的页面
