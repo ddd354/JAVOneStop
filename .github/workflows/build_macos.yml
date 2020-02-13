@@ -1,6 +1,9 @@
 name: build_MacOS_deploy
 
 on: [push]
+#  push:
+#    tags:
+#      - 'v*'
 
 jobs:
   build:
@@ -15,3 +18,19 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+    - name: build pkgs
+      run: |
+        pyinstaller --onedir \
+          --add-data="JavHelper/templates:JavHelper/templates" \
+          --add-data="JavHelper/static:JavHelper/static" \
+          --exclude-module="FixTk" \
+          --exclude-module="tcl" \
+          --exclude-module="tk" \
+          --exclude-module="_tkinter" \
+          --exclude-module="tkinter" \
+          --exclude-module="Tkinter" \
+          --noconfirm \
+          --distpath dist-python \
+          JavHelper/run.py
+
+        tar -czf Jav_OneStop_macos.tar.gz dist-python
