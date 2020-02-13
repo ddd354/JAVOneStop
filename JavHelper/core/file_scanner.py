@@ -137,7 +137,7 @@ class EmbyFileStructure:
                     print(f'find subtitle postfix {postfix} in {file_name}')
                     #subtitle_postfix = postfix
                     subtitle_postfix = '-C'
-                    file_name = file_name.replace(postfix, '')
+                    file_name = file_name[:-len(postfix)]
                     break
         return subtitle_postfix, file_name
 
