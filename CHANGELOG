@@ -2,6 +2,13 @@
 JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.4.1] - 2019-02-12
+### Updated
+- fix T28 R18 jav scrape
+- fix problematic rename for subtitled video
+- upgrade pyinstaller version for security reason
+- backend only will handle one request at a time to avoid concurrency issue for blitzDB and 115 download
+
 ## [0.4.0] - 2019-02-12
 ### Added
 - local blitzDB to handle jav file status look up
