@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Pagination from 'react-bootstrap/Pagination'
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
+import Form from 'react-bootstrap/Form'
+import Col from 'react-bootstrap/Col'
+import Button from 'react-bootstrap/Button'
 
 import JavlibCard from './javlibCard'
 import './javlibBrowser.css';
@@ -13,6 +16,7 @@ const JavlibBroswer = () => {
     const [page_num, setPageNum] = useState('1');
     const [max_page, setMaxPage] = useState('25');
     const [page_items, setPageItems] = useState();
+    const [search_string, setSearchString] = useState('');
 
     // initialize component
     useEffect(() => {
@@ -42,8 +46,10 @@ const JavlibBroswer = () => {
     }, [page_num, max_page]);
 
     const handlePageUpdate = (e) => {
+        // this is triggered from pagination click
         setPageNum(e.target.text);
-        fetch(`/jav_browser/get_set_javs?set_type=`+jav_set_name+`&page_num=`+String(e.target.text))
+        fetch(`/jav_browser/get_set_javs?set_type=`+jav_set_name+
+        `&page_num=`+String(e.target.text)+`&search_string=`+String(search_string))
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
@@ -56,9 +62,33 @@ const JavlibBroswer = () => {
     };
 
     const clickJavSetName = (event) => {
+        // triggered from toggle group which don't need search string
         console.log('Change jav set to: ', event);
         setJavSet(event);
-        fetch(`/jav_browser/get_set_javs?set_type=`+event+`&page_num=`+String(page_num))
+        setSearchString(''); // clean out search string for future page clicks
+        setPageItems('1'); // always get 1st page when switching jav sets
+        fetch(`/jav_browser/get_set_javs?set_type=`+String(event)+`&page_num=`+String(1))
+            .then(response => response.json())
+            .then((jsonData) => {
+                //console.log(jsonData.success);
+                setJavObjs(jsonData.success.jav_objs);
+                setMaxPage(jsonData.success.max_page);
+                if (jsonData.errors) {
+                    console.log('Error: ', jsonData.error);
+                }
+            });
+    };
+
+    const handleFormSearch = (event) => {
+        event.preventDefault();
+        console.log('Searching: ', event.target.elements[0].value, event.target.elements[1].value);
+        // update react states
+        setJavSet(event.target.elements[0].value);
+        setSearchString(event.target.elements[1].value);
+        setPageNum('1');  // initialize page num to 1 to always get 1st page
+
+        fetch(`/jav_browser/get_set_javs?set_type=`+String(event.target.elements[0].value)+
+            `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
@@ -72,11 +102,35 @@ const JavlibBroswer = () => {
 
     return (
         <div>
-            <div>
-            <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" onChange={clickJavSetName}>
-                <ToggleButton value={'most_wanted'}>most_wanted</ToggleButton>
-                <ToggleButton value={'best_rated'}>best_rated</ToggleButton>
-            </ToggleButtonGroup>
+            <div style={{display: "flex"}}>
+                <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                    <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
+                        onChange={clickJavSetName}>
+                        <ToggleButton value={'most_wanted'}>most_wanted</ToggleButton>
+                        <ToggleButton value={'best_rated'}>best_rated</ToggleButton>
+                        <ToggleButton value={'trending_updates'}>trending_updates</ToggleButton>
+                    </ToggleButtonGroup>
+                </div>
+                <div style={{width: "50%"}}>
+                    <Form onSubmit={handleFormSearch}>
+                        <Form.Row>
+                            <Col><Form.Group controlId="formGridSearchType">
+                            <Form.Label>Search Type</Form.Label>
+                            <Form.Control as="select">
+                                <option>番号</option>
+                                <option>女优</option>
+                                <option>分类</option>
+                            </Form.Control>
+                            </Form.Group></Col>
+                            <Col><Form.Group controlId="formGridSearchText">
+                            <Form.Label>Content</Form.Label>
+                            <Form.Control />
+                            </Form.Group></Col>
+                            <Col style={{display: "flex", alignItems: "flex-end", marginBottom: "17px"}}>
+                            <Button variant="primary" type="submit">Submit</Button></Col>
+                        </Form.Row>
+                    </Form>
+                </div>
             </div>
             <div>
                 <Pagination size="sm" onClick={handlePageUpdate}>{page_items}</Pagination>

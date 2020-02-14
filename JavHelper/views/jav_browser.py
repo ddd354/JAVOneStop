@@ -6,29 +6,50 @@ import requests
 from lxml import html
 
 from JavHelper.cache import cache
-from JavHelper.core.javlibrary import javlib_set_page
+from JavHelper.core.javlibrary import javlib_set_page, parse_javlib
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 
 
 jav_browser = Blueprint('jav_browser', __name__, url_prefix='/jav_browser')
 SET_TYPE_MAP = {
-    'most_wanted': 'vl_mostwanted.php?&mode=&page=',
-    'best_rated': 'vl_bestrated.php?&mode=&page='
-}
+    'most_wanted': 'vl_mostwanted.php?&mode=&page={page_num}',
+    'best_rated': 'vl_bestrated.php?&mode=&page={page_num}',
+    'trending_updates': 'vl_update.php?&mode=&page={page_num}'
+}  # there is a hard coded list in javlibBrowser.jsx for filtering as well
 
-@jav_browser.route('/get_set_javs', methods=['GET'])
-@cache.cached(timeout=30, query_string=True)
-def get_set_javs():
-    set_type = request.args.get('set_type')
-    page_num = request.args.get('page_num', 1)
-
-    # verify set type
-    if set_type not in SET_TYPE_MAP:
-        return jsonify({'error': f'{set_type} is not a supported set type'}), 400
-
-    jav_objs, max_page = javlib_set_page(SET_TYPE_MAP[set_type], page_num)
+def search_by_car(car: str, **kwargs):
+    jav_obj = parse_javlib({'car': car})
     db_conn = JavManagerDB()
+
+    if db_conn.pk_exist(str(jav_obj.get('car'))):
+        jav_obj.update(
+            dict(
+                db_conn.get_by_pk(str(jav_obj.get('car')))
+            )
+        )
+    else:
+        jav_obj['stat'] = 2
+        db_conn.upcreate_jav(jav_obj)
+
+    # use the full image (image key) instead of img (much smaller)
+    jav_obj['img'] = jav_obj.get('image', '')
+    
+    return [jav_obj], 1
+
+def search_for_actress(javlib_actress_code: str, page_num=1):
+    """
+    This only support javlibrary actress code
+    """
+    search_url = 'vl_star.php?&mode=&s={url_parameter}&page={page_num}'
+    db_conn = JavManagerDB()
+
+    # get actress first page
+    jav_objs, max_page = javlib_set_page(search_url, 
+        page_num=page_num, 
+        url_parameter=javlib_actress_code
+    )
+
     for jav_obj in jav_objs:
         if db_conn.pk_exist(str(jav_obj.get('car'))):
             jav_obj.update(
@@ -36,8 +57,65 @@ def get_set_javs():
                     db_conn.get_by_pk(str(jav_obj.get('car')))
                 )
             )
+        else:
+            jav_obj['stat'] = 2
+            db_conn.upcreate_jav(jav_obj)
+    
+    return jav_objs, max_page
 
-    return jsonify({'success': {'jav_objs': jav_objs, 'max_page': max_page}})
+@jav_browser.route('/get_set_javs', methods=['GET'])
+@cache.cached(timeout=30, query_string=True)
+def get_set_javs():
+    set_type = request.args.get('set_type')
+    page_num = request.args.get('page_num', 1)
+    # optional search string
+    search_string = request.args.get('search_string', '')
+    _dedupe_car_list = []
+    rt_jav_objs = []
+
+    if not search_string:
+        # parse set without search string
+        # verify set type
+        if set_type not in SET_TYPE_MAP:
+            return jsonify({'error': f'{set_type} is not a supported set type'}), 400
+
+        jav_objs, max_page = javlib_set_page(SET_TYPE_MAP[set_type], page_num)
+    else:
+        # search by supplied string
+        search_map = {
+            '番号': {'function': search_by_car, 'params': {'car': search_string}},
+            '女优': {'function': search_for_actress, 'params': {
+                'javlib_actress_code': search_string, 'page_num': page_num}},
+            '分类': {'function': javlib_set_page, 'params': 
+                {'page_template': 'vl_genre.php?&mode=&g={url_parameter}&page={page_num}',
+                'page_num': page_num, 'url_parameter': search_string}},
+        }
+
+        # verify set type
+        if set_type not in search_map:
+            return jsonify({'error': f'{set_type} is not a supported search type'}), 400
+
+        jav_objs, max_page = search_map[set_type]['function'](**search_map[set_type]['params'])
+    
+    for jav_obj in jav_objs:
+        if jav_obj['car'] not in _dedupe_car_list:
+            _dedupe_car_list.append(jav_obj['car'])
+            rt_jav_objs.append(jav_obj)
+
+    # looooop through DB
+    db_conn = JavManagerDB()
+    for jav_obj in rt_jav_objs:
+        if db_conn.pk_exist(str(jav_obj.get('car'))):
+            jav_obj.update(
+                dict(
+                    db_conn.get_by_pk(str(jav_obj.get('car')))
+                )
+            )
+        else:
+            jav_obj['stat'] = 2
+            db_conn.upcreate_jav(jav_obj)
+
+    return jsonify({'success': {'jav_objs': rt_jav_objs, 'max_page': max_page}})
 
 @jav_browser.route('/get_local_car', methods=['GET'])
 def get_local_car():
@@ -133,7 +211,7 @@ def search_magnet_link():
     except Exception:
         pass
 
-    try:
+    """try:
         respBT = requests.get('http://btdb.io/?s=' + car)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//*/div[@class="item-meta-info"]/a'
@@ -163,7 +241,7 @@ def search_magnet_link():
                 rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i]})
             return jsonify({'success': rt[:10]})
     except Exception:
-        pass
+        pass"""
 
     return jsonify({'error': f'{car} not found in all sources'})
 

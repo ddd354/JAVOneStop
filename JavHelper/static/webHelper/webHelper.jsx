@@ -8,12 +8,14 @@ import 'react-tabs/style/react-tabs.css';
 import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
 
+import { withTranslation } from 'react-i18next';
+
 import JavlibBroswer from "./javlibBrowser"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
 
-export default class App extends Component {
+class App extends Component {
     constructor(props) {
         // Required step: always call the parent class' constructor
         super(props);
@@ -170,6 +172,7 @@ export default class App extends Component {
     }
 
     render() {
+        const { t } = this.props;
         const form_schema = {
           "type": "object",
           "required": [
@@ -179,11 +182,11 @@ export default class App extends Component {
           "properties": {
             "file_path": {
               "type": "string",
-              "title": "File Path"
+              "title": t('form_file_path_title')
             },
             "action": {
               "type": "string",
-              "title": "parse files: ",
+              "title": t('form_action_title'),
               "enum": ["preview", "preview_rename", "rename", "parse_jav"]
             },
           }
@@ -191,12 +194,12 @@ export default class App extends Component {
 
         const form_ui = {
             "file_path": {
-              "ui:description": "Type in path (Due to restriction of the front end, user has to manually input directory)",
-              "ui:autofocus": true,
-              "ui:emptyValue": "/Volumes/XER/X-emby"
+              "ui:description": t('form_file_path_des'),
+              "ui:autofocus": true
             },
             "action": {
               "ui:widget": "radio",
+              "ui:description": t('form_action_des'),
               "ui:emptyValue": "preview"
             },
         };
@@ -209,20 +212,20 @@ export default class App extends Component {
           "properties": {
             "file_path": {
               "type": "string",
-              "title": "File path"
+              "title": t('set_file_path_title')
             },
             "enable_proxy": {
               "type": "string",
-              "title": "Enable Proxy or Not",
+              "title": t('set_enable_proxy_title'),
               "enum": ["是", "否"]
             },
             "proxy_setup": {
               "type": "string",
-              "title": "Proxy address and port"
+              "title": t('set_proxy_addr_port_title')
             },
             "emby_address": {
               "type": "string",
-              "title": "Emby Server Address and Port"
+              "title": t('set_emby_addr_port_title')
             },
             "emby_api": {
               "type": "string",
@@ -230,15 +233,15 @@ export default class App extends Component {
             },
             "javlibrary_url": {
               "type": "string",
-              "title": "Url for Accessing JavLibrary"
+              "title": t('set_javlib_url_title')
             },
             "aria_address": {
               "type": "string",
-              "title": "Url for Aria2; Example: http://192.168.1.9"
+              "title": t('set_aria2_url_title')
             },
             "aria_port": {
               "type": "string",
-              "title": "Port for Aria2"
+              "title": t('set_aria2_port_title')
             },
             "aria_token": {
               "type": "string",
@@ -249,13 +252,13 @@ export default class App extends Component {
 
         const settings_form_ui = {
             "file_path": {
-                "ui:description": "Default file path in the main tool"
+                "ui:description": t('file_path_tip')
             },
             "enable_proxy": {
               "ui:widget": "radio"
             },
             "emby_address": {
-              "ui:description": "Need to enter full address and port; Example: http://localhost:8096/",
+              "ui:description": t('emby_addr_tip'),
             }
         };
 
@@ -266,17 +269,17 @@ export default class App extends Component {
             </StyledLogDiv>
             <Tabs>
             <TabList>
-              <Tab>Main Tool</Tab>
-              <Tab>JavLibrary Manager</Tab>
-              <Tab>Handy Features</Tab>
-              <Tab>Settings</Tab>
+              <Tab>{t('Main Tool')}</Tab>
+              <Tab>{t('JavLibrary Manager')}</Tab>
+              <Tab>{t('Handy Features')}</Tab>
+              <Tab>{t('Settings')}</Tab>
             </TabList>
 
             <TabPanel>
                 <StyledDiv>
                 <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
                     <div>
-                      <button type="submit">Preview File / Execute</button>
+                      <button type="submit">{t('Preview File / Execute')}</button>
                     </div>
                 </Form>
                 </StyledDiv>
@@ -286,7 +289,7 @@ export default class App extends Component {
               <JavlibBroswer />
             </TabPanel>
             <TabPanel>
-              <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>Upload actress images to Emby</Button>
+              <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
             </TabPanel>
             <TabPanel>
               <StyledDiv>
@@ -298,3 +301,5 @@ export default class App extends Component {
            )
         }
 }
+
+export default withTranslation()(App);

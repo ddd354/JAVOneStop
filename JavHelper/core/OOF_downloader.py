@@ -148,6 +148,8 @@ class OOFDownloader:
             task_detail = self.get_task_detail_from_hash(search_hash)
             # filter out unwanted files
             download_files = self.filter_task_details(task_detail)
+            if not download_files:
+                raise Exception(f'there is no download file found in 115 task')
 
             for download_file in download_files:
                 self.download_aria_on_pcode(download_file['cid'], 
