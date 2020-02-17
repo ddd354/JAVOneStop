@@ -8,12 +8,15 @@ import 'react-tabs/style/react-tabs.css';
 import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
 
+import { withTranslation } from 'react-i18next';
+
+import JavConfigurator from "./configurator"
 import JavlibBroswer from "./javlibBrowser"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
 
-export default class App extends Component {
+class App extends Component {
     constructor(props) {
         // Required step: always call the parent class' constructor
         super(props);
@@ -46,7 +49,10 @@ export default class App extends Component {
             'proxy_setup':['代理','代理IP及端口'],
             'emby_address':['emby专用','网址'],
             'emby_api':['emby专用','API ID'],
-            'javlibrary_url':['其他设置','javlibrary网址']
+            'javlibrary_url':['其他设置','javlibrary网址'],
+            'preserve_subtitle_filename': ["本地设置", '保留中文字幕文件名'],
+            'subtitle_filename_postfix': ["本地设置", '中文字幕文件名后缀'],
+            'handle_multi_cds': ["本地设置", '自动处理多CD']
             }`)
             .then(response => response.json())
             .then((jsonData) => {
@@ -170,6 +176,7 @@ export default class App extends Component {
     }
 
     render() {
+        const { t } = this.props;
         const form_schema = {
           "type": "object",
           "required": [
@@ -179,11 +186,11 @@ export default class App extends Component {
           "properties": {
             "file_path": {
               "type": "string",
-              "title": "File Path"
+              "title": t('form_file_path_title')
             },
             "action": {
               "type": "string",
-              "title": "parse files: ",
+              "title": t('form_action_title'),
               "enum": ["preview", "preview_rename", "rename", "parse_jav"]
             },
           }
@@ -191,72 +198,14 @@ export default class App extends Component {
 
         const form_ui = {
             "file_path": {
-              "ui:description": "Type in path (Due to restriction of the front end, user has to manually input directory)",
-              "ui:autofocus": true,
-              "ui:emptyValue": "/Volumes/XER/X-emby"
+              "ui:description": t('form_file_path_des'),
+              "ui:autofocus": true
             },
             "action": {
               "ui:widget": "radio",
+              "ui:description": t('form_action_des'),
               "ui:emptyValue": "preview"
             },
-        };
-
-        const settings_form_schema = {
-          "type": "object",
-          "required": [
-            "enable_proxy"
-          ],
-          "properties": {
-            "file_path": {
-              "type": "string",
-              "title": "File path"
-            },
-            "enable_proxy": {
-              "type": "string",
-              "title": "Enable Proxy or Not",
-              "enum": ["是", "否"]
-            },
-            "proxy_setup": {
-              "type": "string",
-              "title": "Proxy address and port"
-            },
-            "emby_address": {
-              "type": "string",
-              "title": "Emby Server Address and Port"
-            },
-            "emby_api": {
-              "type": "string",
-              "title": "Emby API Key"
-            },
-            "javlibrary_url": {
-              "type": "string",
-              "title": "Url for Accessing JavLibrary"
-            },
-            "aria_address": {
-              "type": "string",
-              "title": "Url for Aria2; Example: http://192.168.1.9"
-            },
-            "aria_port": {
-              "type": "string",
-              "title": "Port for Aria2"
-            },
-            "aria_token": {
-              "type": "string",
-              "title": "Aria2 authentication token"
-            }
-          }
-        };
-
-        const settings_form_ui = {
-            "file_path": {
-                "ui:description": "Default file path in the main tool"
-            },
-            "enable_proxy": {
-              "ui:widget": "radio"
-            },
-            "emby_address": {
-              "ui:description": "Need to enter full address and port; Example: http://localhost:8096/",
-            }
         };
 
         return (
@@ -266,17 +215,17 @@ export default class App extends Component {
             </StyledLogDiv>
             <Tabs>
             <TabList>
-              <Tab>Main Tool</Tab>
-              <Tab>JavLibrary Manager</Tab>
-              <Tab>Handy Features</Tab>
-              <Tab>Settings</Tab>
+              <Tab>{t('Main Tool')}</Tab>
+              <Tab>{t('JavLibrary Manager')}</Tab>
+              <Tab>{t('Handy Features')}</Tab>
+              <Tab>{t('Settings')}</Tab>
             </TabList>
 
             <TabPanel>
                 <StyledDiv>
                 <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
                     <div>
-                      <button type="submit">Preview File / Execute</button>
+                      <button type="submit">{t('Preview File / Execute')}</button>
                     </div>
                 </Form>
                 </StyledDiv>
@@ -286,15 +235,15 @@ export default class App extends Component {
               <JavlibBroswer />
             </TabPanel>
             <TabPanel>
-              <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>Upload actress images to Emby</Button>
+              <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
             </TabPanel>
             <TabPanel>
-              <StyledDiv>
-              <Form schema={settings_form_schema} uiSchema={settings_form_ui} formData={this.state.settings_form_data} onSubmit={this.settingsFormHandler} />
-              </StyledDiv>
+              <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
             </TabPanel>
             </Tabs>
             </div>
            )
         }
 }
+
+export default withTranslation()(App);

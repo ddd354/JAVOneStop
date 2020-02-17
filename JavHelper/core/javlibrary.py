@@ -138,7 +138,7 @@ def find_max_page(search_str: str):
         print(e)
         return None
 
-def javlib_set_page(page_prefix: str, page_num: int, config=None) -> dict:
+def javlib_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:
     xpath_dict = {
         'title': '//*[@class="video"]/a/@title',
         'javid': '//*[@class="video"]/@id',
@@ -154,7 +154,7 @@ def javlib_set_page(page_prefix: str, page_num: int, config=None) -> dict:
     if config == None:
         config = deepcopy(DEFAULT_JAVLIB_CONFIG)
 
-    lib_url = javlib_url + page_prefix + str(page_num)
+    lib_url = javlib_url + page_template.format(page_num=page_num, url_parameter=url_parameter)
     print(f'accessing {lib_url}')
 
     res = return_post_res(lib_url, proxies=config['proxies'], cookies=config['cookies']).content

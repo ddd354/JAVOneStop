@@ -2,6 +2,16 @@
 JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.4.2] - 2019-02-17
+### Added
+- docker deployment script
+- now use chinese by default
+- add tool to configure 115 cookies directly inside of the tool
+### Updated
+- 115 download grace failure
+- better jav search functions
+- alpha mobile view version
+
 ## [0.4.1] - 2019-02-12
 ### Updated
 - fix T28 R18 jav scrape

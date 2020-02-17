@@ -3,7 +3,10 @@ import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { useTranslation } from 'react-i18next';
+
 const StatButtonGroup = (props) => {
+  const { t, i18n } = useTranslation();
   const [button_group_value, setButtonGroupValue] = useState(String(props.stat)+'_'+props.car); 
 
   useEffect(() => {
@@ -28,12 +31,15 @@ const StatButtonGroup = (props) => {
   };
 
   return(
-    <ToggleButtonGroup size="sm" type="radio" value={button_group_value} name="javStat" onChange={buttonClicked}>
-      <ToggleButton value={'0_'+props.car}>wanted</ToggleButton>
-      <ToggleButton value={'1_'+props.car}>viewed</ToggleButton>
-      <ToggleButton value={'2_'+props.car}>no opinion</ToggleButton>
-      <ToggleButton value={'3_'+props.car}>local</ToggleButton>
-      <ToggleButton value={'4_'+props.car}>downloading</ToggleButton>
+    <ToggleButtonGroup size="sm" type="radio" 
+      value={button_group_value} name="javStat"
+      style={{display: "flex", flexWrap: "wrap"}}
+      onChange={buttonClicked}>
+      <ToggleButton value={'0_'+props.car}>{t('wanted')}</ToggleButton>
+      <ToggleButton value={'1_'+props.car}>{t('viewed')}</ToggleButton>
+      <ToggleButton value={'2_'+props.car}>{t('no opinion')}</ToggleButton>
+      <ToggleButton value={'3_'+props.car}>{t('local')}</ToggleButton>
+      <ToggleButton value={'4_'+props.car}>{t('downloading')}</ToggleButton>
     </ToggleButtonGroup>
 )};
 
