@@ -10,9 +10,9 @@ class JavManagerDB:
     def __init__(self):
         self.jav_db = FileBackend('jav_manager.db')
 
-    def query_on_filter(self, filter_on: dict, page=1, limit=20):
+    def query_on_filter(self, filter_on: dict, page=1, limit=8):
         rt = self.jav_db.filter(JavObj, filter_on)
-        rt_max_page = ceil(len(rt)/20)
+        rt_max_page = ceil(len(rt)/limit)
         rt = rt[(page-1)*limit : (page)*limit]
 
         return [dict(x) for x in rt], rt_max_page
