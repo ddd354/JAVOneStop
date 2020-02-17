@@ -26,7 +26,10 @@ const resources = {
       "file_path_tip": "Default file path in the main tool",
       "emby_addr_tip": "Need to enter full address and port; Example: http://localhost:8096/",
       "Local Config": "Local Config",
-      "115 Cookies Update": "115 Cookies Update"
+      "115 Cookies Update": "115 Cookies Update",
+      "handle_multi_cds": "Handle A/B CD filenames",
+      "subtitle_filename_postfix": "Postfixes for subtitled videos; separated by comma",
+      "preserve_subtitle_filename": "Handle subtitlted video filenames"
     }
   },
   //{t('')}
@@ -53,7 +56,10 @@ const resources = {
       "file_path_tip": "刮削工具默认处理的路径",
       "emby_addr_tip": "填写完整的地址和端口, 例子: http://localhost:8096/",
       "Local Config": "本地配置",
-      "115 Cookies Update": "更新115 Cookies"
+      "115 Cookies Update": "更新115 Cookies",
+      "handle_multi_cds": "处理A/B CD 后缀文件名",
+      "subtitle_filename_postfix": "指定带字幕文件的后缀; 逗号隔开",
+      "preserve_subtitle_filename": "处理字幕文件后缀"
     }
   }
 };

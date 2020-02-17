@@ -45,6 +45,20 @@ const JavConfigurator = (props) => {
             "title": t('set_enable_proxy_title'),
             "enum": ["是", "否"]
           },
+          "preserve_subtitle_filename": {
+            "type": "string",
+            "title": t('preserve_subtitle_filename'),
+            "enum": ["是", "否"]
+          },
+          "subtitle_filename_postfix": {
+            "type": "string",
+            "title": t('subtitle_filename_postfix')
+          },
+          "handle_multi_cds": {
+            "type": "string",
+            "title": t('handle_multi_cds'),
+            "enum": ["是", "否"]
+          },
           "proxy_setup": {
             "type": "string",
             "title": t('set_proxy_addr_port_title')
@@ -80,6 +94,12 @@ const JavConfigurator = (props) => {
             "ui:description": t('file_path_tip')
         },
         "enable_proxy": {
+            "ui:widget": "radio"
+        },
+        "preserve_subtitle_filename": {
+            "ui:widget": "radio"
+        },
+        "handle_multi_cds": {
             "ui:widget": "radio"
         },
         "emby_address": {

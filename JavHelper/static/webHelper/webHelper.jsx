@@ -49,7 +49,10 @@ class App extends Component {
             'proxy_setup':['代理','代理IP及端口'],
             'emby_address':['emby专用','网址'],
             'emby_api':['emby专用','API ID'],
-            'javlibrary_url':['其他设置','javlibrary网址']
+            'javlibrary_url':['其他设置','javlibrary网址'],
+            'preserve_subtitle_filename': ["本地设置", '保留中文字幕文件名'],
+            'subtitle_filename_postfix': ["本地设置", '中文字幕文件名后缀'],
+            'handle_multi_cds': ["本地设置", '自动处理多CD']
             }`)
             .then(response => response.json())
             .then((jsonData) => {
