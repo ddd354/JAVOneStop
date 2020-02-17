@@ -1,3 +1,4 @@
+from math import ceil
 from blitzdb import Document, FileBackend
 from blitzdb.document import DoesNotExist
 
@@ -11,9 +12,9 @@ class JavManagerDB:
 
     def query_on_filter(self, filter_on: dict, page=1, limit=20):
         rt = self.jav_db.filter(JavObj, filter_on)
-        rt_max_page = len(rt)//20
+        rt_max_page = ceil(len(rt)/20)
         rt = rt[(page-1)*limit : (page)*limit]
-        
+
         return [dict(x) for x in rt], rt_max_page
 
     def upcreate_jav(self, jav_obj: dict):

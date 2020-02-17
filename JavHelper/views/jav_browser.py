@@ -77,13 +77,15 @@ def get_set_javs():
 
     if set_type == 'personal_wanted':
         db_conn = JavManagerDB()
-        jav_objs, max_page = db_conn.query_on_filter({'stat': 0})
+        jav_objs, max_page = db_conn.query_on_filter({'stat': 0}, page=int(page_num))
         # need additional info
         for jav_obj in jav_objs:
             if not jav_obj.get('title', None):
                 _full_info = parse_javlib({'car': jav_obj['car']})
                 jav_obj.update(_full_info)
                 db_conn.upcreate_jav(jav_obj)
+
+            jav_obj.setdefault('img', jav_obj['image'])  # force img key to exist
 
         # don't need extra db operations
         return jsonify({'success': {'jav_objs': jav_objs, 'max_page': max_page}})
