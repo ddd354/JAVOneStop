@@ -35,21 +35,44 @@ const JavlibBroswer = () => {
 
     useEffect(() => {
         let _page_items = [];
+
         for (let number = 1; number <= parseInt(max_page); number++) {
-            _page_items.push(
-              <Pagination.Item key={number} active={String(number) === page_num}>
-                {number}
-              </Pagination.Item>,
-            );
-        }
+            if (number === 1 && parseInt(page_num) != 1) {
+                _page_items.push(<Pagination.First key={1}/>);
+            } else if (parseInt(max_page) > 7 && number === parseInt(max_page) 
+            && parseInt(page_num) != parseInt(max_page)) {
+                _page_items.push(<Pagination.Last key={parseInt(max_page)}/>);
+            } else if (parseInt(max_page) > 7 
+            && (number >= parseInt(page_num)+3 || number <= parseInt(page_num)-3)) {
+                continue;
+            } else {
+                _page_items.push(
+                    <Pagination.Item key={number} active={String(number) === page_num}>
+                      {number}
+                    </Pagination.Item>,
+                  );
+            }
+        };
         setPageItems(_page_items);
     }, [page_num, max_page]);
 
     const handlePageUpdate = (e) => {
         // this is triggered from pagination click
-        setPageNum(e.target.text);
+        let _target_num = '';
+        if (e.target.text === "»Last" || e.target.textContent === "»") {
+            _target_num = max_page;
+        } else if (e.target.text === "«First" || e.target.textContent === "«") {
+            _target_num = '1';
+        } else {
+            _target_num = e.target.text;
+        };
+        /*if (_target_num === undefined) {
+            debugger;
+        }
+        console.log(_target_num);*/
+        setPageNum(_target_num);
         fetch(`/jav_browser/get_set_javs?set_type=`+jav_set_name+
-        `&page_num=`+String(e.target.text)+`&search_string=`+String(search_string))
+        `&page_num=`+String(_target_num)+`&search_string=`+String(search_string))
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
@@ -103,9 +126,10 @@ const JavlibBroswer = () => {
     return (
         <div>
             <div style={{display: "flex"}}>
-                <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
+                 marginRight: "15px"}}>
                     <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
-                        onChange={clickJavSetName}>
+                        onChange={clickJavSetName} style={{flexWrap: "wrap"}}>
                         <ToggleButton value={'most_wanted'}>most_wanted</ToggleButton>
                         <ToggleButton value={'best_rated'}>best_rated</ToggleButton>
                         <ToggleButton value={'trending_updates'}>trending_updates</ToggleButton>
@@ -114,7 +138,7 @@ const JavlibBroswer = () => {
                 <div style={{width: "50%"}}>
                     <Form onSubmit={handleFormSearch}>
                         <Form.Row>
-                            <Col><Form.Group controlId="formGridSearchType">
+                            <Col style={{minWidth: "100px"}}><Form.Group controlId="formGridSearchType">
                             <Form.Label>Search Type</Form.Label>
                             <Form.Control as="select">
                                 <option>番号</option>

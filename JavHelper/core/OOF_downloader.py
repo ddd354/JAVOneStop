@@ -163,6 +163,15 @@ class OOFDownloader:
             return {'error': f'download {car} failed due to {e}'}
 
     @staticmethod
-    def load_local_cookies():
+    def load_local_cookies(return_all=False):
         raw_cookies = json.load(open(LOCAL_OOF_COOKIES, 'r'))
-        return {x['name']: x['value'] for x in raw_cookies}
+        if return_all:
+            return raw_cookies
+        else:
+            return {x['name']: x['value'] for x in raw_cookies}
+
+    @staticmethod
+    def update_local_cookies(update_dict: dict or list):
+        with open(LOCAL_OOF_COOKIES, 'w') as oof_f:
+            oof_f.write(json.dumps(update_dict))
+        return f'115 cookies updated to local file {LOCAL_OOF_COOKIES}'

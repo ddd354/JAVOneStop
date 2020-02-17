@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 
 import { withTranslation } from 'react-i18next';
 
+import JavConfigurator from "./configurator"
 import JavlibBroswer from "./javlibBrowser"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
@@ -204,64 +205,6 @@ class App extends Component {
             },
         };
 
-        const settings_form_schema = {
-          "type": "object",
-          "required": [
-            "enable_proxy"
-          ],
-          "properties": {
-            "file_path": {
-              "type": "string",
-              "title": t('set_file_path_title')
-            },
-            "enable_proxy": {
-              "type": "string",
-              "title": t('set_enable_proxy_title'),
-              "enum": ["是", "否"]
-            },
-            "proxy_setup": {
-              "type": "string",
-              "title": t('set_proxy_addr_port_title')
-            },
-            "emby_address": {
-              "type": "string",
-              "title": t('set_emby_addr_port_title')
-            },
-            "emby_api": {
-              "type": "string",
-              "title": "Emby API Key"
-            },
-            "javlibrary_url": {
-              "type": "string",
-              "title": t('set_javlib_url_title')
-            },
-            "aria_address": {
-              "type": "string",
-              "title": t('set_aria2_url_title')
-            },
-            "aria_port": {
-              "type": "string",
-              "title": t('set_aria2_port_title')
-            },
-            "aria_token": {
-              "type": "string",
-              "title": "Aria2 authentication token"
-            }
-          }
-        };
-
-        const settings_form_ui = {
-            "file_path": {
-                "ui:description": t('file_path_tip')
-            },
-            "enable_proxy": {
-              "ui:widget": "radio"
-            },
-            "emby_address": {
-              "ui:description": t('emby_addr_tip'),
-            }
-        };
-
         return (
             <div>
             <StyledLogDiv className='javConsole'>
@@ -292,9 +235,7 @@ class App extends Component {
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
             </TabPanel>
             <TabPanel>
-              <StyledDiv>
-              <Form schema={settings_form_schema} uiSchema={settings_form_ui} formData={this.state.settings_form_data} onSubmit={this.settingsFormHandler} />
-              </StyledDiv>
+              <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
             </TabPanel>
             </Tabs>
             </div>

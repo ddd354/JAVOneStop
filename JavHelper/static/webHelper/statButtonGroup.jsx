@@ -28,7 +28,10 @@ const StatButtonGroup = (props) => {
   };
 
   return(
-    <ToggleButtonGroup size="sm" type="radio" value={button_group_value} name="javStat" onChange={buttonClicked}>
+    <ToggleButtonGroup size="sm" type="radio" 
+      value={button_group_value} name="javStat"
+      style={{display: "flex", flexWrap: "wrap"}}
+      onChange={buttonClicked}>
       <ToggleButton value={'0_'+props.car}>wanted</ToggleButton>
       <ToggleButton value={'1_'+props.car}>viewed</ToggleButton>
       <ToggleButton value={'2_'+props.car}>no opinion</ToggleButton>

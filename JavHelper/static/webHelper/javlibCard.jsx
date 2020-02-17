@@ -7,7 +7,7 @@ import './javlibBrowser.css';
 
 const JavlibCard = ({ update_obj }) => {
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 0.3;
+    const _manual_opacity = 0.1;
     
     let border_style = {
         borderColor: 'green', 
@@ -31,9 +31,9 @@ const JavlibCard = ({ update_obj }) => {
 
     if (jav_card_stat === 0) {
         return (
-            <div className="flex-container" style={border_style} key={update_obj.javid}>
+            <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
                 <div className="jav-image"><img style={{opacity: _manual_opacity}} src={"https:"+update_obj.img}></img></div>
-                <div className="jav-content">
+                <div className="jav-content" style={{width: "100%"}}>
                     <p>{update_obj.title}</p>
                     <StatButtonGroup 
                         setbutstat={(_stat) => {setJavCardStat(_stat)}}
@@ -51,11 +51,11 @@ const JavlibCard = ({ update_obj }) => {
             </div>)
     } else {
         return (
-            <div className="flex-container" style={border_style} key={update_obj.javid}>
+            <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
                 <div className="jav-image"><img style={{opacity: _manual_opacity}} src={"https:"+update_obj.img}></img></div>
-                <div className="jav-content">
+                <div className="jav-content" style={{width: "100%"}}>
                     <p>{update_obj.title}</p>
-                    <StatButtonGroup 
+                    <StatButtonGroup  
                         setbutstat={(_stat) => {setJavCardStat(_stat)}}
                         stat={jav_card_stat} 
                         car={update_obj.car}

@@ -32,6 +32,7 @@ const JavMagnetButton = ({ car, magnet, setJavStat }) => {
     return(
       <Button
         size="sm"
+        style={{fontSize: "10px", padding: "1 1 1 1"}}
         variant="primary"
         disabled={isLoading}
         onClick={!isLoading ? submitDownload: null}
