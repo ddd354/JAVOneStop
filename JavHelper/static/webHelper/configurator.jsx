@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 import { StyledDiv } from "./styling";
+import "./configurator.css"
 
 
 const JavConfigurator = (props) => {
