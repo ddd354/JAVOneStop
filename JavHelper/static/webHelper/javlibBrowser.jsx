@@ -6,11 +6,13 @@ import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 
+import { useTranslation } from 'react-i18next';
 import JavlibCard from './javlibCard'
 import './javlibBrowser.css';
 
 
 const JavlibBroswer = () => {
+    const { t, i18n } = useTranslation();
     const [jav_set_name, setJavSet] = useState('most_wanted');
     const [jav_objs, setJavObjs] = useState([]);
     const [page_num, setPageNum] = useState('1');
@@ -130,16 +132,16 @@ const JavlibBroswer = () => {
                  marginRight: "15px"}}>
                     <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
                         onChange={clickJavSetName} style={{flexWrap: "wrap"}}>
-                        <ToggleButton value={'most_wanted'}>most_wanted</ToggleButton>
-                        <ToggleButton value={'best_rated'}>best_rated</ToggleButton>
-                        <ToggleButton value={'trending_updates'}>trending_updates</ToggleButton>
+                        <ToggleButton value={'most_wanted'}>{t('most_wanted')}</ToggleButton>
+                        <ToggleButton value={'best_rated'}>{t('best_rated')}</ToggleButton>
+                        <ToggleButton value={'trending_updates'}>{t('trending_updates')}</ToggleButton>
                     </ToggleButtonGroup>
                 </div>
                 <div style={{width: "50%"}}>
                     <Form onSubmit={handleFormSearch}>
                         <Form.Row>
                             <Col style={{minWidth: "100px"}}><Form.Group controlId="formGridSearchType">
-                            <Form.Label>Search Type</Form.Label>
+                            <Form.Label>{t('Search Type')}</Form.Label>
                             <Form.Control as="select">
                                 <option>番号</option>
                                 <option>女优</option>
@@ -147,11 +149,11 @@ const JavlibBroswer = () => {
                             </Form.Control>
                             </Form.Group></Col>
                             <Col><Form.Group controlId="formGridSearchText">
-                            <Form.Label>Content</Form.Label>
+                            <Form.Label>{t('Content')}</Form.Label>
                             <Form.Control />
                             </Form.Group></Col>
                             <Col style={{display: "flex", alignItems: "flex-end", marginBottom: "17px"}}>
-                            <Button variant="primary" type="submit">Submit</Button></Col>
+                            <Button variant="primary" type="submit">{t('Submit')}</Button></Col>
                         </Form.Row>
                     </Form>
                 </div>

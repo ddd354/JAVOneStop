@@ -29,7 +29,18 @@ const resources = {
       "115 Cookies Update": "115 Cookies Update",
       "handle_multi_cds": "Handle A/B CD filenames",
       "subtitle_filename_postfix": "Postfixes for subtitled videos; separated by comma",
-      "preserve_subtitle_filename": "Handle subtitlted video filenames"
+      "preserve_subtitle_filename": "Handle subtitlted video filenames",
+      "most_wanted": "most wanted",
+      "best_rated": "best rated",
+      "trending_updates": "trending javs",
+      "Search Type": "Search Type",
+      "Content": "Content",
+      'Submit': 'Submit',
+      'wanted': "wanted",
+      'viewed': 'viewed',
+      'no opinion': 'no opinion',
+      'local': 'local',
+      'downloading': 'downloading'
     }
   },
   //{t('')}
@@ -59,7 +70,18 @@ const resources = {
       "115 Cookies Update": "更新115 Cookies",
       "handle_multi_cds": "处理A/B CD 后缀文件名",
       "subtitle_filename_postfix": "指定带字幕文件的后缀; 逗号隔开",
-      "preserve_subtitle_filename": "处理字幕文件后缀"
+      "preserve_subtitle_filename": "处理字幕文件后缀",
+      "most_wanted": "最想要",
+      "best_rated": "高评价",
+      "trending_updates": "新话题",
+      "Search Type": "搜索类别",
+      "Content": "搜索字符",
+      'Submit': '提交',
+      'wanted': '想要',
+      'viewed': '已阅',
+      'no opinion': '没想法',
+      'local': '本地有',
+      'downloading': '下载中'
     }
   }
 };

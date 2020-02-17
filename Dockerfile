@@ -8,10 +8,6 @@ WORKDIR /usr/src/app
 COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Node js for scraper
-#RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-#RUN apt-get install -y nodejs
-
 # EXPOSE port 8000 to allow communication to/from server
 EXPOSE 8009
 
