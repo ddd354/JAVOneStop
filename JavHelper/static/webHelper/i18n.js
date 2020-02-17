@@ -40,7 +40,8 @@ const resources = {
       'viewed': 'viewed',
       'no opinion': 'no opinion',
       'local': 'local',
-      'downloading': 'downloading'
+      'downloading': 'downloading',
+      'personal_wanted': 'still wanted'
     }
   },
   //{t('')}
@@ -81,7 +82,8 @@ const resources = {
       'viewed': '已阅',
       'no opinion': '没想法',
       'local': '本地有',
-      'downloading': '下载中'
+      'downloading': '下载中',
+      'personal_wanted': '还未下载'
     }
   }
 };

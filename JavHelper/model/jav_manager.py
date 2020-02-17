@@ -9,6 +9,13 @@ class JavManagerDB:
     def __init__(self):
         self.jav_db = FileBackend('jav_manager.db')
 
+    def query_on_filter(self, filter_on: dict, page=1, limit=20):
+        rt = self.jav_db.filter(JavObj, filter_on)
+        rt_max_page = len(rt)//20
+        rt = rt[(page-1)*limit : (page)*limit]
+        
+        return [dict(x) for x in rt], rt_max_page
+
     def upcreate_jav(self, jav_obj: dict):
         # uniform car to upper case
         jav_obj['car'] = str(jav_obj['car']).upper()

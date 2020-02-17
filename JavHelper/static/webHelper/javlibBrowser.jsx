@@ -135,6 +135,7 @@ const JavlibBroswer = () => {
                         <ToggleButton value={'most_wanted'}>{t('most_wanted')}</ToggleButton>
                         <ToggleButton value={'best_rated'}>{t('best_rated')}</ToggleButton>
                         <ToggleButton value={'trending_updates'}>{t('trending_updates')}</ToggleButton>
+                        <ToggleButton value={'personal_wanted'}>{t('personal_wanted')}</ToggleButton>
                     </ToggleButtonGroup>
                 </div>
                 <div style={{width: "50%"}}>
