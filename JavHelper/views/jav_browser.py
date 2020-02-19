@@ -85,7 +85,7 @@ def get_set_javs():
                 jav_obj.update(_full_info)
                 db_conn.upcreate_jav(jav_obj)
 
-            jav_obj.setdefault('img', jav_obj['image'])  # force img key to exist
+            jav_obj.setdefault('img', jav_obj.get('image', ''))  # force img key to exist
 
         # don't need extra db operations
         return jsonify({'success': {'jav_objs': jav_objs, 'max_page': max_page}})

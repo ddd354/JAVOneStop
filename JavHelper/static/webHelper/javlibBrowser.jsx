@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Pagination from 'react-bootstrap/Pagination'
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import ToggleButton from 'react-bootstrap/ToggleButton';
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
 
+
 import { useTranslation } from 'react-i18next';
+import JavSetSearchGroup from './javSetSearchBGroup'
 import JavlibCard from './javlibCard'
 import './javlibBrowser.css';
 
@@ -86,24 +86,6 @@ const JavlibBroswer = () => {
             })
     };
 
-    const clickJavSetName = (event) => {
-        // triggered from toggle group which don't need search string
-        console.log('Change jav set to: ', event);
-        setJavSet(event);
-        setSearchString(''); // clean out search string for future page clicks
-        setPageItems('1'); // always get 1st page when switching jav sets
-        fetch(`/jav_browser/get_set_javs?set_type=`+String(event)+`&page_num=`+String(1))
-            .then(response => response.json())
-            .then((jsonData) => {
-                //console.log(jsonData.success);
-                setJavObjs(jsonData.success.jav_objs);
-                setMaxPage(jsonData.success.max_page);
-                if (jsonData.errors) {
-                    console.log('Error: ', jsonData.error);
-                }
-            });
-    };
-
     const handleFormSearch = (event) => {
         event.preventDefault();
         console.log('Searching: ', event.target.elements[0].value, event.target.elements[1].value);
@@ -130,13 +112,10 @@ const JavlibBroswer = () => {
             <div style={{display: "flex"}}>
                 <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
                  marginRight: "15px"}}>
-                    <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
-                        onChange={clickJavSetName} style={{flexWrap: "wrap"}}>
-                        <ToggleButton value={'most_wanted'}>{t('most_wanted')}</ToggleButton>
-                        <ToggleButton value={'best_rated'}>{t('best_rated')}</ToggleButton>
-                        <ToggleButton value={'trending_updates'}>{t('trending_updates')}</ToggleButton>
-                        <ToggleButton value={'personal_wanted'}>{t('personal_wanted')}</ToggleButton>
-                    </ToggleButtonGroup>
+                    <JavSetSearchGroup jav_set_name={jav_set_name} 
+                        setJavSet={setJavSet} setSearchString={setSearchString} 
+                        setJavObjs={setJavObjs} setMaxPage={setMaxPage} setPageItems={setPageItems}
+                    />
                 </div>
                 <div style={{width: "50%"}}>
                     <Form onSubmit={handleFormSearch}>

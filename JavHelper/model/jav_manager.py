@@ -10,6 +10,13 @@ class JavManagerDB:
     def __init__(self):
         self.jav_db = FileBackend('jav_manager.db')
 
+    def create_indexes(self):
+        self.jav_db.create_index(JavObj, 'stat')
+
+    def partial_search(self, search_string: str):
+        rt = self.jav_db.filter(JavObj, {'pk': {'$regex': search_string}})[:20]
+        return rt
+
     def query_on_filter(self, filter_on: dict, page=1, limit=8):
         rt = self.jav_db.filter(JavObj, filter_on)
         rt_max_page = ceil(len(rt)/limit)
