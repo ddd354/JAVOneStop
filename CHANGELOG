@@ -2,13 +2,52 @@
 JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
-## [0.0.2] - 2019-12-31
+## [0.4.2] - 2019-02-17
+### Added
+- docker deployment script
+- now use chinese by default
+- add tool to configure 115 cookies directly inside of the tool
+### Updated
+- 115 download grace failure
+- better jav search functions
+- alpha mobile view version
+
+## [0.4.1] - 2019-02-12
+### Updated
+- fix T28 R18 jav scrape
+- fix problematic rename for subtitled video
+- upgrade pyinstaller version for security reason
+- backend only will handle one request at a time to avoid concurrency issue for blitzDB and 115 download
+
+## [0.4.0] - 2019-02-12
+### Added
+- local blitzDB to handle jav file status look up
+- jav manager - 115 - aria2 download support
+- flask cache for faster web response
+- new function to parse two javlibrary most wanted and best rated pages
+- new readme with demo gifs
+### Updated
+- nfo parser now by default capitalize "car"
+- production webpack react compile to reduce warnings
+### Removed
+- no longer support "C" as cd postfix
+
+## [0.3.0] - 2019-02-05
+### Added
+- warashi scraper which is used for emby actor images
+- Handle multiple CD filename postfix
+- Handle Chinese subtitle filename postfix
+### Updated
+- Fix bug when writing images
+- Fix read from ini file so no restart is needed
+
+## [0.2.0] - 2019-12-31
 ### Updated
 - update README for new usage
 ### Removed
 - remove flaskwebgui package usage
 
-## [0.0.1] - 2019-12-29
+## [0.1.0] - 2019-12-29
 ### Added
 - Basic Architecture for front and back end
 - javLibrary parser

@@ -28,7 +28,8 @@ const config = {
             'style-loader',
             'css-loader'
          ]
-  }]
+  }
+]
  }
 };
 

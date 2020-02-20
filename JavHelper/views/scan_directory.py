@@ -4,6 +4,7 @@ import json
 from ast import literal_eval
 from flask import Blueprint, jsonify, request, Response
 
+from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core import IniNotFoundException
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.ini_file import load_ini_file, return_config_string, set_value_ini_file
@@ -15,6 +16,21 @@ This endpoint is pretty dangerous since it needs permission to r/w no-app direct
 directory_scan = Blueprint('directory_scan', __name__, url_prefix='/directory_scan')
 
 
+@directory_scan.route('/update_oof_cookies', methods=['POST'])
+def update_oof_cookies():
+    req_data = json.loads(request.get_data() or '{}')
+    update_dict = json.loads(req_data['update_dict'])
+
+    status = OOFDownloader.update_local_cookies(update_dict)
+
+    return jsonify({'status': status})
+
+@directory_scan.route('/read_oof_cookies', methods=['GET'])
+def read_oof_cookies():
+    return jsonify({'oof_cookies': OOFDownloader.load_local_cookies(
+        return_all=request.args.get('return_all', False)
+    )})  # convert returned obj to dict format
+
 @directory_scan.route('/update_local_ini', methods=['POST'])
 def update_local_ini():
     req_data = json.loads(request.get_data() or '{}')
@@ -23,7 +39,6 @@ def update_local_ini():
     status = set_value_ini_file(update_dict)
 
     return jsonify({'status': status})
-
 
 @directory_scan.route('/read_local_ini', methods=['GET'])
 def read_local_ini():
@@ -36,7 +51,7 @@ def read_local_ini():
                 res[k] = return_config_string(v)
             except IniNotFoundException as e:
                 errors.append(str(e))
-        return jsonify({'local_config': res, 'errors': errors})
+        return jsonify({'local_config': res, 'error': errors})
     else:
         return jsonify({'local_config': load_ini_file()._sections})  # convert returned obj to dict format
 
@@ -51,7 +66,7 @@ def rename_path_preview():
     if not os.path.isdir(path):
         return jsonify({'response': [{'file_name': f'{path} is not a valid directory for scan'}]}), 400
 
-    res = EmbyFileStructure.rename_directory_preview(path)
+    res = EmbyFileStructure(path).rename_directory_preview()
 
     return jsonify({'response': res,
                     'header': [

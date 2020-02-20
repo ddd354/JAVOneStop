@@ -5,7 +5,13 @@ from JavHelper.core import IniNotFoundException
 
 DEFAULT_INI = resource_path('settings.ini')
 DEFAULT_UPDATE_MAPPING = {
+    'aria_address': ["Aria2设置", "Aria2地址"],
+    'aria_port': ["Aria2设置", "Aria2端口"],
+    'aria_token': ["Aria2设置", "Aria2 Token"],
     'file_path': ["本地设置", "默认填入目录"],
+    'preserve_subtitle_filename': ["本地设置", '保留中文字幕文件名'],
+    'subtitle_filename_postfix': ["本地设置", '中文字幕文件名后缀'],
+    'handle_multi_cds': ["本地设置", '自动处理多CD'],
     'enable_proxy': ['代理', '是否使用代理？'],
     'proxy_setup': ['代理', '代理IP及端口'],
     'emby_address': ['emby专用', '网址'],
@@ -41,10 +47,18 @@ def set_value_ini_file(update_dict: dict, config=None):
     return write_ini_file(config)
 
 
+def return_default_config_string(field_name: str):
+    #print(f'loading {field_path} from ini file')
+    if field_name not in DEFAULT_UPDATE_MAPPING:
+        raise IniNotFoundException(f'{field_name} is not a valid default field')
+    temp = return_config_string(DEFAULT_UPDATE_MAPPING[field_name])
+    return temp
+
+
 def return_config_string(field_path: list, config=None):
     if not config:
         config = load_ini_file()
-    print(f'loading {field_path} from ini file')
+    #print(f'loading {field_path} from ini file')
     temp = config
     for each_level in field_path:
         if each_level not in temp:
@@ -57,8 +71,15 @@ def return_config_string(field_path: list, config=None):
 def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings = configparser.RawConfigParser()
     print('正在重写ini...')
+    config_settings.add_section("Aria2设置")
+    config_settings.set("Aria2设置", "Aria2地址", "")
+    config_settings.set("Aria2设置", "Aria2端口", "")
+    config_settings.set("Aria2设置", "Aria2 Token", "")
     config_settings.add_section("本地设置")
     config_settings.set("本地设置", "默认填入目录", "")
+    config_settings.set("本地设置", "保留中文字幕文件名", "是")
+    config_settings.set("本地设置", "中文字幕文件名后缀", "-C,-c")
+    config_settings.set("本地设置", "自动处理多CD", "是")
     config_settings.add_section("重命名影片")
     config_settings.set("重命名影片", "是否重命名影片？", "是")
     config_settings.set("重命名影片", "重命名影片的格式", "车牌+空格+标题")
@@ -93,7 +114,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("百度人体分析", "Secret Key", "")
     config_settings.add_section("其他设置")
     config_settings.set("其他设置", "简繁中文？", "简")
-    config_settings.set("其他设置", "javlibrary网址", "http://www.h28o.com/cn/")  # supported
+    config_settings.set("其他设置", "javlibrary网址", "http://www.p42u.com/cn/")  # supported
     config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")
     config_settings.set("其他设置", "素人车牌(若有新车牌请自行添加)",
                         "LUXU、MIUM、GANA、NTK、ARA、DCV、MAAN、HOI、NAMA、SWEET、SIRO、SCUTE、CUTE、SQB、JKZ")

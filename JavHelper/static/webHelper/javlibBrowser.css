@@ -1,0 +1,23 @@
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+#main-javcard {
+    min-width: 450px;
+}
+
+.jav-content {
+    flex-direction: column;
+}
+
+.flex-container .rdt_Table {
+    max-height: 250px;
+    height: auto;
+    overflow-y: auto;
+}
+
+.magnetTable div {
+    height: 150px;
+    background: transparent;
+}
