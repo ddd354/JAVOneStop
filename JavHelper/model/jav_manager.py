@@ -20,9 +20,9 @@ class JavManagerDB:
     def query_on_filter(self, filter_on: dict, page=1, limit=8):
         rt = self.jav_db.filter(JavObj, filter_on)
         rt_max_page = ceil(len(rt)/limit)
-        rt = rt[(page-1)*limit : (page)*limit]
+        rt_list = rt[(page-1)*limit : (page)*limit]
 
-        return [dict(x) for x in rt], rt_max_page
+        return [dict(x) for x in rt_list], rt_max_page
 
     def upcreate_jav(self, jav_obj: dict):
         # uniform car to upper case

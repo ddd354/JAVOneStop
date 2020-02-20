@@ -30,6 +30,7 @@
     "i18next": "^19.1.0",
     "react-bootstrap": "^1.0.0-beta.16",
     "react-data-table-component": "^6.0.4",
+    "react-debounce-input": "^3.2.2",
     "react-i18next": "^11.3.1",
     "react-json-editor-ajrm": "^2.5.9",
     "react-jsonschema-form": "^1.8.1",

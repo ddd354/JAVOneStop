@@ -41,7 +41,8 @@ const resources = {
       'no opinion': 'no opinion',
       'local': 'local',
       'downloading': 'downloading',
-      'personal_wanted': 'still wanted'
+      'personal_wanted': 'still wanted',
+      'search_car_allow_partial': 'Search car (allow partial search)'
     }
   },
   //{t('')}
@@ -83,7 +84,8 @@ const resources = {
       'no opinion': '没想法',
       'local': '本地有',
       'downloading': '下载中',
-      'personal_wanted': '还未下载'
+      'personal_wanted': '还未下载',
+      'search_car_allow_partial': '搜索番号(支持部分搜索)'
     }
   }
 };

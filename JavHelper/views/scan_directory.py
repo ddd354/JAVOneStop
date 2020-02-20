@@ -111,10 +111,12 @@ def pre_scan_files():
             continue
         # don't care about directory size
         elif os.path.isdir(os.path.join(path, file_name)):
-            file_list.append({'file_name': file_name, 'size': 'folder - will not process'})
+            #file_list.append({'file_name': file_name, 'size': 'folder - will not process'})
+            # longer care about directory, just skip them
+            pass
         else:
             file_size = os.path.getsize(os.path.join(path, file_name)) >> 20
-            file_list.append({'file_name': file_name, 'size': f'{file_size}MB'})
+            file_list.append({'file_name': file_name, 'car': file_name, 'size': f'{file_size}MB'})
 
     return jsonify({'response': file_list,
                     'header': [
