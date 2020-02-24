@@ -2,6 +2,7 @@
 if [ -z "$1" ]
   then
     echo "Have to supplied source map path"
+    exit 1
 fi
 
 imageName=jav_onestop_docker
