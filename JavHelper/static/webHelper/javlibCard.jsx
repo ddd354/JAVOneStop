@@ -7,7 +7,7 @@ import './javlibBrowser.css';
 
 const JavlibCard = ({ update_obj }) => {
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 0.01;
+    const _manual_opacity = 1;
     
     let border_style = {
         borderColor: 'green', 
