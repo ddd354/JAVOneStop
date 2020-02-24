@@ -16,7 +16,7 @@ class JavLibraryScraper(JavScraper):
         self.source = 'javlibrary'
         self.xpath_dict = {
             'search_field': {
-                'title': '//h3[@class="post-title text"]/text()',
+                'title': '//title/text()',
                 'studio': '//tr[td="制作商:"]/td[2]/span/a/text()',
                 'release_date': '//tr[td="发行日期:"]/td[2]/text()',
                 #'year': processed from release date
@@ -35,6 +35,9 @@ class JavLibraryScraper(JavScraper):
         self.jav_url = return_config_string(['其他设置', 'javlibrary网址'])
 
     def postprocess(self):
+        if ' - JAVLibrary' in self.jav_obj['title']:
+            self.jav_obj['title'] = self.jav_obj['title'].replace(' - JAVLibrary', '').replace(f'{self.car} ', '')
+
         if self.jav_obj.get('release_date') and isinstance(self.jav_obj['release_date'], str):
             self.jav_obj['year'] = self.jav_obj['release_date'][0:4]
 

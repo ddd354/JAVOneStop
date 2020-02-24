@@ -90,6 +90,7 @@ class ArzonScraper(JavScraper):
                     continue
             else:
                 return page_content, self.total_index
+        return '', 0
 
     @staticmethod
     def clean_up_car(pre_clean: str):

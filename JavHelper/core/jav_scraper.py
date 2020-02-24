@@ -54,6 +54,7 @@ class JavScraper:
     def search_single_xpath(update_obj: dict, search_dict: dict, source_root):
         for k, v in search_dict.items():
             _temp_v = source_root.xpath(v)
+            #if k == 'title': import ipdb; ipdb.set_trace()
             if len(_temp_v) > 0:
                 update_obj[k] = _temp_v[0]
 
