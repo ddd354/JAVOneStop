@@ -4,11 +4,13 @@ from flask import Flask, render_template, jsonify
 from werkzeug.exceptions import HTTPException
 from traceback import format_exc, print_exc
 
-from JavHelper.core.ini_file import recreate_ini, DEFAULT_INI
+from JavHelper.core.ini_file import recreate_ini, DEFAULT_INI, verify_ini_file
 # init setting file
 if not os.path.isfile(DEFAULT_INI):
     print('ini file {} doesn\'t exists, recreate one and apply default settings'.format(DEFAULT_INI))
     recreate_ini(DEFAULT_INI)
+# verify all fields exist
+verify_ini_file()
 
 from JavHelper.cache import cache
 from JavHelper.model.jav_manager import JavManagerDB
