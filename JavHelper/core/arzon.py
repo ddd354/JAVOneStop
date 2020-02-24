@@ -56,7 +56,7 @@ class ArzonScraper(JavScraper):
             _temp = _temp.replace('\r\n', '')
             _temp = _temp.strip(' ')
             matched = re.match(re_pattern, _temp)
-            if len(matched.groups()) == 2:
+            if matched and len(matched.groups()) == 2:
                 #import ipdb;ipdb.set_trace()
                 self.jav_obj['year'] = str(matched.groups()[0])
                 self.jav_obj['release_date'] = ''.join(matched.groups()[:1])
