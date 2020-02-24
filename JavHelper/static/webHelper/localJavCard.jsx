@@ -177,7 +177,7 @@ const LocalJavCard = ({ update_obj, handleRemove, global_loading, setGlobalLoadi
                     : ""
                 }
                 {' '}
-                <Button variant="outline-primary" onClick={handleReScrapeClick}>{
+                <Button variant="outline-primary" onClick={handleReScrapeClick} disabled={_global_loading}>{
                     (is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Re-Scrape"}
                 </Button>
                 <LocalJavInfoTabs jav_obj={javcard_obj} setJavCardObj={setJavCardObj} />

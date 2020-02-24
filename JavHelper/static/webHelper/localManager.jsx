@@ -94,12 +94,22 @@ const LocalJavManager = (props) => {
                         push_to_multi_actual(_process_jav_obj.car);
                     } else if (jsonData.errors) {
                         console.log(jsonData.errors);
+                        push_to_multi_actual_failed(_process_jav_obj.car);
                     } else {
                         console.log('[FATAL ERROR] cannot scrape: ', _process_jav_obj.car);
+                        push_to_multi_actual_failed(_process_jav_obj.car);
                     };
                 });
         };
     };
+
+    // this is to handle when scrape fail to get rid of spinning wheel
+    function push_to_multi_actual_failed(car) {
+        let _update_multi_loading = multi_loading_actual;
+        //console.log(_update_multi_loading);
+        _update_multi_loading.push(1);
+        setMultiLoadingActual(_update_multi_loading);
+    }
 
     function push_to_multi_actual(car) {
         let _update_multi_loading = multi_loading_actual;
@@ -153,7 +163,7 @@ const LocalJavManager = (props) => {
                     <span>{t('search_car_allow_partial')}: </span>
                     <DebounceInput minLength={1} debounceTimeout={1500} onChange={e => setSearchString(e.target.value)}/>
                     <Button variant="primary" size="sm" onClick={handleAllScrape} disabled={global_loading}>
-                        {(global_loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Scrape All"}
+                        {(global_loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('scrape_all')}
                     </Button>
                 </div>
             </div>
