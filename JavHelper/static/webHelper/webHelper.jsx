@@ -191,7 +191,7 @@ class App extends Component {
             "action": {
               "type": "string",
               "title": t('form_action_title'),
-              "enum": ["preview", "preview_rename", "rename", "parse_jav"]
+              "enum": ["preview", "preview_rename", "rename"]
             },
           }
         };
@@ -216,6 +216,7 @@ class App extends Component {
             <Tabs>
             <TabList>
               <Tab>{t('Main Tool')}</Tab>
+              <Tab>{t('Rename Tool')}</Tab>
               <Tab>{t('JavLibrary Manager')}</Tab>
               <Tab>{t('Handy Features')}</Tab>
               <Tab>{t('Settings')}</Tab>
@@ -225,6 +226,16 @@ class App extends Component {
                 <StyledDiv>
                   <LocalJavManager scan_path={this.state.settings_form_data.file_path}/>
                 </StyledDiv>
+            </TabPanel>
+            <TabPanel>
+                <StyledDiv>
+                <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
+                    <div>
+                      <button type="submit">{t('Preview File / Execute')}</button>
+                    </div>
+                </Form>
+                </StyledDiv>
+                <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
             </TabPanel>
             <TabPanel>
               <JavlibBroswer />

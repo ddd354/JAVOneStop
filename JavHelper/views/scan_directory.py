@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request, Response
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core import IniNotFoundException
 from JavHelper.core.file_scanner import EmbyFileStructure
-from JavHelper.core.ini_file import load_ini_file, return_config_string, set_value_ini_file
+from JavHelper.core.ini_file import load_ini_file, return_config_string, set_value_ini_file, return_default_config_string
 
 """
 This endpoint is pretty dangerous since it needs permission to r/w no-app directory
@@ -15,6 +15,19 @@ This endpoint is pretty dangerous since it needs permission to r/w no-app direct
 
 directory_scan = Blueprint('directory_scan', __name__, url_prefix='/directory_scan')
 
+
+@directory_scan.route('/verify_local_nfo', methods=['GET'])
+def verify_local_nfo():
+    directory = request.args.get('directory')
+    filename = request.args.get('filename')
+    root = return_default_config_string('file_path')
+
+    # special processing to convert linux db path to windows
+    directory = directory.replace('/', os.sep).replace('\\', os.sep)
+
+    print(os.path.join(root, directory, filename))
+    whether_exists = os.path.isfile(os.path.join(root, directory, filename))
+    return jsonify({'success': whether_exists})
 
 @directory_scan.route('/update_oof_cookies', methods=['POST'])
 def update_oof_cookies():
@@ -116,7 +129,8 @@ def pre_scan_files():
             pass
         else:
             file_size = os.path.getsize(os.path.join(path, file_name)) >> 20
-            file_list.append({'file_name': file_name, 'car': file_name, 'size': f'{file_size}MB'})
+            _car = os.path.splitext(file_name)[0]
+            file_list.append({'file_name': file_name, 'car': _car, 'size': f'{file_size}MB'})
 
     return jsonify({'response': file_list,
                     'header': [

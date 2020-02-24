@@ -5,13 +5,14 @@ from PIL import Image
 import requests
 import re
 import traceback
+import codecs
+from copy import deepcopy
 
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.nfo_parser import EmbyNfo
 from JavHelper.core.ini_file import return_default_config_string
 
 
-FOLDER_STRUCTURE = '{year}/{car}'
 POSTER_NAME = 'poster'
 FANART_NAME = 'fanart'
 DEFAULT_FILENAME_PATTERN = r'^.*?(?P<pre>[a-zA-Z]{2,6})\W*(?P<digit>\d{1,6}).*?$'
@@ -26,7 +27,7 @@ class EmbyFileStructure:
 
         self.root_path = root_path
         self.file_list = []
-        self.folder_structure = FOLDER_STRUCTURE
+        self.folder_structure = return_default_config_string('folder_structure')
 
         # settings from ini file
         self.handle_multi_cds = ( return_default_config_string('handle_multi_cds')== '是' )
@@ -35,8 +36,7 @@ class EmbyFileStructure:
 
         self.jav_manage = JavManagerDB()
 
-    @staticmethod
-    def write_images(jav_obj):
+    def write_images(self, jav_obj):
         poster_name = POSTER_NAME
         fanart_name = FANART_NAME
 
@@ -46,7 +46,9 @@ class EmbyFileStructure:
 
         if 'directory' not in jav_obj:
             raise Exception('no directory field in jav_obj')
-        directory = jav_obj['directory']
+        # windows and linux compatible
+        directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
+        directory = os.path.join(self.root_path, directory)
 
         # 下载海报的地址 cover
         url_obj = urlparse(image_url, scheme='http')
@@ -78,21 +80,36 @@ class EmbyFileStructure:
 
         return
 
-    @staticmethod
-    def write_nfo(jav_obj: dict):
+    def write_nfo(self, jav_obj: dict, verify=False):
         if 'file_name' not in jav_obj:
             raise Exception('no file_name field in jav_obj')
         file_name = jav_obj['file_name']
         if 'directory' not in jav_obj:
             raise Exception('no directory field in jav_obj')
-        directory = jav_obj['directory']
+        # windows and linux compatible
+        directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
+        directory = os.path.join(self.root_path, directory)
+
+        if verify:
+            # verify there is a corresponding video file
+            directory_files = os.listdir(directory)
+            correct_file_exists = False
+            for _filename in directory_files:
+                if _filename == os.path.splitext(file_name)[0] + '.nfo':
+                    continue
+                if _filename.startswith(os.path.splitext(file_name)[0]):
+                    correct_file_exists = True; break
+            if not correct_file_exists:
+                raise Exception('there is no correct file exists in {} for {}'.format(os.path.splitext(file_name)[0], directory))
+
 
         nfo_file_name = os.path.splitext(file_name)[0] + '.nfo'
         nfo_path = os.path.join(directory, nfo_file_name)
 
-        with open(nfo_path, 'w') as f:
+        with codecs.open(nfo_path, 'w', 'utf-8') as f:
             if not jav_obj.get('title'):
-                import ipdb; ipdb.set_trace()
+                #import ipdb; ipdb.set_trace()
+                raise Exception('[FATAL ERROR] There is no valid title for {}'.format(jav_obj['car']))
             f.write(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n"
                 "<movie>\n"
@@ -298,7 +315,69 @@ class EmbyFileStructure:
                 self.folder_structure, jav_obj.keys()
             ))
         os.makedirs(new_full_path, exist_ok=True)
-        jav_obj['directory'] = new_full_path
+        print(f'{new_full_path} created')
+
+        # we only save relative directory excluding root
+        # since root is configurable among different machines
+        jav_obj['directory'] = self.folder_structure.format(**jav_obj)
+        return jav_obj
+
+    def create_folder_for_existing_jav(self, jav_obj: dict):
+        # file_name has to be in incoming jav_obj
+        if 'file_name' not in jav_obj:
+            raise Exception(f'file_name has to be in incoming jav object')
+        file_name = jav_obj['file_name']
+
+        if not os.path.exists(os.path.join(self.root_path, jav_obj['directory'], file_name)):
+            raise Exception('{} does not exist'.format(os.path.join(self.root_path, jav_obj['directory'], file_name)))
+
+        # configure all necessary folders
+        try:
+            new_full_path = os.path.join(self.root_path, self.folder_structure.format(**jav_obj))
+        except KeyError:
+            raise KeyError('required fields not filled for path {} and parsed {}'.format(
+                self.folder_structure, jav_obj.keys()
+            ))
+        os.makedirs(new_full_path, exist_ok=True)
+        print(f'{new_full_path} created')
+
+        # we only save relative directory excluding root
+        # since root is configurable among different machines
+        jav_obj['old_directory'] = deepcopy(jav_obj['directory'])
+        jav_obj['directory'] = self.folder_structure.format(**jav_obj)
+        return jav_obj
+
+    def move_existing_file(self, jav_obj: dict):
+        # file_name has to be in incoming jav_obj
+        if 'file_name' not in jav_obj or 'directory' not in jav_obj:
+            raise Exception(f'required file_name or directoy has to be in incoming {jav_obj} object')
+        if 'old_directory' not in jav_obj:
+            raise Exception(f'required old_directoy has to be in incoming {jav_obj} object')
+
+        file_name = jav_obj['file_name']
+        # join relative directory with root
+        # windows and linux compatible
+        directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
+        new_full_path = os.path.join(self.root_path, directory)
+
+        old_directory = jav_obj['old_directory'].replace('/', os.sep).replace('\\', os.sep)
+        if not os.path.exists(os.path.join(self.root_path, old_directory, file_name)):
+            raise Exception(f'{file_name} does not exist')
+
+        os.rename(
+            os.path.join(self.root_path, old_directory, file_name),
+            os.path.join(new_full_path, file_name)
+        )
+        # default to exists locally
+        jav_obj.setdefault('stat', 3)
+        # write to db
+        self.jav_manage.upcreate_jav(jav_obj)
+
+        print('move {} to {}'.format(
+            os.path.join(self.root_path, old_directory, file_name),
+            os.path.join(new_full_path, file_name)
+        ))
+
         return jav_obj
 
     def put_processed_file(self, jav_obj: dict):
@@ -306,7 +385,10 @@ class EmbyFileStructure:
         if 'file_name' not in jav_obj or 'directory' not in jav_obj:
             raise Exception(f'required file_name or directoy has to be in incoming {jav_obj} object')
         file_name = jav_obj['file_name']
-        new_full_path = jav_obj['directory']
+        # join relative directory with root
+        # windows and linux compatible
+        directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
+        new_full_path = os.path.join(self.root_path, directory)
 
         if not os.path.exists(os.path.join(self.root_path, file_name)):
             raise Exception(f'{file_name} does not exist')

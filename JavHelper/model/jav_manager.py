@@ -13,6 +13,9 @@ class JavManagerDB:
     def create_indexes(self):
         self.jav_db.create_index(JavObj, 'stat')
 
+    def bulk_list(self):
+        return self.jav_db.filter(JavObj, {})
+
     def partial_search(self, search_string: str):
         rt = self.jav_db.filter(JavObj, {'pk': {'$regex': search_string}})[:20]
         return rt
@@ -36,6 +39,7 @@ class JavManagerDB:
         _jav_doc = JavObj(jav_obj)
         _jav_doc.save(self.jav_db)
         self.jav_db.commit()
+        print('writed ', jav_obj)
 
     def get_by_pk(self, pk: str):
         return self.jav_db.get(JavObj, {'pk': pk.upper()})

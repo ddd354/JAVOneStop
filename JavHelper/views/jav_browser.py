@@ -7,7 +7,7 @@ from lxml import html
 from traceback import print_exc
 
 from JavHelper.cache import cache
-from JavHelper.core.javlibrary import javlib_set_page, parse_javlib
+from JavHelper.core.javlibrary import javlib_set_page, JavLibraryScraper
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 
@@ -21,7 +21,7 @@ SET_TYPE_MAP = {
 }  # there is a hard coded list in javlibBrowser.jsx for filtering as well
 
 def search_by_car(car: str, **kwargs):
-    jav_obj = parse_javlib({'car': car})
+    jav_obj = JavLibraryScraper({'car': car}).scrape_jav()
     db_conn = JavManagerDB()
 
     if db_conn.pk_exist(str(jav_obj.get('car'))):
@@ -81,7 +81,7 @@ def get_set_javs():
         # need additional info
         for jav_obj in jav_objs:
             if not jav_obj.get('title', None):
-                _full_info = parse_javlib({'car': jav_obj['car']})
+                _full_info = JavLibraryScraper({'car': jav_obj['car']}).scrape_jav()
                 jav_obj.update(_full_info)
                 db_conn.upcreate_jav(jav_obj)
 

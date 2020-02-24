@@ -16,7 +16,9 @@ DEFAULT_UPDATE_MAPPING = {
     'proxy_setup': ['代理', '代理IP及端口'],
     'emby_address': ['emby专用', '网址'],
     'emby_api': ['emby专用', 'API ID'],
-    'javlibrary_url': ['其他设置', 'javlibrary网址']
+    'javlibrary_url': ['其他设置', 'javlibrary网址'],
+    'jav_obj_priority': ['其他设置', '刮削信息优先度'],
+    'folder_structure': ['本地设置', '保存路径模板']
 }
 
 
@@ -51,8 +53,7 @@ def return_default_config_string(field_name: str):
     #print(f'loading {field_path} from ini file')
     if field_name not in DEFAULT_UPDATE_MAPPING:
         raise IniNotFoundException(f'{field_name} is not a valid default field')
-    temp = return_config_string(DEFAULT_UPDATE_MAPPING[field_name])
-    return temp
+    return return_config_string(DEFAULT_UPDATE_MAPPING[field_name])
 
 
 def return_config_string(field_path: list, config=None):
@@ -77,6 +78,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("Aria2设置", "Aria2 Token", "")
     config_settings.add_section("本地设置")
     config_settings.set("本地设置", "默认填入目录", "")
+    config_settings.set("本地设置", "保存路径模板", "{year}/{car}")
     config_settings.set("本地设置", "保留中文字幕文件名", "是")
     config_settings.set("本地设置", "中文字幕文件名后缀", "-C,-c")
     config_settings.set("本地设置", "自动处理多CD", "是")
@@ -113,7 +115,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("百度人体分析", "API Key", "")
     config_settings.set("百度人体分析", "Secret Key", "")
     config_settings.add_section("其他设置")
-    config_settings.set("其他设置", "简繁中文？", "简")
+    config_settings.set("其他设置", "刮削信息优先度", "javlibrary,arzon")
     config_settings.set("其他设置", "javlibrary网址", "http://www.p42u.com/cn/")  # supported
     config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")
     config_settings.set("其他设置", "素人车牌(若有新车牌请自行添加)",
