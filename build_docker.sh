@@ -2,8 +2,7 @@
 if [ -z "$1" ]
   then
     echo "Have to supplied source map path"
-    exit 1
-fi
+else
 
 imageName=jav_onestop_docker
 containerName=jav_onestop
@@ -23,3 +22,5 @@ docker rm -f $containerName
 
 echo Run new container...
 docker run -d -p 8009:8009 -v "$1":/usr/data1 --name $containerName $imageName
+
+fi
