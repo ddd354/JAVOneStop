@@ -293,10 +293,12 @@ class EmbyFileStructure:
                         not os.path.splitext(each_file)[0].startswith('.'):
                     nfo_obj = EmbyNfo()
                     nfo_obj.parse_emby_nfo(os.path.join(root, each_file))
-                    nfo_obj.jav_obj['directory'] = root
+                    # we only save Relative path to the root in db to make the db work across different machine
+                    nfo_obj.jav_obj['directory'] = os.path.relpath(root, self.root_path)
                     nfo_obj.jav_obj['stat'] = 3
                     self.jav_manage.upcreate_jav(nfo_obj.jav_obj)
                     self.file_list.append(nfo_obj.jav_obj)
+                    print('scanned {}'.format(nfo_obj.jav_obj['directory']))
 
     def create_new_folder(self, jav_obj: dict):
         # file_name has to be in incoming jav_obj

@@ -65,6 +65,11 @@ def search_for_actress(javlib_actress_code: str, page_num=1):
     
     return jav_objs, max_page
 
+@jav_browser.route('/rebuild_db_index', methods=['GET'])
+def rebuild_db_index():
+    JavManagerDB().rebuild_index()
+    return jsonify({'success': 'index rebuilt for stat'})
+
 @jav_browser.route('/get_set_javs', methods=['GET'])
 @cache.cached(timeout=30, query_string=True)
 def get_set_javs():
@@ -80,6 +85,9 @@ def get_set_javs():
         jav_objs, max_page = db_conn.query_on_filter({'stat': 0}, page=int(page_num))
         # need additional info
         for jav_obj in jav_objs:
+            if jav_obj['stat'] != 0:
+                db_conn.rebuild_index()
+                raise Exception('index is not up-to-date and it has been rebuild')
             if not jav_obj.get('title', None):
                 _full_info = JavLibraryScraper({'car': jav_obj['car']}).scrape_jav()
                 jav_obj.update(_full_info)

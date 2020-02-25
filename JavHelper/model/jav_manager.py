@@ -11,7 +11,11 @@ class JavManagerDB:
         self.jav_db = FileBackend('jav_manager.db')
 
     def create_indexes(self):
+        print('creating index for stat')
         self.jav_db.create_index(JavObj, 'stat')
+
+    def rebuild_index(self):
+        self.jav_db.rebuild_index(self.jav_db.get_collection_for_cls(JavObj), 'stat')
 
     def bulk_list(self):
         return self.jav_db.filter(JavObj, {})
@@ -32,9 +36,16 @@ class JavManagerDB:
         jav_obj['car'] = str(jav_obj['car']).upper()
         # set pk to car
         jav_obj['pk'] = jav_obj['car']
-        # set default to no opinion
-        #0-want, 1-viewed, 2-no opinion 3-local 4-downloading
-        jav_obj.setdefault('stat', 2)
+
+        # pull existing data since this is update function
+        try:
+            current_jav_obj = dict(self.get_by_pk(jav_obj['car']))
+            # overwrite current db dict with input dict
+            current_jav_obj.update(jav_obj)
+        except DoesNotExist:
+            # set default to no opinion
+            #0-want, 1-viewed, 2-no opinion 3-local 4-downloading
+            jav_obj.setdefault('stat', 2)
 
         _jav_doc = JavObj(jav_obj)
         _jav_doc.save(self.jav_db)

@@ -15,6 +15,16 @@ This endpoint is pretty dangerous since it needs permission to r/w no-app direct
 
 directory_scan = Blueprint('directory_scan', __name__, url_prefix='/directory_scan')
 
+@directory_scan.route('/rescan_emby_folder', methods=['GET'])
+def rescan_emby_folder():
+    """
+    This endpoint is used to scan javs already exist locally and update db
+    """
+    emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
+    # scan folder
+    emby_folder.scan_emby_root_path()
+
+    return jsonify({'success': [jav_obj['directory'] for jav_obj in emby_folder.file_list]})
 
 @directory_scan.route('/verify_local_nfo', methods=['GET'])
 def verify_local_nfo():
