@@ -143,13 +143,13 @@ def parse_single_jav(jav_obj: dict, sources):
         try:
             #import ipdb; ipdb.set_trace()
             scraped_info = SOURCES_MAP[scrape]({'car': jav_obj['car']}).scrape_jav()
-        except JAVNotFoundException:
+        except Exception as e:
             errors = (jav_obj.get('errors') or [])
             errors.append(
                 '{} cannot be found in {}'.format(jav_obj['car'], scrape)
             )
             scraped_info = {'errors': errors}
-            print(scraped_info)
+            print(scraped_info, e)
         jav_obj.update(scraped_info)
         # also save it separate key
         jav_obj[scrape] = scraped_info
