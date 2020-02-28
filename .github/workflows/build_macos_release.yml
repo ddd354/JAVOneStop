@@ -8,10 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@master
     - name: Install Python
@@ -25,7 +22,6 @@ jobs:
         pip install -r requirements.txt
 
     - name: build macos pkg
-      if: matrix.os == 'macos-latest'
       run: |
         pyinstaller --onedir \
           --add-data="JavHelper/templates:JavHelper/templates" \
@@ -42,21 +38,14 @@ jobs:
 
         tar -czf Jav_OneStop_macos.tar.gz dist-python
 
-    - name: build windows pkg
-      if: matrix.os == 'windows-latest'
-      run: |
-        pyinstaller --onedir --add-data="JavHelper\templates;JavHelper\templates" --add-data="JavHelper\static;JavHelper\static" --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper\run.py
-
-        7z a -tzip "Jav_OneStop_windows.zip" ".\dist-python\"
-        
     - name: Create Release
       id: create_release
-      uses: actions/create-release@v1
+      uses: actions/create-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }} MacOS / Windows
+        release_name: Release ${{ github.ref }} MacOS
         draft: false
         prerelease: false
     
@@ -70,16 +59,4 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./Jav_OneStop_macos.tar.gz
         asset_name: Jav_OneStop_macos.tar.gz
-        asset_content_type: application/zip
-
-    - name: Upload Release Asset Windows
-      if: matrix.os == 'windows-latest'
-      id: upload-release-asset-windows
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./Jav_OneStop_windows.zip
-        asset_name: Jav_OneStop_windows.zip
         asset_content_type: application/zip
