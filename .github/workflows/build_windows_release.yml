@@ -28,13 +28,13 @@ jobs:
 
         7z a -tzip "Jav_OneStop_windows.zip" ".\dist-python\"
         
-    - name: Create Release
+    - name: Create Windows Release
       id: create_release_windows
       uses: actions/create-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}_windows
         release_name: Release ${{ github.ref }} Windows
         draft: false
         prerelease: false
