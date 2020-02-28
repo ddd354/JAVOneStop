@@ -1,4 +1,4 @@
-name: build_releases
+name: build_windows_releases
 
 on:
   push:
