@@ -1,6 +1,17 @@
 # Changelog
-JAVHELPER which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
+JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
+
+## [0.5.0] - 2019-02-27
+### Added
+- local jav manager
+- new scraper class to ease new implementation
+- user can configure scraper sources directly in the configure tool
+### Updated
+- restructure javlibrary and arzon scraper
+- better windows and linux (macos) os path support
+- user can configure saved folder structure in the configure tool
+- fix a bug to rebuild index when doing db search locally
 
 ## [0.4.2] - 2019-02-17
 ### Added
