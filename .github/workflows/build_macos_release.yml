@@ -39,7 +39,7 @@ jobs:
         tar -czf Jav_OneStop_macos.tar.gz dist-python
 
     - name: Create Release
-      id: create_release
+      id: create_release_macos
       uses: actions/create-release@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -50,13 +50,12 @@ jobs:
         prerelease: false
     
     - name: Upload Release Asset MacOS
-      if: matrix.os == 'macos-latest'
       id: upload-release-asset-macos
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        upload_url: ${{ steps.create_release_macos.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./Jav_OneStop_macos.tar.gz
         asset_name: Jav_OneStop_macos.tar.gz
         asset_content_type: application/zip
