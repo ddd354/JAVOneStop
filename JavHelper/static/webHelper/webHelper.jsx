@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 
 import { withTranslation } from 'react-i18next';
 
+import LocalJavManager from "./localManager"
 import JavConfigurator from "./configurator"
 import JavlibBroswer from "./javlibBrowser"
 import FileTable from "./fileTable";
@@ -26,7 +27,6 @@ class App extends Component {
           files_table: [],
           form_data: {},
           settings_form_data: {},
-          ui_log: ['Front end loaded'],
           logs: []
         };
         this.filePathHandler = this.filePathHandler.bind(this);
@@ -191,7 +191,7 @@ class App extends Component {
             "action": {
               "type": "string",
               "title": t('form_action_title'),
-              "enum": ["preview", "preview_rename", "rename", "parse_jav"]
+              "enum": ["preview", "preview_rename", "rename"]
             },
           }
         };
@@ -216,11 +216,17 @@ class App extends Component {
             <Tabs>
             <TabList>
               <Tab>{t('Main Tool')}</Tab>
+              <Tab>{t('Rename Tool')}</Tab>
               <Tab>{t('JavLibrary Manager')}</Tab>
               <Tab>{t('Handy Features')}</Tab>
               <Tab>{t('Settings')}</Tab>
             </TabList>
 
+            <TabPanel>
+                <StyledDiv>
+                  <LocalJavManager scan_path={this.state.settings_form_data.file_path}/>
+                </StyledDiv>
+            </TabPanel>
             <TabPanel>
                 <StyledDiv>
                 <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
