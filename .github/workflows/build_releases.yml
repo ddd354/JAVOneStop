@@ -45,7 +45,7 @@ jobs:
     - name: build windows pkg
       if: matrix.os == 'windows-latest'
       run: |
-        pyinstaller --onedir --add-data JavHelper\templates:JavHelper\templates --add-data JavHelper\static:JavHelper\static --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper\run.py
+        pyinstaller --onedir --add-data JavHelper\templates;JavHelper\templates --add-data JavHelper\static;JavHelper\static --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper\run.py
 
         7z a -tzip "Jav_OneStop_windows.zip" ".\dist-python\"
         
