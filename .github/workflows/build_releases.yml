@@ -1,9 +1,10 @@
-name: build_MacOS_deploy
+name: build_releases
 
-on:
-  push:
-    tags:
-      - 'v*'
+#on:
+#  push:
+#    tags:
+#      - 'v*'
+on: [push]
 
 jobs:
   build:
@@ -23,62 +24,62 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: build macos pkg
-      if: matrix.os == 'macos-latest'
-      run: |
-        pyinstaller --onedir \
-          --add-data="JavHelper/templates:JavHelper/templates" \
-          --add-data="JavHelper/static:JavHelper/static" \
-          --exclude-module="FixTk" \
-          --exclude-module="tcl" \
-          --exclude-module="tk" \
-          --exclude-module="_tkinter" \
-          --exclude-module="tkinter" \
-          --exclude-module="Tkinter" \
-          --noconfirm \
-          --distpath dist-python \
-          JavHelper/run.py
-
-        tar -czf Jav_OneStop_macos.tar.gz dist-python
+    #- name: build macos pkg
+    #  if: matrix.os == 'macos-latest'
+    #  run: |
+    #    pyinstaller --onedir \
+    #      --add-data="JavHelper/templates:JavHelper/templates" \
+    #      --add-data="JavHelper/static:JavHelper/static" \
+    #      --exclude-module="FixTk" \
+    #      --exclude-module="tcl" \
+    #      --exclude-module="tk" \
+    #      --exclude-module="_tkinter" \
+    #      --exclude-module="tkinter" \
+    #      --exclude-module="Tkinter" \
+    #      --noconfirm \
+    #      --distpath dist-python \
+    #      JavHelper/run.py
+#
+    #    tar -czf Jav_OneStop_macos.tar.gz dist-python
 
     - name: build windows pkg
       if: matrix.os == 'windows-latest'
       run: |
-        pyinstaller --onedir --add-data="JavHelper\templates:JavHelper\templates" --add-data="JavHelper\static:JavHelper\static"  --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper/run.py
+        pyinstaller --onedir --add-data="JavHelper\templates:JavHelper\templates" --add-data="JavHelper\static:JavHelper\static"  --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper\run.py
 
-        7zip a -tzip "Jav_OneStop_windows.zip" ".\dist-python\"
+        7z a -tzip "Jav_OneStop_windows.zip" ".\dist-python\"
         
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }} MacOS / Windows
-        draft: false
-        prerelease: false
-    
-    - name: Upload Release Asset MacOS
-      if: matrix.os == 'macos-latest'
-      id: upload-release-asset-macos
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ./Jav_OneStop_macos.tar.gz
-        asset_name: Jav_OneStop_macos.tar.gz
-        asset_content_type: application/zip
-
-    - name: Upload Release Asset Windows
-      if: matrix.os == 'windows-latest'
-      id: upload-release-asset-windows
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./Jav_OneStop_windows.zip
-        asset_name: Jav_OneStop_windows.zip
-        asset_content_type: application/zip
+    #- name: Create Release
+    #  id: create_release
+    #  uses: actions/create-release@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    tag_name: ${{ github.ref }}
+    #    release_name: Release ${{ github.ref }} MacOS / Windows
+    #    draft: false
+    #    prerelease: false
+    #
+    #- name: Upload Release Asset MacOS
+    #  if: matrix.os == 'macos-latest'
+    #  id: upload-release-asset-macos
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its #outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/##passing-data-to-future-steps 
+    #    asset_path: ./Jav_OneStop_macos.tar.gz
+    #    asset_name: Jav_OneStop_macos.tar.gz
+    #    asset_content_type: application/zip
+#
+    #- name: Upload Release Asset Windows
+    #  if: matrix.os == 'windows-latest'
+    #  id: upload-release-asset-windows
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #    asset_path: ./Jav_OneStop_windows.zip
+    #    asset_name: Jav_OneStop_windows.zip
+    #    asset_content_type: application/zip
