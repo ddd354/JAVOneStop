@@ -4,9 +4,10 @@ import json
 from blitzdb.document import DoesNotExist
 import requests
 from lxml import html
+from traceback import print_exc
 
 from JavHelper.cache import cache
-from JavHelper.core.javlibrary import javlib_set_page, parse_javlib
+from JavHelper.core.javlibrary import javlib_set_page, JavLibraryScraper
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 
@@ -15,11 +16,12 @@ jav_browser = Blueprint('jav_browser', __name__, url_prefix='/jav_browser')
 SET_TYPE_MAP = {
     'most_wanted': 'vl_mostwanted.php?&mode=&page={page_num}',
     'best_rated': 'vl_bestrated.php?&mode=&page={page_num}',
-    'trending_updates': 'vl_update.php?&mode=&page={page_num}'
+    'trending_updates': 'vl_update.php?&mode=&page={page_num}',
+    'personal_wanted': 'hard_coded'  # this is a special hard coded category
 }  # there is a hard coded list in javlibBrowser.jsx for filtering as well
 
 def search_by_car(car: str, **kwargs):
-    jav_obj = parse_javlib({'car': car})
+    jav_obj = JavLibraryScraper({'car': car}).scrape_jav()
     db_conn = JavManagerDB()
 
     if db_conn.pk_exist(str(jav_obj.get('car'))):
@@ -63,6 +65,11 @@ def search_for_actress(javlib_actress_code: str, page_num=1):
     
     return jav_objs, max_page
 
+@jav_browser.route('/rebuild_db_index', methods=['GET'])
+def rebuild_db_index():
+    JavManagerDB().rebuild_index()
+    return jsonify({'success': 'index rebuilt for stat'})
+
 @jav_browser.route('/get_set_javs', methods=['GET'])
 @cache.cached(timeout=30, query_string=True)
 def get_set_javs():
@@ -73,7 +80,24 @@ def get_set_javs():
     _dedupe_car_list = []
     rt_jav_objs = []
 
-    if not search_string:
+    if set_type == 'personal_wanted':
+        db_conn = JavManagerDB()
+        jav_objs, max_page = db_conn.query_on_filter({'stat': 0}, page=int(page_num))
+        # need additional info
+        for jav_obj in jav_objs:
+            if jav_obj['stat'] != 0:
+                db_conn.rebuild_index()
+                raise Exception('index is not up-to-date and it has been rebuild')
+            if not jav_obj.get('title', None):
+                _full_info = JavLibraryScraper({'car': jav_obj['car']}).scrape_jav()
+                jav_obj.update(_full_info)
+                db_conn.upcreate_jav(jav_obj)
+
+            jav_obj.setdefault('img', jav_obj.get('image', ''))  # force img key to exist
+
+        # don't need extra db operations
+        return jsonify({'success': {'jav_objs': jav_objs, 'max_page': max_page}})
+    elif not search_string:
         # parse set without search string
         # verify set type
         if set_type not in SET_TYPE_MAP:
@@ -178,8 +202,8 @@ def search_magnet_link():
         bt_xpath = '//html/body//table[@id="archiveResult"]//td[@class="action"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:
             print(f'{car} found in torrentkitty')
-            name_xpath = '//html/body//table[@id="archiveResult"]//td[@class="name"]/text()'
-            titles = [ind[0:25] for ind in BTTree.xpath(name_xpath)]
+            name_xpath = '//html/body//table[@id="archiveResult"]//td[@class="name"]'
+            titles = [ind.text_content()[0:25] for ind in BTTree.xpath(name_xpath)]
 
             file_xpath = '//html/body//table[@id="archiveResult"]//td[@class="size"]/text()'
             file_sizes = [ind for ind in BTTree.xpath(file_xpath)]
@@ -188,7 +212,8 @@ def search_magnet_link():
             for i in range(len(titles)):
                 rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
             return jsonify({'success': rt[:10]})
-    except Exception:
+    except Exception as e:
+        print_exc()
         pass
 
     try:
@@ -210,38 +235,6 @@ def search_magnet_link():
             return jsonify({'success': rt[:10]})
     except Exception:
         pass
-
-    """try:
-        respBT = requests.get('http://btdb.io/?s=' + car)
-        BTTree = html.fromstring(respBT.content)
-        bt_xpath = '//*/div[@class="item-meta-info"]/a'
-        if len(BTTree.xpath(bt_xpath)) > 0:
-            print(f'{car} found in btdb')
-
-            name_xpath = '//*/h2[@class="item-title"]/a'
-            titles = [ind.get('title') for ind in BTTree.xpath(name_xpath)]
-
-            file_xpath = '//*/div[@class="item-meta-info"]/span'
-            file_sizes = [ind.text for ind in BTTree.xpath(file_xpath) if 'GB' in ind.text or 'MB' in ind.text]
-
-            for i in range(len(titles)):
-                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i]})
-            return jsonify({'success': rt[:10]})
-    except Exception:
-        pass
-
-    try:
-        respBT = requests.get('http://btso.pw/search/' + car)
-        BTTree = html.fromstring(respBT.content)
-        bt_xpath = '//*[@class="data-list"]/div'
-        if len(BTTree.xpath(bt_xpath)) > 0:
-            print(f'{car} found in btso')
-
-            for i in range(len(titles)):
-                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i]})
-            return jsonify({'success': rt[:10]})
-    except Exception:
-        pass"""
 
     return jsonify({'error': f'{car} not found in all sources'})
 

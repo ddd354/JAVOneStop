@@ -2,16 +2,18 @@
 from flask import Blueprint, jsonify, request, Response
 import json
 
+from JavHelper.cache import cache
+from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core import JAVNotFoundException
-from JavHelper.core.javlibrary import parse_javlib
-from JavHelper.core.arzon import parse_arzon
+from JavHelper.core.javlibrary import JavLibraryScraper
+from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.file_scanner import EmbyFileStructure
 
 
 parse_jav = Blueprint('parse_jav', __name__, url_prefix='/parse_jav')
 SOURCES_MAP = {
-    'javlibrary': parse_javlib,
-    'arzon': parse_arzon
+    'javlibrary': JavLibraryScraper,
+    'arzon': ArzonScraper
 }
 
 
@@ -22,7 +24,7 @@ def parse_emby_folder():
 
     # verify sources
     if not sources:
-        sources = ['javlibrary', 'arzon']
+        sources = return_default_config_string('jav_obj_priority').split(',')
     else:
         sources = str(sources).split(',')
 
@@ -53,7 +55,7 @@ def parse_unprocessed_folder():
 
     # verify sources
     if not sources:
-        sources = ['javlibrary', 'arzon']
+        sources = return_default_config_string('jav_obj_priority').split(',')
     else:
         sources = str(sources).split(',')
 
@@ -76,6 +78,13 @@ def parse_unprocessed_folder():
                 processed.append(each_jav['car'])
                 yield json.dumps({'log': '{} process failed, cannot find any info in all sources {}, {} to go'.format(
                     each_jav['car'], sources, total - len(processed)
+                )})+'\n'
+                continue
+            elif jav_obj.get('error') and isinstance(jav_obj['error'], str):
+                # handle one of the source is not valid
+                processed.append(each_jav['car'])
+                yield json.dumps({'log': '{} process failed, one of the source within {} is not valid on {}'.format(
+                    each_jav['car'], sources, jav_obj['error']
                 )})+'\n'
                 continue
 
@@ -104,6 +113,7 @@ def parse_unprocessed_folder():
 
 
 @parse_jav.route('/parse_single', methods=['GET'])
+@cache.cached(timeout=3600, query_string=True)
 def parse_single():
     car = request.args.get('car')
     sources = request.args.get('sources')
@@ -112,12 +122,12 @@ def parse_single():
 
     # verify sources
     if not sources:
-        sources = ['javlibrary', 'arzon']
+        sources = return_default_config_string('jav_obj_priority').split(',')
     else:
         sources = str(sources).split(',')
 
     res = parse_single_jav({'car': car}, sources)
-
+    #import ipdb; ipdb.set_trace()
     return jsonify({'car': car, 'sources': sources, 'parsed_output': res})
 
 
@@ -127,18 +137,21 @@ def parse_single():
 def parse_single_jav(jav_obj: dict, sources):
     for scrape in sources:
         if scrape not in SOURCES_MAP:
-            return jsonify({'error': f'{scrape} is not a valid source'}), 400
+            return {'error': f'{scrape} is not a valid source'}
 
-    for scrape in sources:
+    for scrape in sources[::-1]:  # scrape low priority sources first
         try:
-            scraped_info = SOURCES_MAP[scrape](jav_obj)
-        except JAVNotFoundException:
+            #import ipdb; ipdb.set_trace()
+            scraped_info = SOURCES_MAP[scrape]({'car': jav_obj['car']}).scrape_jav()
+        except Exception as e:
             errors = (jav_obj.get('errors') or [])
             errors.append(
                 '{} cannot be found in {}'.format(jav_obj['car'], scrape)
             )
             scraped_info = {'errors': errors}
-            print(scraped_info)
+            print(scraped_info, e)
         jav_obj.update(scraped_info)
+        # also save it separate key
+        jav_obj[scrape] = scraped_info
 
     return jav_obj

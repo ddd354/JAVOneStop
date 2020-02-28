@@ -40,7 +40,11 @@ const resources = {
       'viewed': 'viewed',
       'no opinion': 'no opinion',
       'local': 'local',
-      'downloading': 'downloading'
+      'downloading': 'downloading',
+      'personal_wanted': 'still wanted',
+      'search_car_allow_partial': 'Search car (allow partial search)',
+      'Rename Tool': 'Rename Tool',
+      'scrape_all': 'Scrape All'
     }
   },
   //{t('')}
@@ -81,7 +85,11 @@ const resources = {
       'viewed': '已阅',
       'no opinion': '没想法',
       'local': '本地有',
-      'downloading': '下载中'
+      'downloading': '下载中',
+      'personal_wanted': '还未下载',
+      'search_car_allow_partial': '搜索番号(支持部分搜索)',
+      'Rename Tool': '重命名工具',
+      'scrape_all': '刮削所有'
     }
   }
 };
