@@ -93,7 +93,7 @@ const LocalJavManager = (props) => {
                         console.log('Succeessful scraped: ', _process_jav_obj.car);
                         push_to_multi_actual(_process_jav_obj.car);
                     } else if (jsonData.errors) {
-                        console.log(jsonData.errors);
+                        console.log('encounter errors: ', jsonData.errors);
                         push_to_multi_actual_failed(_process_jav_obj.car);
                     } else {
                         console.log('[FATAL ERROR] cannot scrape: ', _process_jav_obj.car);
@@ -162,7 +162,8 @@ const LocalJavManager = (props) => {
                 <div>
                     <span>{t('search_car_allow_partial')}: </span>
                     <DebounceInput minLength={1} debounceTimeout={1500} onChange={e => setSearchString(e.target.value)}/>
-                    <Button variant="primary" size="sm" onClick={handleAllScrape} disabled={global_loading}>
+                    {'  '}
+                    <Button variant="primary" size="sm" onClick={handleAllScrape} disabled={global_loading || jav_objs.length==0}>
                         {(global_loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('scrape_all')}
                     </Button>
                 </div>

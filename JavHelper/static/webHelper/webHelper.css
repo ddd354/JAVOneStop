@@ -15,3 +15,12 @@
     font-size: 18px !important;
     font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
 }
+
+div.javConsole {
+    position: fixed;
+    z-index: 999;
+}
+
+div.javConsoleContainer {
+    height: 260px;
+}

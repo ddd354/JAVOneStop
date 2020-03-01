@@ -18,7 +18,8 @@ DEFAULT_UPDATE_MAPPING = {
     'emby_api': ['emby专用', 'API ID'],
     'javlibrary_url': ['其他设置', 'javlibrary网址'],
     'jav_obj_priority': ['其他设置', '刮削信息优先度'],
-    'folder_structure': ['本地设置', '保存路径模板']
+    'folder_structure': ['本地设置', '保存路径模板'],
+    'display_language': ["其他设置", "界面语言(cn/en)"]
 }
 DEFAULT_UPDATE_VALUE_MAPPING = {
     'aria_address': "",
@@ -34,7 +35,8 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'emby_api': "",
     'javlibrary_url': "http://www.p42u.com/cn/",
     'jav_obj_priority': "javlibrary,arzon",
-    'folder_structure': "{year}/{car}"
+    'folder_structure': "{year}/{car}",
+    'display_language': 'cn'
 }
 
 def verify_ini_file(ini_file_name=DEFAULT_INI):
@@ -145,6 +147,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("百度人体分析", "API Key", "")
     config_settings.set("百度人体分析", "Secret Key", "")
     config_settings.add_section("其他设置")
+    config_settings.set("其他设置", "界面语言(cn/en)", "cn")
     config_settings.set("其他设置", "刮削信息优先度", "javlibrary,arzon")
     config_settings.set("其他设置", "javlibrary网址", "http://www.p42u.com/cn/")  # supported
     config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")

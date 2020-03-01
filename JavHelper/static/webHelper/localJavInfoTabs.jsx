@@ -4,17 +4,22 @@ import Table from 'react-bootstrap/Table';
 import Spinner from 'react-bootstrap/Spinner'
 import Button from 'react-bootstrap/Button';
 
+import { useTranslation } from 'react-i18next';
 import './javlibBrowser.css';
 
 
+function arraysEqual(a1,a2) {
+    /* WARNING: arrays must not contain {objects} or behavior may be undefined */
+    return JSON.stringify(a1)==JSON.stringify(a2);
+}
+
 const LocalJavInfoTabPanels = ({ source_name, jav_obj, setJavCardObj }) => {
-    //const db_obj = jav_obj || {};
-    //const current_source = source_name;
-    //const _setJavCardObj = setJavCardObj;
+    const { t, i18n } = useTranslation();
+
     const [table_rows, setTableRows] = useState([]);
 
     const handlePlusPickIndex = () => {
-        //setIsScraping(true);
+        // handles up the up index by one
         let new_pick = 0;
         if (jav_obj[source_name].pick_index+1 > jav_obj[source_name].total_index) {
 
@@ -33,6 +38,29 @@ const LocalJavInfoTabPanels = ({ source_name, jav_obj, setJavCardObj }) => {
                 //setIsScraping(false);
             });
 
+    }
+
+    const handleOverwriteWithInfo = (field, value) => {
+        // handles overwrite local nfo with another piece of info
+        console.log(`updating ${field} to ${value}`);
+        let _new_jav_obj = jav_obj;
+        _new_jav_obj[field] = value;
+        fetch('/local_manager/update_jav_dict',
+            {method: 'post',
+            body: JSON.stringify({
+                    "update_dict": _new_jav_obj
+            })})
+            .then(response => response.json())
+            .then((jsonData) => {
+                // jsonData is parsed json object received from url
+                // return can be empty list
+                if (jsonData.success != undefined) {
+                    setJavCardObj(jsonData.success);
+                    console.log('local jav information update succeessful', _new_jav_obj.car);
+                } else {
+                    console.log('some steps failed for ', _new_jav_obj.car);
+                }
+            });
     }
 
     // convert input obj to rows
@@ -66,12 +94,18 @@ const LocalJavInfoTabPanels = ({ source_name, jav_obj, setJavCardObj }) => {
         }
         //console.log(extract_info);
         
+        // display individual data source info
         if (typeof extract_info === 'object') {
             for (const [field, value] of Object.entries(extract_info)) {
                 if (typeof value === 'string' || typeof value === 'number') {
                     let _action = '';
                     if (field === 'pick_index') {
                         _action = <Button variant="success" size="sm" onClick={handlePlusPickIndex}>+</Button>
+                    } else if (value === jav_obj[field]) {
+                        _action = <span>&#9745;</span>
+                    } else {
+                        _action = <Button variant="outline-warning" size="sm" onClick={()=>handleOverwriteWithInfo(field, value)}>^</Button>
+                        //console.log(field, value, jav_obj[field]);
                     }
                     _table_rows.push(
                         <tr key={field}>
@@ -81,11 +115,17 @@ const LocalJavInfoTabPanels = ({ source_name, jav_obj, setJavCardObj }) => {
                         </tr>
                     );
                 } else if (Array.isArray(value)) {
+                    let _action = '';
+                    if (arraysEqual(value, jav_obj[field])) {
+                        _action = <span>&#9745;</span>
+                    } else {
+                        //console.log(field, value, jav_obj[field]);
+                    }
                     _table_rows.push(
                         <tr key={field}>
                             <td>{field}</td>
                             <td>{value.join(', ')}</td>
-                            <td></td>
+                            <td>{_action}</td>
                         </tr>
                     );
                 }
@@ -98,9 +138,9 @@ const LocalJavInfoTabPanels = ({ source_name, jav_obj, setJavCardObj }) => {
         <Table responsive size="sm">
             <thead>
                 <tr>
-                <th>Field</th>
-                <th>Value</th>
-                <th>Action</th>
+                <th>{t('javtab_field')}</th>
+                <th>{t('javtab_value')}</th>
+                <th>{t('javtab_action')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -129,8 +169,6 @@ const InfoTabs = ({tab_names, tab_panels}) => {
 
 
 const LocalJavInfoTabs = ({ jav_obj, setJavCardObj }) => {
-    const db_obj = jav_obj;
-    const _setJavCardObj = setJavCardObj;
     const [jav_sources, setJavSources] = useState([]);
     const [tab_names, setTabNames] = useState([]);
     const [tab_panels, setTabPanels] = useState([]);
@@ -165,7 +203,7 @@ const LocalJavInfoTabs = ({ jav_obj, setJavCardObj }) => {
             for (const source in tab_names) {
                 _tab_panels.push(
                     <TabPanel key={source+'_tabpanel'}>
-                        <LocalJavInfoTabPanels source_name={jav_sources[source]} jav_obj={db_obj} setJavCardObj={_setJavCardObj} />
+                        <LocalJavInfoTabPanels source_name={jav_sources[source]} jav_obj={jav_obj} setJavCardObj={setJavCardObj} />
                     </TabPanel>
                 );
             }

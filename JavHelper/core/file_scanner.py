@@ -58,6 +58,8 @@ class EmbyFileStructure:
         fanart_path = os.path.join(directory, fanart_name+image_ext)
 
         r = requests.get(url_obj.geturl(), stream=True)
+        if r.status_code != 200:
+            raise Exception('Image download failed for {}'.format(url_obj.geturl()))
         with open(fanart_path, 'wb') as pic:
             for chunk in r:
                 pic.write(chunk)
@@ -142,8 +144,17 @@ class EmbyFileStructure:
                 f.write("  <tag>" + i + "</tag>\n")
             f.write("  <tag>片商：{}</tag>\n".format(jav_obj.get('studio', '')))
             for i in jav_obj.get('all_actress', []):
-                f.write("  <actor>\n    <name>" + i + "</name>\n    <type>Actor</type>\n  </actor>\n")
+                f.write("  <actor>\n    <name>" + i + "</name>\n    <type>Actor</type><role>{}</role>\n  </actor>\n".format(self.return_actor_role()))
             f.write("</movie>\n")
+
+    @staticmethod
+    def return_actor_role():
+        language_map = {
+            'cn': '女优',
+            'en': 'Porn Star'
+        }
+        language = return_default_config_string('display_language')
+        return language_map[language]
 
     def extract_subtitle_postfix_filename(self, file_name: str):
         subtitle_postfix = ''
@@ -347,7 +358,29 @@ class EmbyFileStructure:
         # since root is configurable among different machines
         jav_obj['old_directory'] = deepcopy(jav_obj['directory'])
         jav_obj['directory'] = self.folder_structure.format(**jav_obj)
+        print('{} >> {}'.format(jav_obj['old_directory'], jav_obj['directory']))
         return jav_obj
+
+    @staticmethod
+    def find_corresponding_video_file(file_name: str, root_path: str, relative_directory: str):
+        """
+        This function will attempt to find nfo file's corresponding video file
+        """
+        if not file_name.endswith('.nfo'):
+            return file_name
+
+        filename, _ = os.path.splitext(file_name)
+        for f in os.scandir(os.path.join(root_path, relative_directory)):
+            _f, _ext = os.path.splitext(f.name)
+            if _f == filename and _ext != '.nfo':
+                return f.name
+        
+        # by default just return input file name since nothing is found
+        print('[WARNING] cannot find video file for {} in {}'.format(
+            file_name, os.path.join(root_path, relative_directory)
+        ))
+        return file_name
+
 
     def move_existing_file(self, jav_obj: dict):
         # file_name has to be in incoming jav_obj
@@ -355,6 +388,10 @@ class EmbyFileStructure:
             raise Exception(f'required file_name or directoy has to be in incoming {jav_obj} object')
         if 'old_directory' not in jav_obj:
             raise Exception(f'required old_directoy has to be in incoming {jav_obj} object')
+        if jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep) == \
+            jav_obj['old_directory'].replace('/', os.sep).replace('\\', os.sep):
+            print('old & new directories {} are already the same, no need to move'.format(jav_obj['directory']))
+            return jav_obj
 
         file_name = jav_obj['file_name']
         # join relative directory with root
@@ -363,21 +400,28 @@ class EmbyFileStructure:
         new_full_path = os.path.join(self.root_path, directory)
 
         old_directory = jav_obj['old_directory'].replace('/', os.sep).replace('\\', os.sep)
-        if not os.path.exists(os.path.join(self.root_path, old_directory, file_name)):
-            raise Exception(f'{file_name} does not exist')
 
-        os.rename(
-            os.path.join(self.root_path, old_directory, file_name),
-            os.path.join(new_full_path, file_name)
-        )
+        # need to find corresponding video files
+        _move_file_name = self.find_corresponding_video_file(file_name, self.root_path, old_directory)
+
+        if not os.path.exists(os.path.join(self.root_path, old_directory, _move_file_name)):
+            raise Exception(f'{_move_file_name} does not exist')
+
+        try:
+            os.rename(
+                os.path.join(self.root_path, old_directory, _move_file_name),
+                os.path.join(new_full_path, _move_file_name)
+            )
+        except FileExistsError:
+            print('[WARNING] {} already exists in target path'.format(os.path.join(new_full_path, _move_file_name)))
         # default to exists locally
         jav_obj.setdefault('stat', 3)
         # write to db
         self.jav_manage.upcreate_jav(jav_obj)
 
         print('move {} to {}'.format(
-            os.path.join(self.root_path, old_directory, file_name),
-            os.path.join(new_full_path, file_name)
+            os.path.join(self.root_path, old_directory, _move_file_name),
+            os.path.join(new_full_path, _move_file_name)
         ))
 
         return jav_obj

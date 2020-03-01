@@ -3,11 +3,17 @@ import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button'
 import Spinner from 'react-bootstrap/Spinner'
 
+import Bottleneck from "bottleneck";
+
+import { useTranslation } from 'react-i18next';
 import './javlibBrowser.css';
 import LocalJavInfoTabs from './localJavInfoTabs';
 
 
 const LocalJavCard = ({ update_obj, handleRemove, global_loading, setGlobalLoading}) => {
+    const { t, i18n } = useTranslation();
+    const scrape_limiter = new Bottleneck({maxConcurrent: 1});
+
     const [javcard_obj, setJavCardObj] = useState(update_obj);
     const [local_stat, setLocalStat] = useState(false);
     const [show_image, setShowImage] = useState()
@@ -41,14 +47,16 @@ const LocalJavCard = ({ update_obj, handleRemove, global_loading, setGlobalLoadi
                 });
             // if db don't have image / img info, we try to fill it in
             if (javcard_obj.image === undefined && javcard_obj.img === undefined) {
-                console.log(javcard_obj.image, javcard_obj.img);
+                //console.log(javcard_obj.image, javcard_obj.img);
                 re_srape_jav(javcard_obj);
             }
         }
     }, []);
 
     function re_srape_jav (jav_obj) {
-        fetch('/local_manager/find_images?car='+jav_obj.car)
+        scrape_limiter.schedule(() => 
+            fetch('/local_manager/find_images?car='+jav_obj.car)
+        )
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
@@ -157,28 +165,28 @@ const LocalJavCard = ({ update_obj, handleRemove, global_loading, setGlobalLoadi
             <div className="jav-content" style={{width: "70%"}}>
                 <p>{javcard_obj.car} 
                     {javcard_obj.title} 
-                    {(local_stat) ? <Badge variant="primary">Local</Badge> : <Badge variant="danger">Not Organized</Badge>}
+                    {(local_stat) ? <Badge variant="primary">{t('local')}</Badge> : <Badge variant="danger">{t('not_organized')}</Badge>}
                 </p>
                 {
                     (javcard_obj.directory && javcard_obj.file_name) 
-                    ? <Button variant="danger" size="sm" onClick={handleMigrateJav} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Migrate Jav"}</Button>
+                    ? <Button variant="danger" size="sm" onClick={handleMigrateJav} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('migrate_jav')}</Button>
                     : ""
                 }
                 {' '}
                 {
                     (javcard_obj.directory && javcard_obj.file_name) 
-                    ? <Button variant="danger" size="sm" onClick={handleRewriteNfo} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Rewrite Nfo"}</Button>
-                    : <Button variant="success" size="sm" onClick={handleSingleScrape} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Single Scrape"}</Button>
+                    ? <Button variant="danger" size="sm" onClick={handleRewriteNfo} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> :  t('rewrite_nfo')}</Button>
+                    : <Button variant="success" size="sm" onClick={handleSingleScrape} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> :  t('single_scrape')}</Button>
                 }
                 {' '}
                 {
                     (javcard_obj.image) 
-                    ? <Button variant="danger" size="sm" onClick={handleRewriteImages} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Rewrite Images"}</Button>
+                    ? <Button variant="danger" size="sm" onClick={handleRewriteImages} disabled={_global_loading}>{(is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> :  t('rewrite_images')}</Button>
                     : ""
                 }
                 {' '}
                 <Button variant="outline-primary" onClick={handleReScrapeClick} disabled={_global_loading}>{
-                    (is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : "Re-Scrape"}
+                    (is_scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> :  t('refresh_db')}
                 </Button>
                 <LocalJavInfoTabs jav_obj={javcard_obj} setJavCardObj={setJavCardObj} />
             </div>

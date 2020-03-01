@@ -9,6 +9,7 @@ import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
 
 import { withTranslation } from 'react-i18next';
+import i18n from './i18n';
 
 import LocalJavManager from "./localManager"
 import JavConfigurator from "./configurator"
@@ -52,7 +53,8 @@ class App extends Component {
             'javlibrary_url':['其他设置','javlibrary网址'],
             'preserve_subtitle_filename': ["本地设置", '保留中文字幕文件名'],
             'subtitle_filename_postfix': ["本地设置", '中文字幕文件名后缀'],
-            'handle_multi_cds': ["本地设置", '自动处理多CD']
+            'handle_multi_cds': ["本地设置", '自动处理多CD'],
+            'display_language': ["其他设置", "界面语言(cn/en)"]
             }`)
             .then(response => response.json())
             .then((jsonData) => {
@@ -61,6 +63,7 @@ class App extends Component {
               }
               console.log('Using local config: ', jsonData.local_config);
               this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
+              i18n.changeLanguage(jsonData.local_config.display_language);
             })
     }
 
@@ -210,9 +213,11 @@ class App extends Component {
 
         return (
             <div>
-            <StyledLogDiv className='javConsole'>
-              <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
-            </StyledLogDiv>
+              <div className='javConsoleContainer'>
+                <StyledLogDiv className='javConsole'>
+                  <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
+                </StyledLogDiv>
+              </div>
             <Tabs>
             <TabList>
               <Tab>{t('Main Tool')}</Tab>
