@@ -14,6 +14,7 @@ import i18n from './i18n';
 import LocalJavManager from "./localManager"
 import JavConfigurator from "./configurator"
 import JavlibBroswer from "./javlibBrowser"
+import JavBroswerV2 from "./javBrowserV2"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
@@ -243,7 +244,7 @@ class App extends Component {
                 <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
             </TabPanel>
             <TabPanel>
-              <JavlibBroswer />
+              <JavBroswerV2 />
             </TabPanel>
             <TabPanel>
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>

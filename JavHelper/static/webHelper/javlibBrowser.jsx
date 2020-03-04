@@ -142,7 +142,7 @@ const JavlibBroswer = () => {
                 <Pagination style={{flexWrap: "wrap"}} size="sm" onClick={handlePageUpdate}>{page_items}</Pagination>
             </div>
             <div>{jav_objs.map(function(jav_obj){
-                return <JavlibCard key={jav_obj.car} update_obj={jav_obj}/>})}</div>
+                return <JavlibCard key={jav_obj.car} update_obj={jav_obj} />})}</div>
             <div>
                 <Pagination style={{flexWrap: "wrap"}} size="sm" onClick={handlePageUpdate}>{page_items}</Pagination>
             </div>
