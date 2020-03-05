@@ -1,4 +1,8 @@
 import React, { useState, memo } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import Spinner from 'react-bootstrap/Spinner'
 
 import StatButtonGroup from "./statButtonGroup";
 import JavTable from "./javTable";
@@ -6,6 +10,9 @@ import './javlibBrowser.css';
 
 
 const JavlibCard = ({ update_obj }) => {
+    const [card_jav_obj, setCardJavObj] = useState(update_obj);
+    const [loading, setLoading] = useState(false);
+
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
     const _manual_opacity = 1;
     
@@ -29,6 +36,23 @@ const JavlibCard = ({ update_obj }) => {
 
     const updateStatFromComponent = (_stat) => {setJavCardStat(_stat)};
 
+    const handleShowDetailImage = () => {
+        if (card_jav_obj.image === undefined) {
+            setLoading(true);
+            fetch('/local_manager/find_images?car='+card_jav_obj.car)
+                .then(response => response.json())
+                .then((jsonData) => {
+                    // jsonData is parsed json object received from url
+                    // return can be empty list
+                    if (jsonData.success) {
+                        //console.log(file_name, jsonData.success)
+                        setCardJavObj(jsonData.success);
+                    }
+                    setLoading(false);
+                });
+        }
+    }
+
     if (jav_card_stat === 0) {
         return (
             <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
@@ -47,6 +71,20 @@ const JavlibCard = ({ update_obj }) => {
                             setJavStat={(_stat) => {setJavCardStat(_stat)}}
                         />
                     </div>
+                    <Accordion className="detail-image-section">
+                        <Card>
+                            <Card.Header className="detail-image-button">
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
+                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : "Load Detail Images"}
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <img src={card_jav_obj.image}></img>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
                 </div>
             </div>)
     } else {
@@ -54,7 +92,7 @@ const JavlibCard = ({ update_obj }) => {
             <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
                 <div className="jav-image"><img style={{opacity: _manual_opacity}} src={"https:"+update_obj.img}></img></div>
                 <div className="jav-content" style={{width: "100%"}}>
-                    <p>{update_obj.title}</p>
+                    <p>{update_obj.car} {update_obj.title}</p>
                     <StatButtonGroup  
                         setbutstat={(_stat) => {setJavCardStat(_stat)}}
                         stat={jav_card_stat} 
@@ -62,6 +100,20 @@ const JavlibCard = ({ update_obj }) => {
                     />
                     <div className="magnetTable">
                     </div>
+                    <Accordion className="detail-image-section">
+                        <Card>
+                            <Card.Header className="detail-image-button">
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
+                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : "Load Detail Images"}
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <img src={card_jav_obj.image}></img>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
                 </div>
             </div>)
     }

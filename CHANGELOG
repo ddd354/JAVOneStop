@@ -2,6 +2,19 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.5.3] - 2019-03-04
+### Added
+- [JavBrowserV2] jav browser now has a detailed image tab for each jav
+- add role when writing nfo for better visual
+- language now is configurable
+- user now can manually choose which data source to use for individual source
+### Updated
+- add infinite scroll back to jav browser
+- update the migrating logic so now the tool will look for an actual video file instead of just nfo
+- small updates to the translation
+- fix the pagenation issue where sometimes it won't get updated
+- pin log console to the top for better log viewing
+
 ## [0.5.0] - 2019-02-27
 ### Added
 - local jav manager

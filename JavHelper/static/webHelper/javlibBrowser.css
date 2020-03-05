@@ -21,3 +21,11 @@
     height: 150px;
     background: transparent;
 }
+
+div.detail-image-button {
+    padding: 0;
+}
+
+div.detail-image-section {
+    margin-top: 15px;
+}

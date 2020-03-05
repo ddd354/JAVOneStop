@@ -1,14 +1,19 @@
 import React from 'react';
 import DataTable from 'react-data-table-component';
 
-const FileTable = ({ header, file_data }) => (
+import { useTranslation } from 'react-i18next';
+
+const FileTable = ({ header, file_data }) => {
+  const { t, i18n } = useTranslation();
+
+  return (
   <DataTable
-    title="File List"
+    title={t('filetable_title')}
     columns={header}
     data={file_data}
     dense
   />
-);
+)};
 
 export default FileTable;
 

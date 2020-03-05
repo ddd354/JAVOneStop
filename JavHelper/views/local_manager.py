@@ -71,6 +71,33 @@ def single_scrape():
 
     return jsonify({'success': jav_obj, 'errors': errors})
 
+@local_manager.route('/update_jav_dict', methods=['POST'])
+def update_jav_dict():
+    # update db jav dict, also rewrite nfo and images
+
+    req_data = json.loads(request.get_data() or '{}')
+    update_dict = req_data['update_dict']
+
+    # update db
+    db_conn = JavManagerDB()
+    db_conn.upcreate_jav(update_dict)
+
+    file_writer = EmbyFileStructure(return_default_config_string('file_path'))
+     # file structure operations
+    try:
+        jav_obj = file_writer.create_folder_for_existing_jav(update_dict)
+    except KeyError as e:
+        _car = update_dict.get('car', 'Unknown')
+        update_dict.append(json.dumps({'log': f'error: {e}, skipping {_car}'}))
+    # write images
+    file_writer.write_images(jav_obj)
+    # write nfo
+    file_writer.write_nfo(jav_obj)
+    # move video file
+    jav_obj = file_writer.move_existing_file(jav_obj)
+
+    return jsonify({'success': jav_obj})  # post updated jav_obj back to UI
+
 @local_manager.route('/restructure_jav', methods=['POST'])
 def restructure_jav():
     req_data = json.loads(request.get_data() or '{}')

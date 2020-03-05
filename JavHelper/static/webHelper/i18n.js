@@ -44,7 +44,19 @@ const resources = {
       'personal_wanted': 'still wanted',
       'search_car_allow_partial': 'Search car (allow partial search)',
       'Rename Tool': 'Rename Tool',
-      'scrape_all': 'Scrape All'
+      'scrape_all': 'Scrape All',
+      'local': 'Local',
+      'not_organized': 'Not Organized',
+      'migrate_jav': "Migrate Jav",
+      'rewrite_nfo': "Rewrite Nfo",
+      'single_scrape': "Single Scrape",
+      'rewrite_images': "Rewrite Images",
+      'refresh_db': "Refresh DB",
+      'javtab_field': 'Field',
+      'javtab_value': 'Value',
+      'javtab_action': 'Action',
+      'filetable_title': 'File List',
+      'display_language': 'Tool Language'
     }
   },
   //{t('')}
@@ -89,7 +101,19 @@ const resources = {
       'personal_wanted': '还未下载',
       'search_car_allow_partial': '搜索番号(支持部分搜索)',
       'Rename Tool': '重命名工具',
-      'scrape_all': '刮削所有'
+      'scrape_all': '刮削整理所有',
+      'local': '本地',
+      'not_organized': '未整理',
+      'migrate_jav': "移动文件",
+      'rewrite_nfo': "重写Nfo",
+      'single_scrape': "刮削整理当前",
+      'rewrite_images': "重写图片",
+      'refresh_db': "刷新数据库刮削信息",
+      'javtab_field': '键',
+      'javtab_value': '数据',
+      'javtab_action': '执行命令',
+      'filetable_title': '文件列表',
+      'display_language': '工具语言'
     }
   }
 };
@@ -101,6 +125,7 @@ i18n
   .init({
     resources,
     lng: "cn",
+    fallbackLng: "cn",
 
     keySeparator: false, // we do not use keys in form messages.welcome
 

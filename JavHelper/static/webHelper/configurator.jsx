@@ -86,6 +86,10 @@ const JavConfigurator = (props) => {
           "aria_token": {
             "type": "string",
             "title": "Aria2 authentication token"
+          },
+          "display_language": {
+            "type": "string",
+            "title": t('display_language')
           }
         }
     };
