@@ -13,7 +13,6 @@ import i18n from './i18n';
 
 import LocalJavManager from "./localManager"
 import JavConfigurator from "./configurator"
-import JavlibBroswer from "./javlibBrowser"
 import JavBroswerV2 from "./javBrowserV2"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";

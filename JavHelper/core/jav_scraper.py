@@ -63,7 +63,7 @@ class JavScraper:
     @staticmethod
     def search_multifield_xpath(update_obj: dict, search_dict: dict, source_root):
         for k, v in search_dict.items():
-            #if k == 'all_actress':
+            #if k == 'genres':
             #    import ipdb; ipdb.set_trace()
             update_obj[k] = source_root.xpath(v)
 

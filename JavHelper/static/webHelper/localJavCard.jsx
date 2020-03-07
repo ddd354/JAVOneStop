@@ -6,7 +6,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import Bottleneck from "bottleneck";
 
 import { useTranslation } from 'react-i18next';
-import './javlibBrowser.css';
+import './javBrowserV2.css';
 import LocalJavInfoTabs from './localJavInfoTabs';
 
 

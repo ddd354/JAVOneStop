@@ -6,7 +6,7 @@ import Spinner from 'react-bootstrap/Spinner'
 
 import StatButtonGroup from "./statButtonGroup";
 import JavTable from "./javTable";
-import './javlibBrowser.css';
+import './javBrowserV2.css';
 
 
 const JavCardV2 = ({ update_obj }) => {
@@ -56,7 +56,7 @@ const JavCardV2 = ({ update_obj }) => {
     if (jav_card_stat === 0) {
         return (
             <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
-                <div className="jav-image"><img style={{opacity: _manual_opacity}} src={"https:"+update_obj.img}></img></div>
+                <div className="jav-image"><img style={{opacity: _manual_opacity}} src={update_obj.img}></img></div>
                 <div className="jav-content" style={{width: "100%"}}>
                     <p>{update_obj.car} {update_obj.title}</p>
                     <StatButtonGroup 
@@ -90,7 +90,7 @@ const JavCardV2 = ({ update_obj }) => {
     } else {
         return (
             <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
-                <div className="jav-image"><img style={{opacity: _manual_opacity}} src={"https:"+update_obj.img}></img></div>
+                <div className="jav-image"><img style={{opacity: _manual_opacity}} src={update_obj.img}></img></div>
                 <div className="jav-content" style={{width: "100%"}}>
                     <p>{update_obj.car} {update_obj.title}</p>
                     <StatButtonGroup  
