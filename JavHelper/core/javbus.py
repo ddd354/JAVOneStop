@@ -40,7 +40,7 @@ class JavBusScraper(JavScraper):
             self.jav_obj['year'] = self.jav_obj['release_date'][:4]
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
-            self.jav_obj['image'] = self.jav_obj['image'].lstrip('https').lstrip('http')
+            self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')
         if self.jav_obj.get('length'):
             self.jav_obj['length'] = self.jav_obj['length'].lstrip(' ')[:-2]
 
