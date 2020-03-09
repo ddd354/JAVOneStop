@@ -6,6 +6,7 @@ from JavHelper.cache import cache
 from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
+from JavHelper.core.javbus import JavBusScraper
 from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.file_scanner import EmbyFileStructure
 
@@ -13,7 +14,8 @@ from JavHelper.core.file_scanner import EmbyFileStructure
 parse_jav = Blueprint('parse_jav', __name__, url_prefix='/parse_jav')
 SOURCES_MAP = {
     'javlibrary': JavLibraryScraper,
-    'arzon': ArzonScraper
+    'arzon': ArzonScraper,
+    'javbus': JavBusScraper,
 }
 
 

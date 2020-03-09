@@ -50,7 +50,7 @@ class JavLibraryScraper(JavScraper):
         # perform search first
         lib_search_url = self.jav_url + 'vl_searchbyid.php?keyword=' + self.car
         print(f'accessing {lib_search_url}')
-        jav_html = return_html_text(lib_search_url)
+        jav_html = return_html_text(lib_search_url, behind_cloudflare=True)
 
         # 搜索结果的网页，大部分情况就是这个影片的网页，也有可能是多个结果的网页
         # 尝试找标题，第一种情况：找得到，就是这个影片的网页
@@ -65,7 +65,7 @@ class JavLibraryScraper(JavScraper):
 
         # 搜索结果就是AV的页面
         if title_re:
-            return return_get_res(lib_search_url).content, 1
+            return return_get_res(lib_search_url, behind_cloudflare=True).content, 1
         # 第二种情况：搜索结果可能是两个以上，所以这种匹配找不到标题，None！
         else:  # 继续找标题，但匹配形式不同，这是找“可能是多个结果的网页”上的第一个标题
             search_results = re.findall(r'v=javli(.+?)" title=".+?-\d+?[a-z]? ', jav_html)
@@ -73,7 +73,7 @@ class JavLibraryScraper(JavScraper):
             if search_results:
                 self.total_index = len(search_results)
                 result_first_url = self.jav_url + '?v=javli' + search_results[self.pick_index]
-                return return_get_res(result_first_url).content, self.total_index
+                return return_get_res(result_first_url, behind_cloudflare=True).content, self.total_index
             # 第三种情况：搜索不到这部影片，搜索结果页面什么都没有
             else:
                 raise JAVNotFoundException('{} cannot be found in javlib'.format(self.car))
@@ -102,7 +102,7 @@ def javlib_set_page(page_template: str, page_num=1, url_parameter=None, config=N
     lib_url = javlib_url + page_template.format(page_num=page_num, url_parameter=url_parameter)
     print(f'accessing {lib_url}')
 
-    res = return_post_res(lib_url).content
+    res = return_post_res(lib_url, behind_cloudflare=True).content
     root = etree.HTML(res)
 
     jav_objs_raw = defaultlist(dict)

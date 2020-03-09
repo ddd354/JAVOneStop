@@ -2,7 +2,7 @@ import React, { useState, useEffect }  from 'react';
 import DataTable from 'react-data-table-component';
 import Spinner from 'react-bootstrap/Spinner'
 
-import './javlibBrowser.css'
+import './javBrowserV2.css'
 import JavMagnetButton from './javMagnetButton'
 
 
@@ -19,7 +19,7 @@ const JavTable = ({ car, stat, setJavStat }) => {
 
   useEffect(() => {
     if (stat === 0) {
-    fetch(`jav_browser/search_magnet_link?car=`+String(car))
+    fetch(`javlib_browser/search_magnet_link?car=`+String(car))
         .then(response => response.json())
         .then((jsonData) => {
           //console.log(jsonData);

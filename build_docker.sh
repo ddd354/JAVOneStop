@@ -13,7 +13,7 @@ docker cp $containerName:/usr/src/app/115_cookies.json .
 
 # sync existing to local for build and backup
 docker cp $containerName:/usr/src/app/jav_manager.db .
-docker cp $containerName:/usr/src/app/jav_manager.db ./"$(date +"%Y_%m_%d_%I_%M_%p").db"
+docker cp $containerName:/usr/src/app/jav_manager.db ./"$(date +"%Y_%m_%d_%I_%M_%p")_db.backup"
 
 docker build -t $imageName -f Dockerfile  .
 

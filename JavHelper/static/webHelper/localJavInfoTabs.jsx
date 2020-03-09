@@ -5,7 +5,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import Button from 'react-bootstrap/Button';
 
 import { useTranslation } from 'react-i18next';
-import './javlibBrowser.css';
+import './javBrowserV2.css';
 
 
 function arraysEqual(a1,a2) {

@@ -9,7 +9,7 @@ const JavMagnetButton = ({ car, magnet, setJavStat }) => {
   
     useEffect(() => {
         if (isLoading) {
-        fetch('/jav_browser/download_via_aria',
+        fetch('/javlib_browser/download_via_aria',
                 {method: 'post',
                 body: JSON.stringify({
                         "car": _car,

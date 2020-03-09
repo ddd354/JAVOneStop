@@ -9,11 +9,13 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useTranslation } from 'react-i18next';
 import JavSetSearchGroup from './javSetSearchBGroup'
 import JavCardV2 from './JavCardV2'
-import './javlibBrowser.css';
+import './javBrowserV2.css';
 
 
 const JavBroswerV2 = () => {
     const { t, i18n } = useTranslation();
+    const [source_site, setSourceSite] = useState('javlib_browser');
+
     const [jav_objs, setJavObjs] = useState([]);
     const [jav_stat_filter, setJavStatFilter] = useState([]);
 
@@ -28,7 +30,7 @@ const JavBroswerV2 = () => {
 
     // initialize component
     useEffect(() => {
-        fetch(`/jav_browser/get_set_javs?set_type=`+jav_set_name)
+        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)
             .then(response => response.json())
             .then((jsonData) => {
                 if (jsonData.error) {
@@ -40,6 +42,21 @@ const JavBroswerV2 = () => {
                 }
             });
     }, []);
+
+    // when switching from different site, force an update
+    useEffect(() => {
+        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)
+            .then(response => response.json())
+            .then((jsonData) => {
+                if (jsonData.error) {
+                    console.log(jsonData.error);
+                    setJavObjs([]);
+                } else {
+                    setJavObjs(jsonData.success.jav_objs);
+                    setMaxPage(jsonData.success.max_page);
+                }
+            });
+    }, [source_site]);
 
     // when jav_objs or jav_stat_filter update, update card as well
     useEffect(() => {
@@ -91,7 +108,7 @@ const JavBroswerV2 = () => {
             _target_num = e.target.text;
         };
         setPageNum(_target_num);
-        fetch(`/jav_browser/get_set_javs?set_type=`+jav_set_name+
+        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
         `&page_num=`+String(_target_num)+`&search_string=`+String(search_string))
             .then(response => response.json())
             .then((jsonData) => {
@@ -116,7 +133,7 @@ const JavBroswerV2 = () => {
         if (has_more_obj) {
             console.log('current page_num: ', page_num);
             let _new_page = String(parseInt(page_num)+1);
-            fetch(`/jav_browser/get_set_javs?set_type=`+jav_set_name+
+            fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
             `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
                 .then(response => response.json())
                 .then((jsonData) => {
@@ -147,7 +164,7 @@ const JavBroswerV2 = () => {
         setSearchString(event.target.elements[1].value);
         setPageNum('1');  // initialize page num to 1 to always get 1st page
 
-        fetch(`/jav_browser/get_set_javs?set_type=`+String(event.target.elements[0].value)+
+        fetch(`/${source_site}/get_set_javs?set_type=`+String(event.target.elements[0].value)+
             `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
             .then(response => response.json())
             .then((jsonData) => {
@@ -166,6 +183,7 @@ const JavBroswerV2 = () => {
                 <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
                  marginRight: "15px"}}>
                     <JavSetSearchGroup jav_set_name={jav_set_name} 
+                        source_site={source_site} setSourceSite={setSourceSite}
                         setJavSet={setJavSet} setSearchString={setSearchString} 
                         setJavObjs={setJavObjs} setMaxPage={setMaxPage} setPageNum={setPageNum}
                         jav_stat_filter={jav_stat_filter} setJavStatFilter={setJavStatFilter}

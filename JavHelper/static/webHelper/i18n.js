@@ -7,7 +7,7 @@ const resources = {
   en: {
     translation: {
       "Main Tool": "Main Tool",
-      "JavLibrary Manager": "JavLibrary Manager",
+      "JavLibrary Manager": "JavLibrary/JavBus Browser",
       "Handy Features": "Handy Features",
       "Settings": "Settings",
       "Preview File / Execute": "Preview File / Execute",
@@ -56,7 +56,10 @@ const resources = {
       'javtab_value': 'Value',
       'javtab_action': 'Action',
       'filetable_title': 'File List',
-      'display_language': 'Tool Language'
+      'display_language': 'Tool Language',
+      'subtitled': 'subtitled',
+      'no_fitler': 'No Filter',
+      'w_or_noop': 'Wanted / No Opinion'
     }
   },
   //{t('')}
@@ -64,7 +67,7 @@ const resources = {
   cn: {
     translation: {
       "Main Tool": "刮削工具",
-      "JavLibrary Manager": "JavLibrary下载器",
+      "JavLibrary Manager": "JavLibrary/Javbus下载器",
       "Handy Features": "小工具",
       "Settings": "配置表单",
       "Preview File / Execute": "预览/执行",
@@ -113,7 +116,10 @@ const resources = {
       'javtab_value': '数据',
       'javtab_action': '执行命令',
       'filetable_title': '文件列表',
-      'display_language': '工具语言'
+      'display_language': '工具语言',
+      'subtitled': '中文字幕',
+      'no_fitler': '不过滤',
+      'w_or_noop': '想要/没想法'
     }
   }
 };
