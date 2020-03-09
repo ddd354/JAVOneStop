@@ -2,6 +2,16 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.6.0] - 2019-03-08
+### Added
+- added javbus support (user needs to manually edit settings.ini for now to add javbus scrape)
+### Updated
+- updated the docker related script to resolve slow build issue
+- javlibrary now uses cloudscraper to bypass cloudflare
+- some localization improvements
+### Removed
+- completely removed older javbrower code (now only v2 exists)
+
 ## [0.5.3] - 2019-03-04
 ### Added
 - [JavBrowserV2] jav browser now has a detailed image tab for each jav
