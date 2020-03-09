@@ -16,3 +16,4 @@ yarn.lock
 *.DS_Store
 run.spec
 rewrite_his.sh
+*.backup
