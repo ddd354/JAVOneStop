@@ -3,6 +3,10 @@
 pyinstaller --onedir ^
     --add-data="JavHelper\templates;JavHelper\templates" ^
     --add-data="JavHelper\static;JavHelper\static" ^
+    --add-data="C:\Users\luokerenz\Envs\javhelper\lib\site-packages\cloudscraper;cloudscraper" ^
+    --hidden-import="js2py" ^
+    --hidden-import="cloudscraper" ^
+    --hidden-import="cloudscraper_exception" ^
     --exclude-module="FixTk" ^
     --exclude-module="tcl" ^
     --exclude-module="tk" ^

@@ -2,6 +2,14 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.6.3] - 2019-03-09
+### Updated
+- fix cloudscraper import issue
+
+## [0.6.2] - 2019-03-09
+### Updated
+- fix opacity issue
+
 ## [0.6.1] - 2019-03-09
 ### Added
 - now user can configure jav sources and priority in the configuration tool

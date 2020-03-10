@@ -24,7 +24,7 @@ jobs:
 
     - name: build windows pkg
       run: |
-        pyinstaller --onedir --add-data="JavHelper\templates;JavHelper\templates" --add-data="JavHelper\static;JavHelper\static" --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper\run.py
+        pyinstaller --onedir --add-data="JavHelper\templates;JavHelper\templates" --add-data="JavHelper\static;JavHelper\static" --add-data="c:\hostedtoolcache\windows\python\3.7.6\x64\lib\site-packages\cloudscraper;cloudscraper" --hidden-import="js2py" --hidden-import="cloudscraper" --hidden-import="cloudscraper_exception" --exclude-module="FixTk"  --exclude-module="tcl"  --exclude-module="tk"  --exclude-module="_tkinter"  --exclude-module="tkinter"  --exclude-module="Tkinter"  --noconfirm --distpath dist-python  JavHelper\run.py
 
         7z a -tzip "Jav_OneStop_windows.zip" ".\dist-python\"
         
