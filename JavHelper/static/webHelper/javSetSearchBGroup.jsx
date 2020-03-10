@@ -5,11 +5,10 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 
 import { useTranslation } from 'react-i18next';
 
-const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, 
+const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading, setLoading,
     setJavSet, setSearchString, setJavObjs, setMaxPage, setPageNum, 
     jav_stat_filter, setJavStatFilter }) => {
     const { t, i18n } = useTranslation();
-    const [isLoading, setLoading] = useState(false);
 
     const website_set_map = {
         'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates', 'personal_wanted'],
@@ -64,6 +63,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite,
         setJavSet(website_set_map[event][0]);
         setSearchString('');
         setPageNum('1');
+        setLoading(true);
 
         setSourceSite(event);
         setToggleList(website_set_map[event]);

@@ -3,6 +3,7 @@ import Pagination from 'react-bootstrap/Pagination'
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
+import Spinner from 'react-bootstrap/Spinner'
 
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -15,6 +16,7 @@ import './javBrowserV2.css';
 const JavBroswerV2 = () => {
     const { t, i18n } = useTranslation();
     const [source_site, setSourceSite] = useState('javlib_browser');
+    const [isLoading, setLoading] = useState(true);
 
     const [jav_objs, setJavObjs] = useState([]);
     const [jav_stat_filter, setJavStatFilter] = useState([]);
@@ -40,6 +42,7 @@ const JavBroswerV2 = () => {
                     setJavObjs(jsonData.success.jav_objs);
                     setMaxPage(jsonData.success.max_page);
                 }
+                setLoading(false);
             });
     }, []);
 
@@ -55,6 +58,7 @@ const JavBroswerV2 = () => {
                     setJavObjs(jsonData.success.jav_objs);
                     setMaxPage(jsonData.success.max_page);
                 }
+                setLoading(false);
             });
     }, [source_site]);
 
@@ -65,10 +69,10 @@ const JavBroswerV2 = () => {
                 function(jav_obj){
                     if (jav_stat_filter.length > 0) {
                         if (jav_stat_filter.includes(jav_obj.stat)){
-                            return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} />
+                            return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} source_site={source_site} />
                         }
                     } else {
-                        return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} />
+                        return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} source_site={source_site} />
                     }
                 }
             ))
@@ -183,6 +187,7 @@ const JavBroswerV2 = () => {
                 <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
                  marginRight: "15px"}}>
                     <JavSetSearchGroup jav_set_name={jav_set_name} 
+                        isLoading={isLoading} setLoading={setLoading}
                         source_site={source_site} setSourceSite={setSourceSite}
                         setJavSet={setJavSet} setSearchString={setSearchString} 
                         setJavObjs={setJavObjs} setMaxPage={setMaxPage} setPageNum={setPageNum}
@@ -219,6 +224,7 @@ const JavBroswerV2 = () => {
                     //scrollThreshold={0.9}
                     hasMore={has_more_obj}
                     next={handleInfiniteJavFetch}
+                    loader={<Spinner animation="border" variant="primary" />}
                     >
                     {jav_obj_cards}
                 </InfiniteScroll>

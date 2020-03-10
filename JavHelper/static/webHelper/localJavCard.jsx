@@ -20,7 +20,7 @@ const LocalJavCard = ({ update_obj, handleRemove, global_loading, setGlobalLoadi
     const [is_scraping, setIsScraping] = useState(false);
     const _global_loading = global_loading;
     const _setGlobalLoading = setGlobalLoading;
-    const _manual_opacity = 1;
+    const _manual_opacity = 0.01;
     const _handleRemoveFunc = handleRemove;
     
     let border_style = {

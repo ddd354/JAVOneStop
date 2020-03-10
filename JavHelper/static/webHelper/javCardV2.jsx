@@ -9,12 +9,12 @@ import JavTable from "./javTable";
 import './javBrowserV2.css';
 
 
-const JavCardV2 = ({ update_obj }) => {
+const JavCardV2 = ({ update_obj, source_site }) => {
     const [card_jav_obj, setCardJavObj] = useState(update_obj);
     const [loading, setLoading] = useState(false);
 
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 1;
+    const _manual_opacity = 0.1;
     
     let border_style = {
         borderColor: 'green', 
@@ -39,7 +39,17 @@ const JavCardV2 = ({ update_obj }) => {
     const handleShowDetailImage = () => {
         if (card_jav_obj.image === undefined) {
             setLoading(true);
-            fetch('/local_manager/find_images?car='+card_jav_obj.car)
+            fetch(`/${source_site}/get_set_javs?set_type=番号&search_string=`+card_jav_obj.car)
+            .then(response => response.json())
+            .then((jsonData) => {
+                //console.log(jsonData.success);
+                setCardJavObj(jsonData.success.jav_objs[0]);
+                if (jsonData.errors) {
+                    console.log('Error: ', jsonData.error);
+                }
+            });
+
+            `fetch('/local_manager/find_images?car='+card_jav_obj.car)
                 .then(response => response.json())
                 .then((jsonData) => {
                     // jsonData is parsed json object received from url
@@ -49,7 +59,7 @@ const JavCardV2 = ({ update_obj }) => {
                         setCardJavObj(jsonData.success);
                     }
                     setLoading(false);
-                });
+                });`
         }
     }
 

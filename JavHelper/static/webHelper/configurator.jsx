@@ -40,6 +40,10 @@ const JavConfigurator = (props) => {
             "type": "string",
             "title": t('set_file_path_title')
           },
+          "jav_obj_priority": {
+            "type": "string",
+            "title": t('set_jav_obj_priority')
+          },
           "enable_proxy": {
             "type": "string",
             "title": t('set_enable_proxy_title'),
