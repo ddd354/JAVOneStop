@@ -1,4 +1,4 @@
-# JAVOneStop 一站JAV V0.6.0
+# JAVOneStop 一站JAV V0.6.1
 **千里之行, 始于架构**<br><br>
 本工具将致力于提供一个All-in-One的使用环境, 便于用户下载, 整理本地JAV文件. 
 

@@ -59,7 +59,8 @@ const resources = {
       'display_language': 'Tool Language',
       'subtitled': 'subtitled',
       'no_fitler': 'No Filter',
-      'w_or_noop': 'Wanted / No Opinion'
+      'w_or_noop': 'Wanted / No Opinion',
+      'set_jav_obj_priority': 'Set Jav website sources priority (comma separated)'
     }
   },
   //{t('')}
@@ -119,7 +120,8 @@ const resources = {
       'display_language': '工具语言',
       'subtitled': '中文字幕',
       'no_fitler': '不过滤',
-      'w_or_noop': '想要/没想法'
+      'w_or_noop': '想要/没想法',
+      'set_jav_obj_priority': '设置JAV网站优先级(使用英文逗号隔开)'
     }
   }
 };
