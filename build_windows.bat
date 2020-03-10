@@ -1,6 +1,6 @@
 @echo off 
 
-pyinstaller --onedir -c ^
+pyinstaller --onedir ^
     --add-data="JavHelper\templates;JavHelper\templates" ^
     --add-data="JavHelper\static;JavHelper\static" ^
     --add-data="C:\Users\luokerenz\Envs\javhelper\lib\site-packages\cloudscraper;cloudscraper" ^
