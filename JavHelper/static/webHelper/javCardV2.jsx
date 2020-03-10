@@ -14,7 +14,7 @@ const JavCardV2 = ({ update_obj, source_site }) => {
     const [loading, setLoading] = useState(false);
 
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 0.1;
+    const _manual_opacity = 1;
     
     let border_style = {
         borderColor: 'green', 
