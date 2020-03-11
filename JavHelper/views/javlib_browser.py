@@ -71,7 +71,7 @@ def rebuild_db_index():
     return jsonify({'success': 'index rebuilt for stat'})
 
 @javlib_browser.route('/get_set_javs', methods=['GET'])
-@cache.cached(timeout=30, query_string=True)
+@cache.cached(timeout=300, query_string=True)
 def get_set_javs():
     set_type = request.args.get('set_type')
     page_num = request.args.get('page_num', 1)

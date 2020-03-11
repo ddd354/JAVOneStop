@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import re
 from blitzdb.document import DoesNotExist
+from time import sleep
 
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.aria2_handler import aria2
@@ -139,28 +140,36 @@ class OOFDownloader:
         except DoesNotExist:
             jav_obj = {'car': car}
 
-        try:
-            # create download using magnet link
-            created_task = self.post_magnet_to_oof(magnet)
+        retry_num = 0
+        e = None
 
-            # get task detail from list page
-            search_hash = created_task['info_hash']
-            task_detail = self.get_task_detail_from_hash(search_hash)
-            # filter out unwanted files
-            download_files = self.filter_task_details(task_detail)
-            if not download_files:
-                raise Exception(f'there is no download file found in 115 task')
+        while retry_num < 3:
+            try:
+                # create download using magnet link
+                created_task = self.post_magnet_to_oof(magnet)
 
-            for download_file in download_files:
-                self.download_aria_on_pcode(download_file['cid'], 
-                    download_file['pickup_code'])
+                # get task detail from list page
+                search_hash = created_task['info_hash']
+                task_detail = self.get_task_detail_from_hash(search_hash)
+                # filter out unwanted files
+                download_files = self.filter_task_details(task_detail)
+                if not download_files:
+                    raise Exception(f'there is no download file found in 115 task')
 
-            # if everything went well, update stat
-            jav_obj['stat'] = 4
-            db_conn.upcreate_jav(jav_obj)
-            return jav_obj
-        except Exception as e:
-            return {'error': f'download {car} failed due to {e}'}
+                for download_file in download_files:
+                    self.download_aria_on_pcode(download_file['cid'], 
+                        download_file['pickup_code'])
+
+                # if everything went well, update stat
+                jav_obj['stat'] = 4
+                db_conn.upcreate_jav(jav_obj)
+                return jav_obj
+            except Exception as _e:
+                retry_num += 1
+                sleep(5)
+                e = _e
+                
+        return {'error': f'download {car} failed after {retry_num} of retries due to {e}'}
 
     @staticmethod
     def load_local_cookies(return_all=False):
