@@ -91,9 +91,12 @@ class OOFDownloader:
         r = requests.get(url_template.format(oof_file_id), headers=STANDARD_HEADERS, cookies=self.cookies)
         try:
             return r.json()
-        except json.decoder.JSONDecodeError as e:
+        except json.decoder.JSONDecodeError as json_e:
             print(r.text)
-            raise e
+            raise json_e
+        except Exception as other_e:
+            print(r.text)
+            raise other_e
 
     @staticmethod
     def filter_task_details(task_detail: dict):
@@ -143,11 +146,13 @@ class OOFDownloader:
         retry_num = 0
         e = None
 
+        # create download using magnet link
+        created_task = self.post_magnet_to_oof(magnet)
+        if created_task.get('errcode') == 10008:
+            return {'error': f'magnet for {car} already exists, please delete existing magnet to continue'}
+
         while retry_num < 3:
             try:
-                # create download using magnet link
-                created_task = self.post_magnet_to_oof(magnet)
-
                 # get task detail from list page
                 search_hash = created_task['info_hash']
                 task_detail = self.get_task_detail_from_hash(search_hash)
@@ -167,6 +172,7 @@ class OOFDownloader:
             except Exception as _e:
                 retry_num += 1
                 sleep(5)
+                print(f'current error: {_e}, retrying')
                 e = _e
                 
         return {'error': f'download {car} failed after {retry_num} of retries due to {e}'}
