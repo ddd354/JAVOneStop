@@ -69,6 +69,32 @@ class JavBusScraper(JavScraper):
         return return_get_res(result_first_url).content, self.total_index
 
 
+def javbus_magnet_search(car: str):
+    jav_url = return_config_string(['其他设置', 'javbus网址'])
+    gid_match = r'.*?var gid = (\d*);.*?'
+    magnet_xpath = {
+        'magnet': '//tr/td[position()=1]/a[1]/@href',
+        'title': '//tr/td[position()=1]/a[1]/text()',
+        'size': '//tr/td[position()=2]/a[1]/text()'
+    }
+    main_url_template = jav_url+'{car}'
+    magnet_url_template = jav_url+'ajax/uncledatoolsbyajax.php?gid={gid}&uc=0'
+
+    res = return_get_res(main_url_template.format(car=car)).text
+    gid = re.search(gid_match, res).groups()[0]
+
+    res = return_get_res(magnet_url_template.format(gid=gid), headers={'referer': main_url_template.format(car=car)}).content
+    root = etree.HTML(res)
+
+    magnets = defaultlist(dict)
+    for k, v in magnet_xpath.items():
+        _values = root.xpath(v)
+        for _i, _value in enumerate(_values):
+            magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
+    
+    return magnets
+
+
 def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:
     xpath_dict = {
         'title': '//div[@class="photo-frame"]/img[not(contains(@src, "actress"))]/@title',

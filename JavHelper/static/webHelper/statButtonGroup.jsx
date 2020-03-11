@@ -31,6 +31,7 @@ const StatButtonGroup = (props) => {
   };
 
   return(
+    <div>
     <ToggleButtonGroup size="sm" type="radio" 
       value={button_group_value} name="javStat"
       style={{display: "flex", flexWrap: "wrap"}}
@@ -41,6 +42,19 @@ const StatButtonGroup = (props) => {
       <ToggleButton value={'3_'+props.car}>{t('local')}</ToggleButton>
       <ToggleButton value={'4_'+props.car}>{t('downloading')}</ToggleButton>
     </ToggleButtonGroup>
+    <ToggleButtonGroup size="sm" type="radio" value={props.magnet_site} name="selectSourceSet" 
+        onChange={(e) => props.setMagnetSite(e)} style={{marginTop: "5px", marginBottom: "5px"}}>
+        <ToggleButton value={'javbus'}>
+            {"javbus"}
+        </ToggleButton>
+        <ToggleButton value={'torrentkitty'}>
+            {"torrentkitty"}
+        </ToggleButton>
+        <ToggleButton value={'nyaa'}>
+            {"nyaa"}
+        </ToggleButton>
+    </ToggleButtonGroup>
+    </div>
 )};
 
 export default StatButtonGroup;
