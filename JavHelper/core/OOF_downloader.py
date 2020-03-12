@@ -147,9 +147,12 @@ class OOFDownloader:
         e = None
 
         # create download using magnet link
-        created_task = self.post_magnet_to_oof(magnet)
-        if created_task.get('errcode') == 10008:
-            return {'error': f'magnet for {car} already exists, please delete existing magnet to continue'}
+        try:
+            created_task = self.post_magnet_to_oof(magnet)
+            if created_task.get('errcode') == 10008:
+                return {'error': f'magnet for {car} already exists, please delete existing magnet to continue'}
+        except Exception as create_magnet_e:
+            return {'error': f'download {car} failed on {e}'}
 
         while retry_num < 3:
             try:

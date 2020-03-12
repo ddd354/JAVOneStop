@@ -61,6 +61,16 @@ class JavBusScraper(JavScraper):
         search_results = search_root.xpath('//a[@class="movie-box"]/@href')
 
         if not search_results:
+            # sometimes the access will fail, try directly access by car
+            direct_url = self.jav_url + self.car
+            print(f'no search result, try direct accessing {search_url}')
+            jav_search_content = return_get_res(direct_url).content
+            search_root = etree.HTML(jav_search_content)
+
+            if search_root.xpath('//a[@class="bigImage"]/img/@title'):
+               search_results = [direct_url]
+
+        if not search_results:
             raise JAVNotFoundException('{} cannot be found in javbus'.format(self.car))
 
         self.total_index = len(search_results)
