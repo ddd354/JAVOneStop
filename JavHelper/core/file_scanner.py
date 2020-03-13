@@ -121,7 +121,7 @@ class EmbyFileStructure:
                 "  <rating>{score}</rating>\n"
                 # "  <criticrating>" + criticrating + "</criticrating>\n"
                 "  <year>{year}</year>\n"
-                "  <release>{release_date}</release>\n"
+                "  <premiered>{release_date}</premiered>\n"
                 "  <runtime>{length}</runtime>\n"
                 "  <studio>{studio}</studio>\n"
                 "  <id>{car}</id>\n".format(
@@ -130,7 +130,7 @@ class EmbyFileStructure:
                     director=jav_obj.get('director', ''),
                     score=jav_obj.get('score', ''),
                     year=jav_obj.get('year', ''),
-                    release_date=jav_obj.get('release_date', ''),
+                    premiered=jav_obj.get('premiered', ''),
                     length=jav_obj.get('length', ''),
                     studio=jav_obj.get('studio', ''),
                     car=jav_obj.get('car', '')
