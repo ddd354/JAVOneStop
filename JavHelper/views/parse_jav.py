@@ -149,7 +149,10 @@ def search_magnet_link():
     }
     
     rt = source_func_map[source](car)
-    return jsonify({'success': rt})
+    if len(rt) > 0:
+        return jsonify({'success': rt})
+    else:
+        return jsonify({'error': 'no magnet link found'})
 
 
 # ---------------------------utilities-------------------------------
