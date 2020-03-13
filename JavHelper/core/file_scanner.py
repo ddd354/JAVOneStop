@@ -121,7 +121,7 @@ class EmbyFileStructure:
                 "  <rating>{score}</rating>\n"
                 # "  <criticrating>" + criticrating + "</criticrating>\n"
                 "  <year>{year}</year>\n"
-                "  <premiered>{release_date}</premiered>\n"
+                "  <premiered>{premiered}</premiered>\n"
                 "  <runtime>{length}</runtime>\n"
                 "  <studio>{studio}</studio>\n"
                 "  <id>{car}</id>\n".format(
