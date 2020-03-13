@@ -18,7 +18,7 @@ class JavBusScraper(JavScraper):
             'search_field': {
                 'title': '//a[@class="bigImage"]/img/@title',
                 'studio': '//p[span="製作商:"]/a/text()',
-                'release_date': '//p[span="發行日期:"]/text()',
+                'premiered': '//p[span="發行日期:"]/text()',
                 #'year': processed from release date
                 'length': '//p[span="長度:"]/text()',
                 'director': '//p[span="導演:"]/a/text()',
@@ -35,9 +35,9 @@ class JavBusScraper(JavScraper):
         self.jav_url = return_config_string(['其他设置', 'javbus网址'])
 
     def postprocess(self):
-        if self.jav_obj.get('release_date'):
-            self.jav_obj['release_date'] = self.jav_obj['release_date'].lstrip(' ')
-            self.jav_obj['year'] = self.jav_obj['release_date'][:4]
+        if self.jav_obj.get('premiered'):
+            self.jav_obj['premiered'] = self.jav_obj['premiered'].lstrip(' ')
+            self.jav_obj['year'] = self.jav_obj['premiered'][:4]
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')

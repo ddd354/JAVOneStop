@@ -5,6 +5,7 @@ import re
 from blitzdb.document import DoesNotExist
 from time import sleep
 
+from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.aria2_handler import aria2
 from JavHelper.core.utils import byte_to_MB
@@ -17,6 +18,7 @@ STANDARD_HEADERS = {"Content-Type": "application/x-www-form-urlencoded", 'User-A
 class OOFDownloader:
     def __init__(self):
         self.cookies = self.load_local_cookies()
+        self.translate_map = BackendTranslation()
 
     def get_oof_userid(self):
         r = requests.get('https://115.com/?cid=0&offset=0&mode=wangpan', cookies=self.cookies)
@@ -35,7 +37,7 @@ class OOFDownloader:
         try:
             r_json = json.loads(r.text)
         except json.decoder.JSONDecodeError:
-            raise Exception('Failure to get 115 signiture, check cookies are correct')
+            raise Exception(self.translate_map['oof_cookie_error'])
 
         return r_json['sign'], r_json['time']
 
@@ -55,15 +57,14 @@ class OOFDownloader:
             
             json_r = r.json()
             if json_r.get('errno') == 99:
-                raise Exception('code 99, please re-login to 115')
+                raise Exception(self.translate_map['oof_code99'])
             elif json_r.get('errno') == 911:
-                print(json_r)
-                raise Exception(f'code 911, please manually download link {magnet}')
+                raise Exception(self.translate_map['oof_code911'].format(magnet=magnet))
             elif json_r.get('errno') == 0:
                 print('Successfully add magnet')
                 return json_r
         except Exception as e:
-            raise Exception(f'unknown error {e}')
+            raise Exception(self.translate_map['unknown_e'].format(e=e))
     
     def get_first_lixian_list(self):
         url = 'https://115.com/web/lixian/'
@@ -151,9 +152,9 @@ class OOFDownloader:
         try:
             created_task = self.post_magnet_to_oof(magnet)
             if created_task.get('errcode') == 10008:
-                return {'error': f'magnet for {car} already exists, please delete existing magnet to continue'}
+                return {'error': self.translate_map['oof_magnet_exists'].format(car=car)}
         except Exception as create_magnet_e:
-            return {'error': f'download {car} failed on {create_magnet_e}'}
+            return {'error': self.translate_map['oof_fail_magnet'].format(car=car, create_magnet_e=create_magnet_e)}
 
         while retry_num < 3:
             try:
@@ -163,7 +164,7 @@ class OOFDownloader:
                 # filter out unwanted files
                 download_files = self.filter_task_details(task_detail)
                 if not download_files:
-                    raise Exception(f'there is no download file found in 115 task')
+                    raise Exception(self.translate_map['oof_no_file'])
 
                 for download_file in download_files:
                     self.download_aria_on_pcode(download_file['cid'], 
@@ -179,7 +180,7 @@ class OOFDownloader:
                 print(f'current error: {_e}, retrying')
                 e = _e
                 
-        return {'error': f'download {car} failed after {retry_num} of retries due to {e}'}
+        return {'error': self.translate_map['oof_general_failure'].format(car=car, retry_num=retry_num, e=e)}
 
     @staticmethod
     def load_local_cookies(return_all=False):

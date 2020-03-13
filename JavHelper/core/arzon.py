@@ -16,7 +16,7 @@ class ArzonScraper(JavScraper):
             'search_field': {
                 'title': '//h1/text()',
                 'studio': '//tr[td="AVメーカー："]/td[2]/a/text()',
-                'release_date': '//tr[td="発売日："]/td[2]/text()',
+                'premiered': '//tr[td="発売日："]/td[2]/text()',
                 #'year': processed from release date
                 'length': '//tr[td="収録時間："]/td[2]/text()',
                 'director': '//tr[td="監督："]/td[2]/a/text()',
@@ -50,19 +50,19 @@ class ArzonScraper(JavScraper):
             _temp = str(re.search(r'\d+', _temp).group(0))
             self.jav_obj['length'] = deepcopy(_temp)
 
-        if self.jav_obj.get('release_date') and isinstance(self.jav_obj['release_date'], str):
+        if self.jav_obj.get('premiered') and isinstance(self.jav_obj['premiered'], str):
             re_pattern = r'^(\d{4})(\/\d{2}\/\d{2}).*$'
-            _temp = deepcopy(self.jav_obj['release_date'])
+            _temp = deepcopy(self.jav_obj['premiered'])
             _temp = _temp.replace('\r\n', '')
             _temp = _temp.strip(' ')
             matched = re.match(re_pattern, _temp)
             if matched and len(matched.groups()) == 2:
                 #import ipdb;ipdb.set_trace()
                 self.jav_obj['year'] = str(matched.groups()[0])
-                self.jav_obj['release_date'] = ''.join(matched.groups()[:1])
+                self.jav_obj['premiered'] = ''.join(matched.groups()[:1])
             else:
                 # keep cleaned release date only
-                self.jav_obj['release_date'] = deepcopy(_temp)
+                self.jav_obj['premiered'] = deepcopy(_temp)
 
 
     def get_single_jav_page(self):

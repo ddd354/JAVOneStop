@@ -9,7 +9,7 @@ class EmbyNfo:
         'director': './/director',
         'rating': './/rating',
         'year': './/year',
-        'release': './/release',
+        'premiered': './/premiered',
         'length': './/runtime',
         'studio': './/studio',
         'car': './/id'
