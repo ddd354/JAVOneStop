@@ -57,7 +57,8 @@ class OOFDownloader:
             if json_r.get('errno') == 99:
                 raise Exception('code 99, please re-login to 115')
             elif json_r.get('errno') == 911:
-                raise Exception(f'code 911, please manually download magnet {magnet}')
+                print(json_r)
+                raise Exception(f'code 911, please manually download link {magnet}')
             elif json_r.get('errno') == 0:
                 print('Successfully add magnet')
                 return json_r
@@ -152,7 +153,7 @@ class OOFDownloader:
             if created_task.get('errcode') == 10008:
                 return {'error': f'magnet for {car} already exists, please delete existing magnet to continue'}
         except Exception as create_magnet_e:
-            return {'error': f'download {car} failed on {e}'}
+            return {'error': f'download {car} failed on {create_magnet_e}'}
 
         while retry_num < 3:
             try:

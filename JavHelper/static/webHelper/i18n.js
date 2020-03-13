@@ -60,7 +60,10 @@ const resources = {
       'subtitled': 'subtitled',
       'no_fitler': 'No Filter',
       'w_or_noop': 'Wanted / No Opinion',
-      'set_jav_obj_priority': 'Set Jav website sources priority (comma separated)'
+      'set_jav_obj_priority': 'Set Jav website sources priority (comma separated)',
+      'validate_oof_tool': 'Validate 115',
+      'close': 'Close',
+      'oof_validate_instruction': 'click following captha and hit submit to validate 115 adding magnet tool'
     }
   },
   //{t('')}
@@ -121,7 +124,10 @@ const resources = {
       'subtitled': '中文字幕',
       'no_fitler': '不过滤',
       'w_or_noop': '想要/没想法',
-      'set_jav_obj_priority': '设置JAV网站优先级(使用英文逗号隔开)'
+      'set_jav_obj_priority': '设置JAV网站优先级(使用英文逗号隔开)',
+      'validate_oof_tool': '115验证码工具',
+      'close': '关闭',
+      'oof_validate_instruction': '通过以下115验证码检测（正确并不会有跳转，直接关闭工具）'
     }
   }
 };
