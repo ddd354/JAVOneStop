@@ -17,6 +17,11 @@ from JavHelper.model.jav_manager import JavManagerDB
 
 local_manager = Blueprint('local_manager', __name__, url_prefix='/local_manager')
 
+@local_manager.route('/readme', methods=['GET'])
+def readme():
+    markdown_file = resource_path('README.md')
+    return jsonify({'success': open(markdown_file, 'r', encoding='utf8').read()})
+
 @local_manager.route('/partial_search', methods=['GET'])
 def partial_search():
     search_string = request.args.get('search_string')

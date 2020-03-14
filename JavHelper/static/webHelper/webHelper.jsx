@@ -17,6 +17,7 @@ import JavBroswerV2 from "./javBrowserV2"
 import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
+import HelpDoc from "./HelpDoc"
 
 class App extends Component {
     constructor(props) {
@@ -40,6 +41,7 @@ class App extends Component {
         Hook(window.console, log => {
           this.setState(({ logs }) => ({ logs: [Decode(log), ...logs] }))
         })
+        console.log('initialized');
         // load ini from file
         fetch(`/directory_scan/read_local_ini?filter_dict={
             'aria_address': ["Aria2设置", "Aria2地址"],
@@ -62,7 +64,7 @@ class App extends Component {
               if (jsonData.error != undefined && jsonData.error.length > 0) {
                 console.log('Error: ', jsonData.errors);
               }
-              console.log('Using local config: ', jsonData.local_config);
+              //console.log('Using local config: ', jsonData.local_config);
               this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
               i18n.changeLanguage(jsonData.local_config.display_language);
             })
@@ -221,13 +223,20 @@ class App extends Component {
               </div>
             <Tabs>
             <TabList>
+              <Tab>{t('helper_page')}</Tab>
+              <Tab>{t('JavLibrary Manager')}</Tab>
               <Tab>{t('Main Tool')}</Tab>
               <Tab>{t('Rename Tool')}</Tab>
-              <Tab>{t('JavLibrary Manager')}</Tab>
               <Tab>{t('Handy Features')}</Tab>
               <Tab>{t('Settings')}</Tab>
             </TabList>
 
+            <TabPanel>
+              <HelpDoc />
+            </TabPanel>
+            <TabPanel>
+              <JavBroswerV2 />
+            </TabPanel>
             <TabPanel>
                 <StyledDiv>
                   <LocalJavManager scan_path={this.state.settings_form_data.file_path}/>
@@ -242,9 +251,6 @@ class App extends Component {
                 </Form>
                 </StyledDiv>
                 <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
-            </TabPanel>
-            <TabPanel>
-              <JavBroswerV2 />
             </TabPanel>
             <TabPanel>
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>

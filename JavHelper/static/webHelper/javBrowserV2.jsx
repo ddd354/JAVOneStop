@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Pagination from 'react-bootstrap/Pagination'
+import Pagination from 'rc-pagination'
+import index from 'rc-pagination/assets' // import for pagination styling
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
-import Spinner from 'react-bootstrap/Spinner'
 
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -27,7 +27,7 @@ const JavBroswerV2 = () => {
     const [jav_set_name, setJavSet] = useState('subtitled');
     const [page_num, setPageNum] = useState('1');
     const [max_page, setMaxPage] = useState('25');
-    const [page_items, setPageItems] = useState();
+    //const [page_items, setPageItems] = useState();
     const [search_string, setSearchString] = useState('');
 
     // initialize component
@@ -78,39 +78,11 @@ const JavBroswerV2 = () => {
             ))
     }, [jav_objs, jav_stat_filter]);
 
-    useEffect(() => {
-        let _page_items = [];
-
-        for (let number = 1; number <= parseInt(max_page); number++) {
-            if (number === 1 && parseInt(page_num) != 1) {
-                _page_items.push(<Pagination.First key={1}/>);
-            } else if (parseInt(max_page) > 7 && number === parseInt(max_page) 
-            && parseInt(page_num) != parseInt(max_page)) {
-                _page_items.push(<Pagination.Last key={parseInt(max_page)}/>);
-            } else if (parseInt(max_page) > 7 
-            && (number >= parseInt(page_num)+3 || number <= parseInt(page_num)-3)) {
-                continue;
-            } else {
-                _page_items.push(
-                    <Pagination.Item key={number} active={String(number) === page_num}>
-                      {number}
-                    </Pagination.Item>,
-                  );
-            }
-        };
-        setPageItems(_page_items);
-    }, [page_num, max_page]);
-
-    const handlePageUpdate = (e) => {
+    const handlePageUpdate = (current, page_size) => {
         // this is triggered from pagination click
-        let _target_num = '';
-        if (e.target.text === "»Last" || e.target.textContent === "»") {
-            _target_num = max_page;
-        } else if (e.target.text === "«First" || e.target.textContent === "«") {
-            _target_num = '1';
-        } else {
-            _target_num = e.target.text;
-        };
+        //console.log(current, page_size);
+        let _target_num = String(current);
+        
         setPageNum(_target_num);
         fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
         `&page_num=`+String(_target_num)+`&search_string=`+String(search_string))
@@ -135,7 +107,7 @@ const JavBroswerV2 = () => {
     const handleInfiniteJavFetch = () => {
         // this handles infinite scroll data fetch
         if (has_more_obj) {
-            console.log('current page_num: ', page_num);
+            console.log(t('log_page_incremental'), page_num);
             let _new_page = String(parseInt(page_num)+1);
             fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
             `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
@@ -162,7 +134,7 @@ const JavBroswerV2 = () => {
 
     const handleFormSearch = (event) => {
         event.preventDefault();
-        console.log('Searching: ', event.target.elements[0].value, event.target.elements[1].value);
+        console.log(t('log_search_web_jav'), event.target.elements[0].value, event.target.elements[1].value);
         // update react states
         setJavSet(event.target.elements[0].value);
         setSearchString(event.target.elements[1].value);
@@ -216,7 +188,10 @@ const JavBroswerV2 = () => {
                 </div>
             </div>
             <div>
-                <Pagination style={{flexWrap: "wrap"}} size="sm" onClick={handlePageUpdate}>{page_items}</Pagination>
+                <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
+                    defaultPageSize={1}
+                    onChange={handlePageUpdate}
+                />
             </div>
             <div>
                 <InfiniteScroll
@@ -224,7 +199,7 @@ const JavBroswerV2 = () => {
                     //scrollThreshold={0.9}
                     hasMore={has_more_obj}
                     next={handleInfiniteJavFetch}
-                    loader={<Spinner animation="border" variant="primary" />}
+                    loader={"Loading..."}
                     >
                     {jav_obj_cards}
                 </InfiniteScroll>

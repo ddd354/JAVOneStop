@@ -12,6 +12,7 @@ from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
 from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.file_scanner import EmbyFileStructure
+from JavHelper.core.utils import parsed_size_to_int
 
 
 parse_jav = Blueprint('parse_jav', __name__, url_prefix='/parse_jav')
@@ -149,6 +150,8 @@ def search_magnet_link():
     }
     
     rt = source_func_map[source](car)
+    rt = custom_magnet_sorting(rt)
+    
     if len(rt) > 0:
         return jsonify({'success': rt})
     else:
@@ -157,12 +160,32 @@ def search_magnet_link():
 
 # ---------------------------utilities-------------------------------
 
+def custom_magnet_sorting(magnet_list: list):
+    # sort based on size
+    try:
+        magnet_list.sort(key=lambda x: x['size_sort'])
+    except KeyError:
+        magnet_list.sort(key=lambda x: x['size'])
+
+    # put subtitled first
+    _rt = []
+    subtitled_strings = return_default_config_string('subtitle_filename_postfix').split(',')
+    while magnet_list:
+        _current = magnet_list.pop()
+        if any([x in _current.get('title', '') for x in subtitled_strings]):
+            _rt = [_current] + _rt
+        else:
+            # append to return list if it is not subtitled
+            _rt.append(_current)
+
+    return _rt
+
 def search_javbus_magnet(car: str):
     try:
         rt = javbus_magnet_search(car)
     except Exception:
         print_exc()
-        pass
+        rt = []
 
     return rt
 
@@ -183,7 +206,8 @@ def search_nyaa_magnet(car: str):
             magnets = BTTree.xpath(bt_xpath)
 
             for i in range(len(titles)):
-                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 
+                'car': car, 'size_sort': parsed_size_to_int(file_sizes[i])})
     except Exception:
         print_exc()
         pass
@@ -207,7 +231,8 @@ def search_torrentkitty_magnet(car: str):
             magnets = BTTree.xpath(bt_xpath)
             
             for i in range(len(titles)):
-                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 
+                'car': car, 'size_sort': parsed_size_to_int(file_sizes[i])})
     except Exception as e:
         print_exc()
         pass

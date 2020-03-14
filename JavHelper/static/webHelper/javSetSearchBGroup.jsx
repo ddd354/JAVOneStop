@@ -27,7 +27,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
 
     const clickJavSetName = (event) => {
         // triggered from toggle group which don't need search string
-        console.log('Change jav set to: ', event);
+        console.log(t('log_switch_jav_set'), event);
         setLoading(true);
         setJavSet(event);
         setSearchString(''); // clean out search string for future page clicks

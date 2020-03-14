@@ -1,6 +1,7 @@
 import re
 import requests
 from PIL import Image
+import re
 
 
 def byte_to_MB(some_input):
@@ -8,6 +9,18 @@ def byte_to_MB(some_input):
         return int(some_input)/1024/1024
     else:
         return 0
+
+def parsed_size_to_int(size_str: str):
+    if 'GB' in size_str or 'GiB' in size_str or 'gb' in size_str:
+        multiplier = 1000000
+    elif 'MB' in size_str or 'MiB' in size_str or 'mb' in size_str:
+        multiplier = 1000
+    else:
+        multiplier = 1
+
+    size_int = float(re.search(r'(\d*\.\d*)', size_str).group()) * multiplier
+
+    return size_int
 
 class defaultlist(list):
     def __init__(self, fx):

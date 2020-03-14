@@ -8,6 +8,7 @@ from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text, return_post_res, return_get_res
 from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
 from JavHelper.core.ini_file import return_config_string
+from JavHelper.core.utils import parsed_size_to_int
 
 
 class JavBusScraper(JavScraper):
@@ -101,6 +102,8 @@ def javbus_magnet_search(car: str):
         _values = root.xpath(v)
         for _i, _value in enumerate(_values):
             magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
+            if k == 'size':
+                magnets[_i].update({'size_sort': parsed_size_to_int(_value.strip('\t').strip('\r').strip('\n').strip())})
     
     return magnets
 

@@ -1,5 +1,6 @@
 # JAVOneStop 一站JAV V0.6.4
-**千里之行, 始于架构**<br><br>
+**千里之行, 始于架构**
+
 本工具将致力于提供一个All-in-One的使用环境, 便于用户下载, 整理本地JAV文件. 
 
 ## Features
@@ -7,7 +8,8 @@
 ### Jav Local Manager
 用以批量刮削本地Jav视频文件, 亦可重新刮削、移动本地已整理的Jav.
 ### Rename Tool
-<img src="demo/feature1.gif" width="80%"/><br>
+<img src="demo/feature1.gif" width="80%"/>
+
 此工具含四个选项: 预览文件夹内容, 预览重命名文件, 重命名文件~~, 刮削JAV信息~~(功能已转移至Jav Local Manager). 注意事项如下:
 * 用户指定文件夹请使用系统完整路径, 不要使用相对路径
 * 目前文件结构不可更改, 设置为: 用户指定文件夹/Jav发行年份/番号/番号.nfo; 未来版本将开放更改, 但是这个基本是最佳配置
@@ -18,7 +20,8 @@
 * 后端有扫描nfo功能, 有经验的用户可以尝试
 
 ### JavLibrary Manager
-![jav manager demo](/demo/feature2.gif)
+<img src="demo/feature2.gif" width="80%"/>
+
 此工具集成JavLibrary-115-Aria2下载于一个界面, 需要正确的115_cookies.json和Aria2设置以正常工作. 下载流程如下:
 * 在浏览器(chrome)登录至115网页界面, 使用EditThisCookie或类似浏览器插件导出cookie, 存入115_cookies.json
 * 选择wanted选项则会显示115下载选项.
@@ -32,7 +35,7 @@
 ### Settings
 表单式界面, 方便用户更新配置文件. 用户也可以直接更新settings.ini文件.
 
-## Installation 硬性使用要求
+## Installation 安装使用要求
 * 本程序使用8009端口, 必须确保此端口目前可以使用.
 * 如果需要使用115-Aria2下载功能, 则需在根目录下新建"115_cookies.json"文件并从浏览器导出cookies, 填入; 而且需要正确地配置Aria2.
 * 本程序将在本地创建"jav_manager.db"数据库文件, 如无须重置请不要删除.
@@ -56,8 +59,8 @@
 * 选择 parse_jav 选项并按下 Execute 按钮, 后台将会爬取 javLibrary 和 arzon 的视频文件信息.
 * 观察上方的运行记录, 确保文件被正确地处理.
 
-## Road Map
-TBD
+## 路线图 Road Map
+[项目管理](https://github.com/ddd354/JAVOneStop/projects/1)
 
 电报反馈: [link](https://t.me/joinchat/PBVbLRfEaXOVFifI2nz3Kg)
 部分code来自:[work1](https://github.com/junerain123/JAV-Scraper-and-Rename-local-files)

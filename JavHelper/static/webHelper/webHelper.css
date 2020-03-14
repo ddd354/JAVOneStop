@@ -17,6 +17,7 @@
 }
 
 div.javConsole {
+    min-width: 95%;
     position: fixed;
     z-index: 999;
 }
