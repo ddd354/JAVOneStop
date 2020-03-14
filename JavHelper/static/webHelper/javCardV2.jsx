@@ -13,6 +13,8 @@ const JavCardV2 = ({ update_obj, source_site }) => {
     const [card_jav_obj, setCardJavObj] = useState(update_obj);
     const [loading, setLoading] = useState(false);
 
+    const [magnet_site, setMagnetSite] = useState('javbus');
+
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
     const _manual_opacity = 1;
     
@@ -34,8 +36,6 @@ const JavCardV2 = ({ update_obj, source_site }) => {
         border_style.background = 'rgba(255, 255, 0, 0.2)';
     }
 
-    const updateStatFromComponent = (_stat) => {setJavCardStat(_stat)};
-
     const handleShowDetailImage = () => {
         if (card_jav_obj.image === undefined) {
             setLoading(true);
@@ -47,19 +47,8 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                 if (jsonData.errors) {
                     console.log('Error: ', jsonData.error);
                 }
+                setLoading(false);
             });
-
-            `fetch('/local_manager/find_images?car='+card_jav_obj.car)
-                .then(response => response.json())
-                .then((jsonData) => {
-                    // jsonData is parsed json object received from url
-                    // return can be empty list
-                    if (jsonData.success) {
-                        //console.log(file_name, jsonData.success)
-                        setCardJavObj(jsonData.success);
-                    }
-                    setLoading(false);
-                });`
         }
     }
 
@@ -73,10 +62,13 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                         setbutstat={(_stat) => {setJavCardStat(_stat)}}
                         stat={jav_card_stat} 
                         car={update_obj.car}
+                        magnet_site={magnet_site}
+                        setMagnetSite={setMagnetSite}
                     />
                     <div className="magnetTable">
                         <JavTable
-                            car={update_obj.car} 
+                            car={update_obj.car}
+                            magnet_site={magnet_site}
                             stat={jav_card_stat} 
                             setJavStat={(_stat) => {setJavCardStat(_stat)}}
                         />

@@ -1,12 +1,15 @@
 # -*- coding:utf-8 -*-
 from flask import Blueprint, jsonify, request, Response
+import requests
+from lxml import html
+from traceback import print_exc
 import json
 
 from JavHelper.cache import cache
 from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
-from JavHelper.core.javbus import JavBusScraper
+from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
 from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.file_scanner import EmbyFileStructure
 
@@ -133,7 +136,83 @@ def parse_single():
     return jsonify({'car': car, 'sources': sources, 'parsed_output': res})
 
 
+@parse_jav.route('/search_magnet_link', methods=['GET'])
+@cache.cached(timeout=3600, query_string=True)
+def search_magnet_link():
+    car = request.args.get('car')
+    source = request.args.get('source')
+
+    source_func_map = {
+        'torrentkitty': search_torrentkitty_magnet,
+        'nyaa': search_nyaa_magnet,
+        'javbus': search_javbus_magnet
+    }
+    
+    rt = source_func_map[source](car)
+    if len(rt) > 0:
+        return jsonify({'success': rt})
+    else:
+        return jsonify({'error': 'no magnet link found'})
+
+
 # ---------------------------utilities-------------------------------
+
+def search_javbus_magnet(car: str):
+    try:
+        rt = javbus_magnet_search(car)
+    except Exception:
+        print_exc()
+        pass
+
+    return rt
+
+def search_nyaa_magnet(car: str):
+    rt = []
+    try:
+        respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
+        BTTree = html.fromstring(respBT.content)
+        bt_xpath = '//*/tbody/tr/td[@class="text-center"]/a[2]/@href'
+        if len(BTTree.xpath(bt_xpath)) > 0:
+            print(f'{car} found in nyaa')
+            name_xpath = '//*/tbody/tr/td[@colspan="2"]/a'
+            titles = [ind.get('title', '')[0:25] for ind in BTTree.xpath(name_xpath)]
+
+            file_xpath = '//*/tbody/tr/td'
+            file_sizes = [ind.text for ind in BTTree.xpath(file_xpath) if 'GiB' in ind.text or 'Bytes' in ind.text
+                          or 'MiB' in ind.text]
+            magnets = BTTree.xpath(bt_xpath)
+
+            for i in range(len(titles)):
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
+    except Exception:
+        print_exc()
+        pass
+
+    return rt
+
+def search_torrentkitty_magnet(car: str):
+    rt = []
+    try:
+        # torrent kitty is good for chinese subtitled movies
+        respBT = requests.get('https://www.torrentkitty.tv/search/' + car)
+        BTTree = html.fromstring(respBT.content)
+        bt_xpath = '//html/body//table[@id="archiveResult"]//td[@class="action"]/a[2]/@href'
+        if len(BTTree.xpath(bt_xpath)) > 0:
+            print(f'{car} found in torrentkitty')
+            name_xpath = '//html/body//table[@id="archiveResult"]//td[@class="name"]'
+            titles = [ind.text_content()[0:25] for ind in BTTree.xpath(name_xpath)]
+
+            file_xpath = '//html/body//table[@id="archiveResult"]//td[@class="size"]/text()'
+            file_sizes = [ind for ind in BTTree.xpath(file_xpath)]
+            magnets = BTTree.xpath(bt_xpath)
+            
+            for i in range(len(titles)):
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
+    except Exception as e:
+        print_exc()
+        pass
+
+    return rt
 
 
 def parse_single_jav(jav_obj: dict, sources):

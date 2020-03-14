@@ -18,7 +18,7 @@ class JavBusScraper(JavScraper):
             'search_field': {
                 'title': '//a[@class="bigImage"]/img/@title',
                 'studio': '//p[span="製作商:"]/a/text()',
-                'release_date': '//p[span="發行日期:"]/text()',
+                'premiered': '//p[span="發行日期:"]/text()',
                 #'year': processed from release date
                 'length': '//p[span="長度:"]/text()',
                 'director': '//p[span="導演:"]/a/text()',
@@ -35,9 +35,9 @@ class JavBusScraper(JavScraper):
         self.jav_url = return_config_string(['其他设置', 'javbus网址'])
 
     def postprocess(self):
-        if self.jav_obj.get('release_date'):
-            self.jav_obj['release_date'] = self.jav_obj['release_date'].lstrip(' ')
-            self.jav_obj['year'] = self.jav_obj['release_date'][:4]
+        if self.jav_obj.get('premiered'):
+            self.jav_obj['premiered'] = self.jav_obj['premiered'].lstrip(' ')
+            self.jav_obj['year'] = self.jav_obj['premiered'][:4]
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')
@@ -61,12 +61,48 @@ class JavBusScraper(JavScraper):
         search_results = search_root.xpath('//a[@class="movie-box"]/@href')
 
         if not search_results:
+            # sometimes the access will fail, try directly access by car
+            direct_url = self.jav_url + self.car
+            print(f'no search result, try direct accessing {search_url}')
+            jav_search_content = return_get_res(direct_url).content
+            search_root = etree.HTML(jav_search_content)
+
+            if search_root.xpath('//a[@class="bigImage"]/img/@title'):
+               search_results = [direct_url]
+
+        if not search_results:
             raise JAVNotFoundException('{} cannot be found in javbus'.format(self.car))
 
         self.total_index = len(search_results)
         result_first_url = search_results[self.pick_index]
 
         return return_get_res(result_first_url).content, self.total_index
+
+
+def javbus_magnet_search(car: str):
+    jav_url = return_config_string(['其他设置', 'javbus网址'])
+    gid_match = r'.*?var gid = (\d*);.*?'
+    magnet_xpath = {
+        'magnet': '//tr/td[position()=1]/a[1]/@href',
+        'title': '//tr/td[position()=1]/a[1]/text()',
+        'size': '//tr/td[position()=2]/a[1]/text()'
+    }
+    main_url_template = jav_url+'{car}'
+    magnet_url_template = jav_url+'ajax/uncledatoolsbyajax.php?gid={gid}&uc=0'
+
+    res = return_get_res(main_url_template.format(car=car)).text
+    gid = re.search(gid_match, res).groups()[0]
+
+    res = return_get_res(magnet_url_template.format(gid=gid), headers={'referer': main_url_template.format(car=car)}).content
+    root = etree.HTML(res)
+
+    magnets = defaultlist(dict)
+    for k, v in magnet_xpath.items():
+        _values = root.xpath(v)
+        for _i, _value in enumerate(_values):
+            magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
+    
+    return magnets
 
 
 def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:

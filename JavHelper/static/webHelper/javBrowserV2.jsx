@@ -15,16 +15,16 @@ import './javBrowserV2.css';
 
 const JavBroswerV2 = () => {
     const { t, i18n } = useTranslation();
-    const [source_site, setSourceSite] = useState('javlib_browser');
+    const [source_site, setSourceSite] = useState('javbus_browser');
     const [isLoading, setLoading] = useState(true);
 
     const [jav_objs, setJavObjs] = useState([]);
-    const [jav_stat_filter, setJavStatFilter] = useState([]);
+    const [jav_stat_filter, setJavStatFilter] = useState([0, 2]);
 
     const [jav_obj_cards, setJavObjCards] = useState([]);
     const [has_more_obj, setHasMoreObj] = useState(true);
 
-    const [jav_set_name, setJavSet] = useState('most_wanted');
+    const [jav_set_name, setJavSet] = useState('subtitled');
     const [page_num, setPageNum] = useState('1');
     const [max_page, setMaxPage] = useState('25');
     const [page_items, setPageItems] = useState();

@@ -18,7 +18,7 @@ class JavLibraryScraper(JavScraper):
             'search_field': {
                 'title': '//title/text()',
                 'studio': '//tr[td="制作商:"]/td[2]/span/a/text()',
-                'release_date': '//tr[td="发行日期:"]/td[2]/text()',
+                'premiered': '//tr[td="发行日期:"]/td[2]/text()',
                 #'year': processed from release date
                 'length': '//tr[td="长度:"]/td[2]/span/text()',
                 'director': '//tr[td="导演:"]/td[2]/text()',
@@ -38,8 +38,8 @@ class JavLibraryScraper(JavScraper):
         if ' - JAVLibrary' in self.jav_obj['title']:
             self.jav_obj['title'] = self.jav_obj['title'].replace(' - JAVLibrary', '').replace(f'{self.car} ', '')
 
-        if self.jav_obj.get('release_date') and isinstance(self.jav_obj['release_date'], str):
-            self.jav_obj['year'] = self.jav_obj['release_date'][0:4]
+        if self.jav_obj.get('premiered') and isinstance(self.jav_obj['premiered'], str):
+            self.jav_obj['year'] = self.jav_obj['premiered'][0:4]
 
     def get_single_jav_page(self):
         """

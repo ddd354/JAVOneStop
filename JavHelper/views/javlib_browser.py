@@ -71,7 +71,7 @@ def rebuild_db_index():
     return jsonify({'success': 'index rebuilt for stat'})
 
 @javlib_browser.route('/get_set_javs', methods=['GET'])
-@cache.cached(timeout=30, query_string=True)
+@cache.cached(timeout=300, query_string=True)
 def get_set_javs():
     set_type = request.args.get('set_type')
     page_num = request.args.get('page_num', 1)
@@ -187,56 +187,5 @@ def download_via_aria():
         return jsonify({'success': jav_obj})
     else:
         return jsonify({'error': jav_obj.get('error')}), 400
-
-@javlib_browser.route('/search_magnet_link', methods=['GET'])
-@cache.cached(timeout=3600, query_string=True)
-def search_magnet_link():
-    car = request.args.get('car')
-
-    rt = []
-    # check whether magnet is available
-    try:
-        # torrent kitty is good for chinese subtitled movies
-        respBT = requests.get('https://www.torrentkitty.tv/search/' + car)
-        BTTree = html.fromstring(respBT.content)
-        bt_xpath = '//html/body//table[@id="archiveResult"]//td[@class="action"]/a[2]/@href'
-        if len(BTTree.xpath(bt_xpath)) > 0:
-            print(f'{car} found in torrentkitty')
-            name_xpath = '//html/body//table[@id="archiveResult"]//td[@class="name"]'
-            titles = [ind.text_content()[0:25] for ind in BTTree.xpath(name_xpath)]
-
-            file_xpath = '//html/body//table[@id="archiveResult"]//td[@class="size"]/text()'
-            file_sizes = [ind for ind in BTTree.xpath(file_xpath)]
-            magnets = BTTree.xpath(bt_xpath)
-            
-            for i in range(len(titles)):
-                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
-            return jsonify({'success': rt[:10]})
-    except Exception as e:
-        print_exc()
-        pass
-
-    try:
-        respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
-        BTTree = html.fromstring(respBT.content)
-        bt_xpath = '//*/tbody/tr/td[@class="text-center"]/a[2]/@href'
-        if len(BTTree.xpath(bt_xpath)) > 0:
-            print(f'{car} found in nyaa')
-            name_xpath = '//*/tbody/tr/td[@colspan="2"]/a'
-            titles = [ind.get('title', '')[0:25] for ind in BTTree.xpath(name_xpath)]
-
-            file_xpath = '//*/tbody/tr/td'
-            file_sizes = [ind.text for ind in BTTree.xpath(file_xpath) if 'GiB' in ind.text or 'Bytes' in ind.text
-                          or 'MiB' in ind.text]
-            magnets = BTTree.xpath(bt_xpath)
-
-            for i in range(len(titles)):
-                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 'car': car})
-            return jsonify({'success': rt[:10]})
-    except Exception:
-        pass
-
-    return jsonify({'error': f'{car} not found in all sources'})
-
 
 # ---------------------------utilities-------------------------------

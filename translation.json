@@ -1,0 +1,34 @@
+{
+    "unknown_e": {
+        "en": "unknown error {e}",
+        "cn": "意外错误: {e}"
+    },
+    "oof_cookie_error": {
+        "cn": "获取115签名失败，请检查是否填入正确的cookies",
+        "en": "Failure to get 115 signiture, check cookies are correct"
+    },
+    "oof_code99": {
+        "cn": "错误代码99，请重新登陆115并填入新的cookies",
+        "en": "code 99, please re-login to 115"
+    },
+    "oof_code911": {
+        "en": "code 911, please manually download link {magnet}",
+        "cn": "错误911，请手动添加{magnet}或者通过115验证并重试"
+    },
+    "oof_magnet_exists": {
+        "en": "magnet for {car} already exists, please delete existing magnet to continue",
+        "cn": "{car}磁链已存在于115, 请删除后重试"
+    },
+    "oof_fail_magnet": {
+        "en": "download {car} failed on {create_magnet_e}",
+        "cn": "{car}添加磁链失败: {create_magnet_e}"
+    },
+    "oof_no_file": {
+        "en": "there is no download file found in 115 task",
+        "cn": "磁链任务内找不到可下载的文件(未完成/文件未达到100MB)"
+    },
+    "oof_general_failure": {
+        "en": "download {car} failed after {retry_num} of retries due to {e}",
+        "cn": "经过{retry_num}次重试, {car}下载失败, 原因: {e}"
+    }
+}
