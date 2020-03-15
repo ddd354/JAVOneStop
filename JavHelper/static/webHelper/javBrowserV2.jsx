@@ -84,6 +84,7 @@ const JavBroswerV2 = () => {
         //console.log(current, page_size);
         let _target_num = String(current);
         
+        setLoading(true);
         setPageNum(_target_num);
         fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
         `&page_num=`+String(_target_num)+`&search_string=`+String(search_string))
@@ -102,6 +103,7 @@ const JavBroswerV2 = () => {
                 if (jsonData.errors) {
                     console.log('Error: ', jsonData.error);
                 }
+                setLoading(false);
             })
     };
 
