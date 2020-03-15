@@ -22,9 +22,9 @@ const JavMagnetButton = ({ car, magnet, setJavStat }) => {
         .then(response => response.json())
         .then((jsonData) => {
           if (jsonData.success === undefined) {
-            console.log('failed on: ', jsonData.error)
+            console.log(t('log_error'), jsonData.error)
           } else {
-            console.log('aria2 downloadeding: ', jsonData.success.car);
+            console.log(t('log_aria2_download'), jsonData.success.car);
             setJavStat(4);
           }
           setLoading(false);

@@ -19,7 +19,7 @@
 div.javConsole {
     min-width: 95%;
     position: fixed;
-    z-index: 999;
+    z-index: 900;
 }
 
 div.javConsoleContainer {

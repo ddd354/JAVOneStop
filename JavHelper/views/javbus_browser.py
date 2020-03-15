@@ -61,7 +61,6 @@ def search_for_actress(javlib_actress_code: str, page_num=1):
     return jav_objs, max_page
 
 @javbus_browser.route('/get_set_javs', methods=['GET'])
-@cache.cached(timeout=30, query_string=True)
 def get_set_javs():
     set_type = request.args.get('set_type')
     page_num = request.args.get('page_num', 1)

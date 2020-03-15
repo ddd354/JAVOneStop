@@ -58,6 +58,6 @@ def create_app():
 
         print_exc()
         # now you're handling non-HTTP exceptions only
-        return jsonify({'errors': format_exc()}), 500
+        return jsonify({'error': format_exc()}), 500
 
     return app

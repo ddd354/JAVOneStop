@@ -15,6 +15,7 @@ const StatButtonGroup = (props) => {
   
   // event handler
   const buttonClicked = (event) => {
+    const stat_map = JSON.parse(t('jav_stat_map'));
     //console.log(event[0], event.slice(2));
     fetch('/javlib_browser/update_db_jav',
           {method: 'post',
@@ -24,7 +25,7 @@ const StatButtonGroup = (props) => {
           })})
           .then(response => response.json())
           .then(resp_json => {
-            console.log('Update DB Stat: ', resp_json.success);
+            console.log(t('log_update_jav_stat'), resp_json.success.car, stat_map[resp_json.success.stat]);
           });
     setButtonGroupValue(event);
     props.setbutstat(Number(event[0]));

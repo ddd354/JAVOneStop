@@ -7,9 +7,10 @@ import Button from 'react-bootstrap/Button'
 
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import JavBrowserChecker from './javBrowserChecker';
 import { useTranslation } from 'react-i18next';
-import JavSetSearchGroup from './javSetSearchBGroup'
-import JavCardV2 from './JavCardV2'
+import JavSetSearchGroup from './javSetSearchBGroup';
+import JavCardV2 from './JavCardV2';
 import './javBrowserV2.css';
 
 
@@ -138,7 +139,11 @@ const JavBroswerV2 = () => {
         // update react states
         setJavSet(event.target.elements[0].value);
         setSearchString(event.target.elements[1].value);
-        setPageNum('1');  // initialize page num to 1 to always get 1st page
+
+        // initialize other state
+        setLoading(true);
+        setPageNum('1');  
+        setHasMoreObj(true);
 
         fetch(`/${source_site}/get_set_javs?set_type=`+String(event.target.elements[0].value)+
             `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
@@ -150,11 +155,13 @@ const JavBroswerV2 = () => {
                 if (jsonData.errors) {
                     console.log('Error: ', jsonData.error);
                 }
+                setLoading(false);
             });
     };
 
     return (
         <div>
+            <JavBrowserChecker />
             <div style={{display: "flex"}}>
                 <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
                  marginRight: "15px"}}>

@@ -9,3 +9,11 @@ aria2 = aria2p.API(
         secret=return_default_config_string('aria_token')
     )
 )
+
+def verify_aria2_configs_exist():
+    if not return_default_config_string('aria_address') or \
+    not int(return_default_config_string('aria_port') or 0) or \
+    not return_default_config_string('aria_token'):
+        return False
+    else:
+        return True

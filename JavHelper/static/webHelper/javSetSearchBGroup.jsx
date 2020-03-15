@@ -57,7 +57,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
 
     const changeSourceSite = (event) => {
         // triggered from change website source
-        console.log('change website source to: ', event);
+        console.log(t('log_change_website'), event);
 
         // clean current search parameters
         setJavSet(website_set_map[event][0]);

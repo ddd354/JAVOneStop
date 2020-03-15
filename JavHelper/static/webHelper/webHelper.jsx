@@ -62,7 +62,7 @@ class App extends Component {
             .then(response => response.json())
             .then((jsonData) => {
               if (jsonData.error != undefined && jsonData.error.length > 0) {
-                console.log('Error: ', jsonData.errors);
+                console.log(this.props.t('log_error'), jsonData.error);
               }
               //console.log('Using local config: ', jsonData.local_config);
               this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
