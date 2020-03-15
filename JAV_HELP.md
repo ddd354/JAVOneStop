@@ -21,6 +21,8 @@ JAV下载器集成Jav网站-115-Aria2下载于一个界面, 需要正确的115_c
 
 ## 手动搜索
 
+## 手动验证115
+
 
 电报反馈: [link](https://t.me/joinchat/PBVbLRfEaXOVFifI2nz3Kg)
 ## License
