@@ -1,10 +1,20 @@
 # JAVOneStop 一站JAV V0.6.4
 **千里之行, 始于架构**
 
-本工具将致力于提供一个All-in-One的使用环境, 便于用户下载, 整理本地JAV文件. 
+本工具将致力于提供一个All-in-One的使用环境, 便于用户下载, 整理本地JAV文件和其信息. 
 
-## Features
-~~四~~五大功能:
+## Features ~~四~~五大功能
+### JAV Downloader JAV 下载器
+<img src="demo/feature2.gif" width="80%"/>
+
+此工具集成Jav网站-115-Aria2下载于一个界面, 需要正确的115_cookies.json和Aria2设置以正常工作. 简易下载流程如下:
+* 在浏览器(chrome)登录至115网页界面, 使用EditThisCookie或类似浏览器插件导出cookie, 存入115_cookies.json
+* 选择"想要"选项则会显示磁链下载选项.
+* 在下方的列表选择下载按钮, 按下后程序自动将磁链加入115并将下载链接传至Aria2
+* 115操作过多的时候会提示错误, 用户需要手动使用配置表单 -> 更新115 Cookies -> 115验证码工具进行验证
+
+具体使用请切换至"JAV下载器教程"文档查看
+
 ### Jav Local Manager
 用以批量刮削本地Jav视频文件, 亦可重新刮削、移动本地已整理的Jav.
 ### Rename Tool
@@ -18,15 +28,6 @@
 * 如果重命名预览不尽如人意, 用户请手动重命名视频文件
 * 目前此工具不会移动没有处理成功的视频文件, 用户需要手动移动到别的文件夹
 * 后端有扫描nfo功能, 有经验的用户可以尝试
-
-### JavLibrary Manager
-<img src="demo/feature2.gif" width="80%"/>
-
-此工具集成JavLibrary-115-Aria2下载于一个界面, 需要正确的115_cookies.json和Aria2设置以正常工作. 下载流程如下:
-* 在浏览器(chrome)登录至115网页界面, 使用EditThisCookie或类似浏览器插件导出cookie, 存入115_cookies.json
-* 选择wanted选项则会显示115下载选项.
-* 在下方的列表选择磁链按钮, 按下后程序自动将磁链加入115并将下载链接传至Aria2
-* 115操作过多的时候会提示错误, 用户需要手动在115添加磁链以消除机器验证码
 
 ### Handy Features
 目前具有以下功能:

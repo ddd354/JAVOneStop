@@ -74,7 +74,9 @@ const resources = {
       'log_change_website': 'change website source to: ',
       'log_aria2_download': 'aria2 downloadeding: ',
       'log_update_jav_stat': 'Update DB Stat: ',
-      'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading'})
+      'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading'}),
+      'main_readme': 'Main ReadMe',
+      'javdownloader_readme': 'Jav Downloader Tutorial'
     }
   },
   //{t('')}
@@ -149,7 +151,9 @@ const resources = {
       'log_change_website': '更换网站来源: ',
       'log_aria2_download': '下载添加至aria2: ',
       'log_update_jav_stat': '更新数据库文档: ',
-      'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中'})
+      'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中'}),
+      'main_readme': '快速入门介绍',
+      'javdownloader_readme': 'JAV下载器教程'
     }
   }
 };

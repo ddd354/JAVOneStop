@@ -2,6 +2,18 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.7.0] - 2019-03-15
+### Added
+- readme tab to teach user how to
+- toast error messages for misconfigured 115 / aria2 server
+### Updated
+- brand new pagination
+- better 115 & aria2 downloader logging
+- full localization on jav download tool
+- magnet sorting based on size and subtitled (flawed though)
+- bug fix for not infinite scroll when switch between fully loaded page and new page
+- remove cache from reading the source site (since we need newest db stat)
+
 ## [0.6.4] - 2019-03-13
 ### Added
 - 115 downloader error message translations

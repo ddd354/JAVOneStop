@@ -19,7 +19,14 @@ local_manager = Blueprint('local_manager', __name__, url_prefix='/local_manager'
 
 @local_manager.route('/readme', methods=['GET'])
 def readme():
-    markdown_file = resource_path('README.md')
+    source_filename_map = {
+        'main_readme': 'README.md',
+        'javdownloader_readme': 'JAV_HELP.md'
+    }
+
+    source = request.args.get('source') or 'main_readme'
+    
+    markdown_file = resource_path(source_filename_map[source])
     return jsonify({'success': open(markdown_file, 'r', encoding='utf8').read()})
 
 @local_manager.route('/partial_search', methods=['GET'])
