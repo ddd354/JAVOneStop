@@ -38,5 +38,13 @@
     "aria2_setup_error": {
         "en": "not all aria2 fields are setup correctly",
         "cn": "无效的aria2设置, 请检查3个相关设置已正确填入"
+    },
+    "aria2_wrong_server": {
+        "en": "cannot connect to server due to incorrect server address",
+        "cn": "无法连接至aria2服务器, 请检查正确设置了服务器参数"
+    },
+    "aria2_cannot_contact_server": {
+        "en": "cannot add url to server, please verify aria2 server is running or the setup is correct",
+        "cn": "无法添加任务至aria2服务器, 请检查服务器正在运行并正确设置了所有服务器参数"
     }
 }
