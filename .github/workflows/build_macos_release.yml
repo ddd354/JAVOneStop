@@ -25,6 +25,10 @@ jobs:
       run: |
         pyinstaller --onedir \
           --icon "demo/icon.ico" \
+          --add-data="demo:demo" \
+          --add-data="translation.json:." \
+          --add-data="README.md:." \
+          --add-data="JAV_HELP.md:." \
           --add-data="JavHelper/templates:JavHelper/templates" \
           --add-data="JavHelper/static:JavHelper/static" \
           --add-data="/Users/runner/hostedtoolcache/Python/3.7.6/x64/lib/python3.7/site-packages/cloudscraper:cloudscraper" \
