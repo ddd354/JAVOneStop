@@ -21,7 +21,7 @@ const HelpDoc = () => {
   }, [markdown_source]);
 
   return (
-    <div style={{padding: "1rem 5rem"}}>
+    <div style={{padding: "1rem 12rem"}}>
       <ToggleButtonGroup size="sm" type="radio" value={markdown_source} name="selectMarkdown" 
           onChange={(e) => setMarkdownSource(e)} style={{flexWrap: "wrap", marginLeft: "5px"}}>
           <ToggleButton value={'main_readme'}>

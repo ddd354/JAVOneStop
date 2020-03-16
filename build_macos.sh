@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 pyinstaller --onedir \
-    --icon "demo/icon.ico" \
     --add-data="demo:demo" \
     --add-data="translation.json:." \
     --add-data="README.md:." \
