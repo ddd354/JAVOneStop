@@ -24,6 +24,7 @@ jobs:
     - name: build macos pkg
       run: |
         pyinstaller --onedir \
+          --icon "demo/icon.ico" \
           --add-data="JavHelper/templates:JavHelper/templates" \
           --add-data="JavHelper/static:JavHelper/static" \
           --add-data="/Users/runner/hostedtoolcache/Python/3.7.6/x64/lib/python3.7/site-packages/cloudscraper:cloudscraper" \

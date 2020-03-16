@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 pyinstaller --onedir \
+    --icon "demo/icon.ico" \
     --add-data="JavHelper/templates:JavHelper/templates" \
     --add-data="JavHelper/static:JavHelper/static" \
     --exclude-module="FixTk" \
