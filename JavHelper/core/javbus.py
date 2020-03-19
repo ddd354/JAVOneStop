@@ -44,6 +44,8 @@ class JavBusScraper(JavScraper):
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')
         if self.jav_obj.get('length'):
             self.jav_obj['length'] = self.jav_obj['length'].lstrip(' ')[:-2]
+        if self.jav_obj.get('title'):
+            self.jav_obj['title'] = '{} {}'.format(self.jav_obj['car'], self.jav_obj['title'])
 
     def get_single_jav_page(self):
         """

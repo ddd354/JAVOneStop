@@ -36,7 +36,7 @@ class JavLibraryScraper(JavScraper):
 
     def postprocess(self):
         if ' - JAVLibrary' in self.jav_obj['title']:
-            self.jav_obj['title'] = self.jav_obj['title'].replace(' - JAVLibrary', '').replace(f'{self.car} ', '')
+            self.jav_obj['title'] = self.jav_obj['title'].replace(' - JAVLibrary', '')
 
         if self.jav_obj.get('premiered') and isinstance(self.jav_obj['premiered'], str):
             self.jav_obj['year'] = self.jav_obj['premiered'][0:4]

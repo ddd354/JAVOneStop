@@ -64,6 +64,9 @@ class ArzonScraper(JavScraper):
                 # keep cleaned release date only
                 self.jav_obj['premiered'] = deepcopy(_temp)
 
+        if self.jav_obj.get('title'):
+            self.jav_obj['title'] = '{} {}'.format(self.jav_obj['car'], self.jav_obj['title'])
+
 
     def get_single_jav_page(self):
         arzon_cookies = self.get_site_sessions().cookies.get_dict()
