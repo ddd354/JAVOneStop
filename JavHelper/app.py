@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_from_directory
 from werkzeug.exceptions import HTTPException
 from traceback import format_exc, print_exc
 
@@ -20,6 +20,7 @@ from JavHelper.views.javlib_browser import javlib_browser
 from JavHelper.views.javbus_browser import javbus_browser
 from JavHelper.views.local_manager import local_manager
 from JavHelper.views.scan_directory import directory_scan
+from JavHelper.utils import resource_path
 
 
 def create_app():
@@ -45,6 +46,10 @@ def create_app():
     def hello():
         return render_template('home.html')
 
+    @app.route('/demo/<path:path>')
+    def serve_demo_images(path):
+        return send_from_directory(resource_path('demo'), path)
+
     @app.errorhandler(Exception)
     def handle_exception(e):
         # pass through HTTP errors
@@ -53,6 +58,6 @@ def create_app():
 
         print_exc()
         # now you're handling non-HTTP exceptions only
-        return jsonify({'errors': format_exc()}), 500
+        return jsonify({'error': format_exc()}), 500
 
     return app

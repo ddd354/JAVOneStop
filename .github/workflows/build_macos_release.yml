@@ -24,6 +24,10 @@ jobs:
     - name: build macos pkg
       run: |
         pyinstaller --onedir \
+          --add-data="demo:demo" \
+          --add-data="translation.json:." \
+          --add-data="README.md:." \
+          --add-data="JAV_HELP.md:." \
           --add-data="JavHelper/templates:JavHelper/templates" \
           --add-data="JavHelper/static:JavHelper/static" \
           --add-data="/Users/runner/hostedtoolcache/Python/3.7.6/x64/lib/python3.7/site-packages/cloudscraper:cloudscraper" \
@@ -37,10 +41,10 @@ jobs:
           --exclude-module="tkinter" \
           --exclude-module="Tkinter" \
           --noconfirm \
-          --distpath dist-python \
+          --distpath JAVOneStop_${GITHUB_REF##*/} \
           JavHelper/run.py
 
-        tar -czf Jav_OneStop_macos.tar.gz dist-python
+        tar -czf Jav_OneStop_macos.tar.gz JAVOneStop_${GITHUB_REF##*/}
 
     - name: Create MacOS Release
       id: create_release_macos

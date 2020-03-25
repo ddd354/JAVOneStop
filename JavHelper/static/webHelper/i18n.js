@@ -7,7 +7,7 @@ const resources = {
   en: {
     translation: {
       "Main Tool": "Main Tool",
-      "JavLibrary Manager": "JavLibrary/JavBus Browser",
+      "JavLibrary Manager": "JAV Downloader",
       "Handy Features": "Handy Features",
       "Settings": "Settings",
       "Preview File / Execute": "Preview File / Execute",
@@ -63,7 +63,20 @@ const resources = {
       'set_jav_obj_priority': 'Set Jav website sources priority (comma separated)',
       'validate_oof_tool': 'Validate 115',
       'close': 'Close',
-      'oof_validate_instruction': 'click following captha and hit submit to validate 115 adding magnet tool'
+      'oof_validate_instruction': 'click following captha and hit submit to validate 115 adding magnet tool',
+      'helper_page': 'Help Doc',
+      'log_page_incremental': 'current page_num: ',
+      'load_detail_image_tab_name': "Load Detail Images",
+      'download_magnet_button': 'Download',
+      'log_search_web_jav': 'Searching: ',
+      'log_switch_jav_set': 'Change jav set to: ',
+      'log_error': 'Error: ',
+      'log_change_website': 'change website source to: ',
+      'log_aria2_download': 'aria2 downloadeding: ',
+      'log_update_jav_stat': 'Update DB Stat: ',
+      'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading'}),
+      'main_readme': 'Main ReadMe',
+      'javdownloader_readme': 'Jav Downloader Tutorial'
     }
   },
   //{t('')}
@@ -71,7 +84,7 @@ const resources = {
   cn: {
     translation: {
       "Main Tool": "刮削工具",
-      "JavLibrary Manager": "JavLibrary/Javbus下载器",
+      "JavLibrary Manager": "JAV下载器",
       "Handy Features": "小工具",
       "Settings": "配置表单",
       "Preview File / Execute": "预览/执行",
@@ -127,7 +140,20 @@ const resources = {
       'set_jav_obj_priority': '设置JAV网站优先级(使用英文逗号隔开)',
       'validate_oof_tool': '115验证码工具',
       'close': '关闭',
-      'oof_validate_instruction': '通过以下115验证码检测（正确并不会有跳转，直接关闭工具）'
+      'oof_validate_instruction': '通过以下115验证码检测（正确并不会有跳转，直接关闭工具）',
+      'helper_page': '帮助手册',
+      'log_page_incremental': '读取页码: ',
+      'load_detail_image_tab_name': "加载详细海报",
+      'download_magnet_button': '下载',
+      'log_search_web_jav': '搜索: ',
+      'log_switch_jav_set': '更改搜索页面: ',
+      'log_error': '发生错误: ',
+      'log_change_website': '更换网站来源: ',
+      'log_aria2_download': '下载添加至aria2: ',
+      'log_update_jav_stat': '更新数据库文档: ',
+      'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中'}),
+      'main_readme': '快速入门介绍',
+      'javdownloader_readme': 'JAV下载器教程'
     }
   }
 };

@@ -1,6 +1,7 @@
 @echo off 
 
 pyinstaller --onedir ^
+    --icon "demo\icon.ico" ^
     --add-data="JavHelper\templates;JavHelper\templates" ^
     --add-data="JavHelper\static;JavHelper\static" ^
     --add-data="C:\Users\luokerenz\Envs\javhelper\lib\site-packages\cloudscraper;cloudscraper" ^

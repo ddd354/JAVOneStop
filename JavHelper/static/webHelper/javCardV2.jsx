@@ -4,12 +4,16 @@ import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner'
 
+import { useTranslation } from 'react-i18next';
+
 import StatButtonGroup from "./statButtonGroup";
 import JavTable from "./javTable";
 import './javBrowserV2.css';
 
 
 const JavCardV2 = ({ update_obj, source_site }) => {
+    const { t, i18n } = useTranslation();
+    
     const [card_jav_obj, setCardJavObj] = useState(update_obj);
     const [loading, setLoading] = useState(false);
 
@@ -77,7 +81,7 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                         <Card>
                             <Card.Header className="detail-image-button">
                                 <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
-                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : "Load Detail Images"}
+                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
                                 </Accordion.Toggle>
                             </Card.Header>
                             <Accordion.Collapse eventKey="0">
@@ -106,7 +110,7 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                         <Card>
                             <Card.Header className="detail-image-button">
                                 <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
-                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : "Load Detail Images"}
+                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
                                 </Accordion.Toggle>
                             </Card.Header>
                             <Accordion.Collapse eventKey="0">

@@ -4,10 +4,11 @@ from datetime import datetime
 import re
 from blitzdb.document import DoesNotExist
 from time import sleep
+from traceback import print_exc
 
 from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.model.jav_manager import JavManagerDB
-from JavHelper.core.aria2_handler import aria2
+from JavHelper.core.aria2_handler import get_aria2
 from JavHelper.core.utils import byte_to_MB
 
 
@@ -132,11 +133,16 @@ class OOFDownloader:
             download_header = download_header.split(';')[0]
 
             file_url = r.json()['file_url']
-            aria_r = aria2.add_uris([file_url], options={'referer': referer_url, 'header': [f'Cookie: {download_header}', f'User-Agent: {STANDARD_UA}']})
+            aria_r = get_aria2().add_uris([file_url], options={'referer': referer_url, 'header': 
+                [f'Cookie: {download_header}', f'User-Agent: {STANDARD_UA}']})
             #TODO: check aria_r for success or not
         except json.decoder.JSONDecodeError as e:
             print(r.text)
             print(f'Error {e} processing {pickup_code}, manual clean up may be needed')
+        except requests.exceptions.InvalidSchema as e:
+            raise Exception(self.translate_map['aria2_wrong_server'])
+        except requests.exceptions.ConnectionError as e:
+            raise Exception(self.translate_map['aria2_cannot_contact_server'])
 
     def handle_jav_download(self, car: str, magnet: str):
         db_conn = JavManagerDB()
@@ -165,20 +171,26 @@ class OOFDownloader:
                 download_files = self.filter_task_details(task_detail)
                 if not download_files:
                     raise Exception(self.translate_map['oof_no_file'])
-
-                for download_file in download_files:
-                    self.download_aria_on_pcode(download_file['cid'], 
-                        download_file['pickup_code'])
-
-                # if everything went well, update stat
-                jav_obj['stat'] = 4
-                db_conn.upcreate_jav(jav_obj)
-                return jav_obj
+                break
             except Exception as _e:
                 retry_num += 1
                 sleep(5)
                 print(f'current error: {_e}, retrying')
                 e = _e
+
+        # send download info to aria2
+        try:
+            for download_file in download_files:
+                self.download_aria_on_pcode(download_file['cid'], 
+                    download_file['pickup_code'])
+
+            # if everything went well, update stat
+            jav_obj['stat'] = 4
+            db_conn.upcreate_jav(jav_obj)
+            return jav_obj
+        except Exception as _e:
+            print_exc()
+            e = _e
                 
         return {'error': self.translate_map['oof_general_failure'].format(car=car, retry_num=retry_num, e=e)}
 

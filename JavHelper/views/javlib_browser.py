@@ -10,6 +10,8 @@ from JavHelper.cache import cache
 from JavHelper.core.javlibrary import javlib_set_page, JavLibraryScraper
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
+from JavHelper.core.backend_translation import BackendTranslation
+from JavHelper.core.aria2_handler import verify_aria2_configs_exist
 
 
 javlib_browser = Blueprint('javlib_browser', __name__, url_prefix='/javlib_browser')
@@ -71,7 +73,6 @@ def rebuild_db_index():
     return jsonify({'success': 'index rebuilt for stat'})
 
 @javlib_browser.route('/get_set_javs', methods=['GET'])
-@cache.cached(timeout=300, query_string=True)
 def get_set_javs():
     set_type = request.args.get('set_type')
     page_num = request.args.get('page_num', 1)
@@ -187,5 +188,21 @@ def download_via_aria():
         return jsonify({'success': jav_obj})
     else:
         return jsonify({'error': jav_obj.get('error')}), 400
+
+@javlib_browser.route('/diagnose_downloader_setup', methods=['GET'])
+def diagnose_downloader_setup():
+    error_list = {}
+    try:
+        OOFDownloader()
+    except FileNotFoundError:
+        error_list['oof_cookies'] = BackendTranslation()['oof_cookies_not_found']
+
+    if not verify_aria2_configs_exist():
+        error_list['aria2_setup'] = BackendTranslation()['aria2_setup_error']
+
+    if error_list:
+        return jsonify({'error': error_list}), 500
+    
+    return jsonify({'success': 1})
 
 # ---------------------------utilities-------------------------------
