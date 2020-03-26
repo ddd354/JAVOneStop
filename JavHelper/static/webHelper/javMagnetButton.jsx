@@ -35,7 +35,7 @@ const JavMagnetButton = ({ car, magnet, site, setJavStat }) => {
 
   if (site === 'jav777') {
     return(
-      <a href={_magnet}>download</a>
+      <a href={_magnet} rel="noreferrer" target="_blank">download</a>
     )
   } else {
     return(
