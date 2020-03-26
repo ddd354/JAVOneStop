@@ -11,6 +11,7 @@ from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
 from JavHelper.core.arzon import ArzonScraper
+from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.utils import parsed_size_to_int
 
@@ -146,7 +147,8 @@ def search_magnet_link():
     source_func_map = {
         'torrentkitty': search_torrentkitty_magnet,
         'nyaa': search_nyaa_magnet,
-        'javbus': search_javbus_magnet
+        'javbus': search_javbus_magnet,
+        'jav777': jav777_download_search
     }
     
     rt = source_func_map[source](car)

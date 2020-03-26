@@ -4,7 +4,7 @@ import Spinner from 'react-bootstrap/Spinner'
 
 import { useTranslation } from 'react-i18next';
 
-const JavMagnetButton = ({ car, magnet, setJavStat }) => {
+const JavMagnetButton = ({ car, magnet, site, setJavStat }) => {
   const { t, i18n } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
@@ -33,17 +33,24 @@ const JavMagnetButton = ({ car, magnet, setJavStat }) => {
 
   const submitDownload = () => setLoading(true);
 
-  return(
-    <Button
-      size="sm"
-      style={{fontSize: "10px", padding: "1 1 1 1"}}
-      variant="primary"
-      disabled={isLoading}
-      onClick={!isLoading ? submitDownload: null}
-    >
-      {isLoading ? <Spinner as="span" animation="grow" size="sm" ole="status" aria-hidden="true" />: t('download_magnet_button')}
-    </Button>
-      
-)};
+  if (site === 'jav777') {
+    return(
+      <a href={_magnet}>download</a>
+    )
+  } else {
+    return(
+      <Button
+        size="sm"
+        style={{fontSize: "10px", padding: "1 1 1 1"}}
+        variant="primary"
+        disabled={isLoading}
+        onClick={!isLoading ? submitDownload: null}
+      >
+        {isLoading ? <Spinner as="span" animation="grow" size="sm" ole="status" aria-hidden="true" />: t('download_magnet_button')}
+      </Button>
+        
+  )
+  }
+  };
   
   export default JavMagnetButton;
