@@ -8,6 +8,7 @@ from traceback import print_exc
 
 from JavHelper.cache import cache
 from JavHelper.core.jav777 import jav777_set_page, Jav777Scraper
+from JavHelper.core.javbus import JavBusScraper
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 
@@ -18,7 +19,8 @@ SET_TYPE_MAP = {
 }
 
 def search_by_car(car: str, **kwargs):
-    jav_obj = Jav777Scraper({'car': car}).scrape_jav()
+    # use javbus for car search
+    jav_obj = JavBusScraper({'car': car}).scrape_jav()
     db_conn = JavManagerDB()
 
     if db_conn.pk_exist(str(jav_obj.get('car'))):
