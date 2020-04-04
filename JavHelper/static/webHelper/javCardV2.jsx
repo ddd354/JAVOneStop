@@ -17,7 +17,7 @@ const JavCardV2 = ({ update_obj, source_site }) => {
     const [card_jav_obj, setCardJavObj] = useState(update_obj);
     const [loading, setLoading] = useState(false);
 
-    const [magnet_site, setMagnetSite] = useState('javbus');
+    const [magnet_site, setMagnetSite] = useState('overall');
 
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
     const _manual_opacity = 1;

@@ -145,6 +145,7 @@ def search_magnet_link():
     source = request.args.get('source')
 
     source_func_map = {
+        'overall': priority_download_search,
         'torrentkitty': search_torrentkitty_magnet,
         'nyaa': search_nyaa_magnet,
         'javbus': search_javbus_magnet,
@@ -161,6 +162,24 @@ def search_magnet_link():
 
 
 # ---------------------------utilities-------------------------------
+
+def priority_download_search(car: str):
+    search_list = [
+        jav777_download_search,
+        search_javbus_magnet,
+        search_nyaa_magnet,
+        search_torrentkitty_magnet
+    ]
+
+    for search_function in search_list:
+        try:
+            rt = search_function(car)
+            if rt:
+                return rt
+        except Exception as e:
+            pass  # if not found just run the next one
+    
+    return []
 
 def custom_magnet_sorting(magnet_list: list):
     # sort based on size

@@ -45,6 +45,9 @@ const StatButtonGroup = (props) => {
     </ToggleButtonGroup>
     <ToggleButtonGroup size="sm" type="radio" value={props.magnet_site} name="selectSourceSet" 
         onChange={(e) => props.setMagnetSite(e)} style={{marginTop: "5px", marginBottom: "5px"}}>
+        <ToggleButton value={'overall'}>
+            {t("overall")}
+        </ToggleButton>
         <ToggleButton value={'javbus'}>
             {"javbus"}
         </ToggleButton>
