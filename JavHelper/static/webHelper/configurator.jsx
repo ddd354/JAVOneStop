@@ -46,6 +46,10 @@ const JavConfigurator = (props) => {
             "type": "string",
             "title": t('set_jav_obj_priority')
           },
+          "remove_string": {
+            "type": "string",
+            "title": t('set_remove_string')
+          },
           "enable_proxy": {
             "type": "string",
             "title": t('set_enable_proxy_title'),

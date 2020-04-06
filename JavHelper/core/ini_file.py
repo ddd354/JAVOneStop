@@ -19,7 +19,8 @@ DEFAULT_UPDATE_MAPPING = {
     'javlibrary_url': ['其他设置', 'javlibrary网址'],
     'jav_obj_priority': ['其他设置', '刮削信息优先度'],
     'folder_structure': ['本地设置', '保存路径模板'],
-    'display_language': ["其他设置", "界面语言(cn/en)"]
+    'display_language': ["其他设置", "界面语言(cn/en)"],
+    'remove_string': ["重命名影片", "移除字符"]
 }
 DEFAULT_UPDATE_VALUE_MAPPING = {
     'aria_address': "",
@@ -36,7 +37,8 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'javlibrary_url': "http://www.p42u.com/cn/",
     'jav_obj_priority': "javlibrary,javbus,arzon",
     'folder_structure': "{year}/{car}",
-    'display_language': 'cn'
+    'display_language': 'cn',
+    'remove_string': ''
 }
 
 def verify_ini_file(ini_file_name=DEFAULT_INI):
@@ -115,8 +117,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("本地设置", "中文字幕文件名后缀", "-C,-c")
     config_settings.set("本地设置", "自动处理多CD", "是")
     config_settings.add_section("重命名影片")
-    config_settings.set("重命名影片", "是否重命名影片？", "是")
-    config_settings.set("重命名影片", "重命名影片的格式", "车牌+空格+标题")
+    config_settings.set("重命名影片", "移除字符", "")
     config_settings.add_section("修改文件夹")
     config_settings.set("修改文件夹", "是否重命名或创建独立文件夹？", "是")
     config_settings.set("修改文件夹", "新文件夹的格式", "【+全部女优+】+车牌")
