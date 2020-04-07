@@ -4,12 +4,12 @@ import Spinner from 'react-bootstrap/Spinner'
 
 import { useTranslation } from 'react-i18next';
 
-const JavMagnetButton = ({ car, magnet, site, setJavStat }) => {
+const JavMagnetButton = ({ car, download_link, setJavStat }) => {
   const { t, i18n } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
   const _car = car;
-  const _magnet = magnet;
+  const _download_link = download_link;
 
   useEffect(() => {
       if (isLoading) {
@@ -17,7 +17,7 @@ const JavMagnetButton = ({ car, magnet, site, setJavStat }) => {
               {method: 'post',
               body: JSON.stringify({
                       "car": _car,
-                      "magnet": _magnet
+                      "magnet": _download_link
               })})
         .then(response => response.json())
         .then((jsonData) => {
@@ -33,11 +33,7 @@ const JavMagnetButton = ({ car, magnet, site, setJavStat }) => {
 
   const submitDownload = () => setLoading(true);
 
-  if (site === 'jav777') {
-    return(
-      <a href={_magnet} rel="noreferrer" target="_blank">download</a>
-    )
-  } else {
+  if (_download_link.startsWith('magnet:')) {
     return(
       <Button
         size="sm"
@@ -47,9 +43,12 @@ const JavMagnetButton = ({ car, magnet, site, setJavStat }) => {
         onClick={!isLoading ? submitDownload: null}
       >
         {isLoading ? <Spinner as="span" animation="grow" size="sm" ole="status" aria-hidden="true" />: t('download_magnet_button')}
-      </Button>
-        
-  )
+      </Button>    
+    )
+  } else {
+    return(
+      <a href={_download_link} rel="noreferrer" target="_blank">{t('download_web_button')}</a>
+    )
   }
   };
   

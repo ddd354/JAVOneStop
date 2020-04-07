@@ -84,7 +84,7 @@ def jav777_download_search(car: str):
     title = search_root.xpath('//h1[@class="post-title"]/a/@title')
 
     if search_results:
-        return [{'magnet': search_results[0], 'title': title[0], 'size': '--'}]
+        return [{'web_link': search_results[0], 'title': title[0], 'size': '--'}]
     else:
         return []
 
