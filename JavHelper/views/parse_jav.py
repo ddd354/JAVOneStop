@@ -167,11 +167,10 @@ def search_magnet_link():
 def search_ikoa_dmmc(car: str):
     # prototype
     server_addr = return_default_config_string('ikoa_dmmc_server')
-    res = requests.get(server_addr+'lookup?id={}'.format(car), timeout=2)
+    res = requests.get(server_addr+'lookup?id={}'.format(car), timeout=10)
     #print(res.text)
     rt = []
     sources = res.json()['success']['sources']
-
     if 'ikoa' in sources:
         rt.append({'title': f'ikoa - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=ikoa', 'size': '-', 'size_sort': '-'})
     if 'dmmc' in sources:
@@ -194,6 +193,7 @@ def priority_download_search(car: str):
             if rt:
                 return rt
         except Exception as e:
+            #print(search_function, e)
             pass  # if not found just run the next one
     
     return []
