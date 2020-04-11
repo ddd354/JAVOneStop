@@ -20,7 +20,8 @@ DEFAULT_UPDATE_MAPPING = {
     'jav_obj_priority': ['其他设置', '刮削信息优先度'],
     'folder_structure': ['本地设置', '保存路径模板'],
     'display_language': ["其他设置", "界面语言(cn/en)"],
-    'remove_string': ["重命名影片", "移除字符"]
+    'remove_string': ["重命名影片", "移除字符"],
+    'ikoa_dmmc_server': ["其他设置", "ikoa_dmmc"]
 }
 DEFAULT_UPDATE_VALUE_MAPPING = {
     'aria_address': "",
@@ -38,7 +39,8 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'jav_obj_priority': "javlibrary,javbus,arzon",
     'folder_structure': "{year}/{car}",
     'display_language': 'cn',
-    'remove_string': ''
+    'remove_string': '',
+    'ikoa_dmmc_server': ''
 }
 
 def verify_ini_file(ini_file_name=DEFAULT_INI):
@@ -152,8 +154,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("其他设置", "刮削信息优先度", "javlibrary,javbus,arzon")
     config_settings.set("其他设置", "javlibrary网址", "http://www.p42u.com/cn/")  # supported
     config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")
-    config_settings.set("其他设置", "素人车牌(若有新车牌请自行添加)",
-                        "LUXU、MIUM、GANA、NTK、ARA、DCV、MAAN、HOI、NAMA、SWEET、SIRO、SCUTE、CUTE、SQB、JKZ")
+    config_settings.set("其他设置", "ikoa_dmmc", "")
     config_settings.set("其他设置", "扫描文件类型", "mp4、mkv、avi、wmv、iso、rmvb、MP4")
     config_settings.set("其他设置", "重命名中的标题长度（50~150）", "50")
     config_settings.write(open(ini_file_name, "w", encoding='utf-8-sig'))

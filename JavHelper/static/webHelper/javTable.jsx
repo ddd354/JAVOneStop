@@ -13,7 +13,7 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
     var row;
     for (row of obj_list) {
       row['action'] = <JavMagnetButton car={car} 
-          download_link={row['magnet'] || row['web_link']} 
+          download_link={row['magnet'] || row['web_link'] || row['idmm']} 
           setJavStat={setJavStat}
         />;
     }

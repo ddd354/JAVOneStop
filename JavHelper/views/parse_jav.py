@@ -146,6 +146,7 @@ def search_magnet_link():
 
     source_func_map = {
         'overall': priority_download_search,
+        'ikoa_dmmc': search_ikoa_dmmc,
         'torrentkitty': search_torrentkitty_magnet,
         'nyaa': search_nyaa_magnet,
         'javbus': search_javbus_magnet,
@@ -163,8 +164,24 @@ def search_magnet_link():
 
 # ---------------------------utilities-------------------------------
 
+def search_ikoa_dmmc(car: str):
+    # prototype
+    server_addr = return_default_config_string('ikoa_dmmc_server')
+    res = requests.get(server_addr+'lookup?id={}'.format(car), timeout=2)
+    #print(res.text)
+    rt = []
+    sources = res.json()['success']['sources']
+
+    if 'ikoa' in sources:
+        rt.append({'title': f'ikoa - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=ikoa', 'size': '-', 'size_sort': '-'})
+    if 'dmmc' in sources:
+        rt.append({'title': f'dmmc - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=dmmc', 'size': '-', 'size_sort': '-'})
+    return rt
+
+
 def priority_download_search(car: str):
     search_list = [
+        search_ikoa_dmmc,
         jav777_download_search,
         search_javbus_magnet,
         search_nyaa_magnet,

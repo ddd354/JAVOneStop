@@ -48,6 +48,9 @@ const StatButtonGroup = (props) => {
         <ToggleButton value={'overall'}>
             {t("overall")}
         </ToggleButton>
+        <ToggleButton value={'ikoa_dmmc'}>
+            {"ikoa/dmmc"}
+        </ToggleButton>
         <ToggleButton value={'javbus'}>
             {"javbus"}
         </ToggleButton>

@@ -100,6 +100,10 @@ const JavConfigurator = (props) => {
           "display_language": {
             "type": "string",
             "title": t('display_language')
+          },
+          "ikoa_dmmc_server": {
+            "type": "string",
+            "title": t('set_ikoa_dmmc_server')
           }
         }
     };
