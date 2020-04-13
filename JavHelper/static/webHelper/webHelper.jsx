@@ -11,6 +11,7 @@ import Button from '@material-ui/core/Button';
 import { withTranslation } from 'react-i18next';
 import i18n from './i18n';
 
+import IdmmMonitor from "./idmm_download"
 import LocalJavManager from "./localManager"
 import JavConfigurator from "./configurator"
 import JavBroswerV2 from "./javBrowserV2"
@@ -256,6 +257,7 @@ class App extends Component {
             </TabPanel>
             <TabPanel>
               <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
+              <IdmmMonitor server_addr={this.state.settings_form_data.ikoa_dmmc_server} />
             </TabPanel>
             <TabPanel>
               <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
