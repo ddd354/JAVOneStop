@@ -21,7 +21,7 @@ class JavManagerDB:
         return self.jav_db.filter(JavObj, {})
 
     def partial_search(self, search_string: str):
-        rt = self.jav_db.filter(JavObj, {'pk': {'$regex': search_string}})[:20]
+        rt = self.jav_db.filter(JavObj, {'pk': {'$regex': search_string.upper()}})[:20]
         return rt
 
     def query_on_filter(self, filter_on: dict, page=1, limit=8):
@@ -57,7 +57,7 @@ class JavManagerDB:
 
     def pk_exist(self, pk: str):
         try:
-            self.jav_db.get(JavObj, {'pk': pk})
+            self.jav_db.get(JavObj, {'pk': pk.upper()})
             return True
         except DoesNotExist:
             return False

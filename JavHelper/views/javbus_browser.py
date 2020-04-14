@@ -19,6 +19,7 @@ SET_TYPE_MAP = {
 }
 
 def search_by_car(car: str, **kwargs):
+    car = car.upper()
     jav_obj = JavBusScraper({'car': car}).scrape_jav()
     db_conn = JavManagerDB()
 

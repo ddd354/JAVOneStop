@@ -23,6 +23,7 @@ SET_TYPE_MAP = {
 }  # there is a hard coded list in javlibBrowser.jsx for filtering as well
 
 def search_by_car(car: str, **kwargs):
+    car = car.upper()
     jav_obj = JavLibraryScraper({'car': car}).scrape_jav()
     db_conn = JavManagerDB()
 
