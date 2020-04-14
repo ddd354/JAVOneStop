@@ -14,6 +14,7 @@ from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.utils import parsed_size_to_int
+from JavHelper.model.jav_manager import JavManagerDB
 
 
 parse_jav = Blueprint('parse_jav', __name__, url_prefix='/parse_jav')
@@ -164,6 +165,12 @@ def search_magnet_link():
 
 # ---------------------------utilities-------------------------------
 
+def need_ikoa_credit(car: str):
+    db = JavManagerDB()
+    need = db.get_by_pk(car.upper()).get('need_ikoa_credit', '0')=="1"
+    print(f'need ikoa credit: {need}')
+    return need
+
 def search_ikoa_dmmc(car: str):
     # prototype
     server_addr = return_default_config_string('ikoa_dmmc_server')
@@ -171,7 +178,7 @@ def search_ikoa_dmmc(car: str):
     #print(res.text)
     rt = []
     sources = res.json()['success']['sources']
-    if 'ikoa' in sources:
+    if 'ikoa' in sources and not need_ikoa_credit(car):
         rt.append({'title': f'ikoa - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=ikoa', 'size': '-', 'size_sort': '-'})
     if 'dmmc' in sources:
         rt.append({'title': f'dmmc - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=dmmc', 'size': '-', 'size_sort': '-'})
