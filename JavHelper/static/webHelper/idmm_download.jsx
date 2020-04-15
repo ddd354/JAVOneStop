@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ProgressBar from 'react-bootstrap/ProgressBar'
+import Container from 'react-bootstrap/Container'
+import Col from 'react-bootstrap/Col'
+import Row from 'react-bootstrap/Row'
 
 import { useTranslation } from 'react-i18next';
 
 const IdmmMonitor = ({ server_addr }) => {
-    const [jobs, setJobs] = useState([]);
+    const [ikoa_jobs, setIkoaJobs] = useState([]);
+    const [dmmc_jobs, setDmmcJobs] = useState([]);
 
     const { t, i18n } = useTranslation();
 
@@ -15,22 +19,35 @@ const IdmmMonitor = ({ server_addr }) => {
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData);
-                let _jobs = [];
+                let ikoa_jobs = [];
+                let dmmc_jobs = [];
                 if (jsonData.success) {
                     var job;
                     for (job of jsonData.success) {
-                        if (job.meta) {
-                            _jobs.push({
-                                'car': job.car, 'progress': parseInt(job.meta.percentage || ''), 'speed': job.meta.speed, 'state': job.state, 'key': job.car+Math.random().toString(36).substring(7)
-                            });
-                        } else {
-                            _jobs.push({
-                                'car': job.car, 'state': job.state, 'key': job.car+Math.random().toString(36).substring(7)
-                            });
+                        if (job.queue === 'ikoa') {
+                            if (job.meta) {
+                                ikoa_jobs.push({
+                                    'car': job.car, 'progress': parseInt(job.meta.percentage || ''), 'speed': job.meta.speed, 'state': job.state, 'key': job.car+Math.random().toString(36).substring(7)
+                                });
+                            } else {
+                                ikoa_jobs.push({
+                                    'car': job.car, 'state': job.state, 'key': job.car+Math.random().toString(36).substring(7)
+                                });
+                            }
+                        } else if (job.queue === 'dmmc') {
+                            if (job.meta) {
+                                dmmc_jobs.push({
+                                    'car': job.car, 'progress': parseInt(job.meta.percentage || ''), 'speed': job.meta.speed, 'state': job.state, 'key': job.car+Math.random().toString(36).substring(7)
+                                });
+                            } else {
+                                dmmc_jobs.push({
+                                    'car': job.car, 'state': job.state, 'key': job.car+Math.random().toString(36).substring(7)
+                                });
+                            }
                         }
-                        
                     }
-                    setJobs(_jobs);
+                    setIkoaJobs(ikoa_jobs);
+                    setDmmcJobs(dmmc_jobs);
                 }
             });
         }, 4000);
@@ -38,13 +55,26 @@ const IdmmMonitor = ({ server_addr }) => {
       }, []);
 
     return (
-    <div>
+    <Container fluid>
+        <Row>
+        <Col>
+        <p>iKOA download queue</p>
         {
-            jobs.map(job => {
+            ikoa_jobs.map(job => {
                 return <div><p>{job.car} {job.state}:</p><ProgressBar key={job.key} animated now={job.progress || ''} label={(job.speed || '')}/></div>
             })
         }
-    </div>
+        </Col>
+        <Col>
+        <p>DMMC download queue</p>
+        {
+            dmmc_jobs.map(job => {
+                return <div><p>{job.car} {job.state}:</p><ProgressBar key={job.key} animated now={job.progress || ''} label={(job.speed || '')}/></div>
+            })
+        }
+        </Col>
+        </Row>
+    </Container>
 )};
 
 export default IdmmMonitor;
