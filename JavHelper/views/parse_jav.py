@@ -4,6 +4,7 @@ import requests
 from lxml import html
 from traceback import print_exc
 import json
+from blitzdb.document import DoesNotExist
 
 from JavHelper.cache import cache
 from JavHelper.core.ini_file import return_default_config_string
@@ -166,10 +167,17 @@ def search_magnet_link():
 # ---------------------------utilities-------------------------------
 
 def need_ikoa_credit(car: str):
-    db = JavManagerDB()
-    need = db.get_by_pk(car.upper()).get('need_ikoa_credit', '0')=="1"
-    print(f'need ikoa credit: {need}')
-    return need
+    try:
+        db = JavManagerDB()
+        need = db.get_by_pk(car.upper()).get('need_ikoa_credit', '0')=="1"
+        print(f'need ikoa credit: {need}')
+        return need
+    except DoesNotExist as e:
+        # for any other error we return False
+        return False
+    except Exception as e:
+        # for any other error we return False
+        return False
 
 def search_ikoa_dmmc(car: str):
     # prototype
