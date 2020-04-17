@@ -12,9 +12,9 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
   const addDownloadButton = (obj_list, car) => {
     var row;
     for (row of obj_list) {
-      if (row.idmm) {
+      if (row.idmm !== undefined) {
         row['action'] = <JavMagnetButton car={car} 
-          download_link={row['idmm']} 
+          download_link={row.idmm} 
           setJavStat={setJavStat}
           type='iframe'
         />;
