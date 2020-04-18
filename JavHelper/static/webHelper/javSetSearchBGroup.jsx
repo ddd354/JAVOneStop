@@ -72,7 +72,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
   
   
     return(
-        <div>
+        <div id="javBrowserToggleGroup">
         <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
             onChange={clickJavSetName} style={{flexWrap: "wrap"}}>
             {set_toggle_list.map(

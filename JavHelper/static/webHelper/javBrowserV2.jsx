@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Pagination from 'rc-pagination'
 import index from 'rc-pagination/assets' // import for pagination styling do not remove
 import Form from 'react-bootstrap/Form'
-import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
+
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 import InfiniteScroll from 'react-infinite-scroll-component';
 
@@ -164,9 +167,9 @@ const JavBroswerV2 = () => {
     return (
         <div>
             <JavBrowserChecker />
-            <div style={{display: "flex"}}>
-                <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
-                 marginRight: "15px"}}>
+            <Container>
+                <Row>
+                <Col xs={{span: 12, order: 1}} md={{span: 6, order: 1}}>
                     <JavSetSearchGroup jav_set_name={jav_set_name} 
                         isLoading={isLoading} setLoading={setLoading}
                         source_site={source_site} setSourceSite={setSourceSite}
@@ -174,8 +177,8 @@ const JavBroswerV2 = () => {
                         setJavObjs={setJavObjs} setMaxPage={setMaxPage} setPageNum={setPageNum}
                         jav_stat_filter={jav_stat_filter} setJavStatFilter={setJavStatFilter}
                     />
-                </div>
-                <div style={{width: "50%"}}>
+                </Col>
+                <Col xs={{span: 12, order: 2}} md={{span: 6, order: 2}}>
                     <Form onSubmit={handleFormSearch}>
                         <Form.Row>
                             <Col style={{minWidth: "100px"}}><Form.Group controlId="formGridSearchType">
@@ -194,8 +197,9 @@ const JavBroswerV2 = () => {
                             <Button variant="primary" type="submit">{t('Submit')}</Button></Col>
                         </Form.Row>
                     </Form>
-                </div>
-            </div>
+                </Col>
+                </Row>
+            </Container>
             <div>
                 <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
                     defaultPageSize={1}

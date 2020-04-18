@@ -17,9 +17,17 @@
 }
 
 div.javConsole {
-    min-width: 95%;
     position: fixed;
+    width: 90%;
     z-index: 900;
+}
+
+div[id="consoleColumn"] {
+    -webkit-transform: translateZ(0);
+}
+
+div.cgarle {
+    margin: 0px;
 }
 
 div.javConsoleContainer {

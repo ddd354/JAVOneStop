@@ -1,5 +1,8 @@
-#main-javcard {
-    min-width: 450px;
+div[id="javBrowserToggleGroup"] {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: 100%;
 }
 
 .jav-content {
