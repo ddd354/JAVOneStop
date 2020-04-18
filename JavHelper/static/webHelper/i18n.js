@@ -23,6 +23,8 @@ const resources = {
       "set_javlib_url_title": "Url for Accessing JavLibrary",
       "set_aria2_url_title": "Url for Aria2; Example: http://192.168.1.9",
       "set_aria2_port_title": "Port for Aria2",
+      "set_remove_string": "Remove following strings (comma separated)",
+      "set_ikoa_dmmc_server": "Server addresses for ikoa dmmc, example: http://192.168.1.2:990/",
       "file_path_tip": "Default file path in the main tool",
       "emby_addr_tip": "Need to enter full address and port; Example: http://localhost:8096/",
       "Local Config": "Local Config",
@@ -68,15 +70,19 @@ const resources = {
       'log_page_incremental': 'current page_num: ',
       'load_detail_image_tab_name': "Load Detail Images",
       'download_magnet_button': 'Download',
+      'download_web_button': 'Web Download',
+      'download_iframe_button': 'Downloader',
       'log_search_web_jav': 'Searching: ',
       'log_switch_jav_set': 'Change jav set to: ',
       'log_error': 'Error: ',
       'log_change_website': 'change website source to: ',
       'log_aria2_download': 'aria2 downloadeding: ',
+      'log_idmm_download': 'idmm downloader job added: ',
       'log_update_jav_stat': 'Update DB Stat: ',
       'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading'}),
       'main_readme': 'Main ReadMe',
-      'javdownloader_readme': 'Jav Downloader Tutorial'
+      'javdownloader_readme': 'Jav Downloader Tutorial',
+      'overall': 'overall'
     }
   },
   //{t('')}
@@ -100,6 +106,8 @@ const resources = {
       "set_javlib_url_title": "JavLibrary可用网址",
       "set_aria2_url_title": "Aria2网址 例如: http://192.168.1.9",
       "set_aria2_port_title": "Aria2端口",
+      "set_remove_string": "文件名移除以下字符(英文逗号隔开)",
+      "set_ikoa_dmmc_server": "ikoa/dmmc下载服务器地址, 例子: http://192.168.1.2:990/",
       "file_path_tip": "刮削工具默认处理的路径",
       "emby_addr_tip": "填写完整的地址和端口, 例子: http://localhost:8096/",
       "Local Config": "本地配置",
@@ -145,15 +153,19 @@ const resources = {
       'log_page_incremental': '读取页码: ',
       'load_detail_image_tab_name': "加载详细海报",
       'download_magnet_button': '下载',
+      'download_web_button': '网页下载',
+      'download_iframe_button': '下载器',
       'log_search_web_jav': '搜索: ',
       'log_switch_jav_set': '更改搜索页面: ',
       'log_error': '发生错误: ',
       'log_change_website': '更换网站来源: ',
       'log_aria2_download': '下载添加至aria2: ',
+      'log_idmm_download': '下载添加至idmm下载器',
       'log_update_jav_stat': '更新数据库文档: ',
       'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中'}),
       'main_readme': '快速入门介绍',
-      'javdownloader_readme': 'JAV下载器教程'
+      'javdownloader_readme': 'JAV下载器教程',
+      'overall': '综合'
     }
   }
 };

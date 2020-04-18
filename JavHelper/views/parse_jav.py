@@ -4,6 +4,7 @@ import requests
 from lxml import html
 from traceback import print_exc
 import json
+from blitzdb.document import DoesNotExist
 
 from JavHelper.cache import cache
 from JavHelper.core.ini_file import return_default_config_string
@@ -11,8 +12,10 @@ from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
 from JavHelper.core.arzon import ArzonScraper
+from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.utils import parsed_size_to_int
+from JavHelper.model.jav_manager import JavManagerDB
 
 
 parse_jav = Blueprint('parse_jav', __name__, url_prefix='/parse_jav')
@@ -144,9 +147,12 @@ def search_magnet_link():
     source = request.args.get('source')
 
     source_func_map = {
+        'overall': priority_download_search,
+        'ikoa_dmmc': search_ikoa_dmmc,
         'torrentkitty': search_torrentkitty_magnet,
         'nyaa': search_nyaa_magnet,
-        'javbus': search_javbus_magnet
+        'javbus': search_javbus_magnet,
+        'jav777': jav777_download_search
     }
     
     rt = source_func_map[source](car)
@@ -159,6 +165,53 @@ def search_magnet_link():
 
 
 # ---------------------------utilities-------------------------------
+
+def need_ikoa_credit(car: str):
+    try:
+        db = JavManagerDB()
+        need = db.get_by_pk(car.upper()).get('need_ikoa_credit', '0')=="1"
+        print(f'need ikoa credit: {need}')
+        return need
+    except DoesNotExist as e:
+        # for any other error we return False
+        return False
+    except Exception as e:
+        # for any other error we return False
+        return False
+
+def search_ikoa_dmmc(car: str):
+    # prototype
+    server_addr = return_default_config_string('ikoa_dmmc_server')
+    res = requests.get(server_addr+'lookup?id={}'.format(car), timeout=10)
+    #print(res.text)
+    rt = []
+    sources = res.json()['success']['sources']
+    if 'ikoa' in sources and not need_ikoa_credit(car):
+        rt.append({'title': f'ikoa - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=ikoa', 'size': '-', 'size_sort': '-'})
+    if 'dmmc' in sources:
+        rt.append({'title': f'dmmc - {car}', 'car': car, 'idmm': f'{server_addr}download?id={car}&source=dmmc', 'size': '-', 'size_sort': '-'})
+    return rt
+
+
+def priority_download_search(car: str):
+    search_list = [
+        search_ikoa_dmmc,
+        jav777_download_search,
+        search_javbus_magnet,
+        search_nyaa_magnet,
+        search_torrentkitty_magnet
+    ]
+
+    for search_function in search_list:
+        try:
+            rt = search_function(car)
+            if rt:
+                return rt
+        except Exception as e:
+            #print(search_function, e)
+            pass  # if not found just run the next one
+    
+    return []
 
 def custom_magnet_sorting(magnet_list: list):
     # sort based on size

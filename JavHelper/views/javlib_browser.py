@@ -23,6 +23,7 @@ SET_TYPE_MAP = {
 }  # there is a hard coded list in javlibBrowser.jsx for filtering as well
 
 def search_by_car(car: str, **kwargs):
+    car = car.upper()
     jav_obj = JavLibraryScraper({'car': car}).scrape_jav()
     db_conn = JavManagerDB()
 
@@ -82,19 +83,7 @@ def get_set_javs():
     rt_jav_objs = []
 
     if set_type == 'personal_wanted':
-        db_conn = JavManagerDB()
-        jav_objs, max_page = db_conn.query_on_filter({'stat': 0}, page=int(page_num))
-        # need additional info
-        for jav_obj in jav_objs:
-            if jav_obj['stat'] != 0:
-                db_conn.rebuild_index()
-                raise Exception('index is not up-to-date and it has been rebuild')
-            if not jav_obj.get('title', None):
-                _full_info = JavLibraryScraper({'car': jav_obj['car']}).scrape_jav()
-                jav_obj.update(_full_info)
-                db_conn.upcreate_jav(jav_obj)
-
-            jav_obj.setdefault('img', jav_obj.get('image', ''))  # force img key to exist
+        jav_objs, max_page = db_stat_lookup(page_num)
 
         # don't need extra db operations
         return jsonify({'success': {'jav_objs': jav_objs, 'max_page': max_page}})
@@ -206,3 +195,22 @@ def diagnose_downloader_setup():
     return jsonify({'success': 1})
 
 # ---------------------------utilities-------------------------------
+
+def db_stat_lookup(page_num):
+    # handle db stat 0 look up
+    db_conn = JavManagerDB()
+    jav_objs, max_page = db_conn.query_on_filter({'stat': 0}, page=int(page_num))
+    # need additional info
+    for jav_obj in jav_objs:
+        if jav_obj['stat'] != 0:
+            print('0 stat detected, reindex and redo jav obj lookup')
+            db_conn.rebuild_index()
+            return db_stat_lookup(page_num)
+        if not jav_obj.get('title', None):
+            _full_info = JavLibraryScraper({'car': jav_obj['car']}).scrape_jav()
+            jav_obj.update(_full_info)
+            db_conn.upcreate_jav(jav_obj)
+
+        jav_obj.setdefault('img', jav_obj.get('image', ''))  # force img key to exist
+
+    return jav_objs, max_page

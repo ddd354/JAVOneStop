@@ -14,7 +14,7 @@ from JavHelper.core.utils import parsed_size_to_int
 class JavBusScraper(JavScraper):
     def __init__(self, *args, **kwargs):
         super(JavBusScraper, self).__init__(*args, **kwargs)
-        self.source = 'javlibrary'
+        self.source = 'javbus'
         self.xpath_dict = {
             'search_field': {
                 'title': '//a[@class="bigImage"]/img/@title',

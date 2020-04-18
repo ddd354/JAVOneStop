@@ -33,6 +33,8 @@ class EmbyFileStructure:
         self.handle_multi_cds = ( return_default_config_string('handle_multi_cds')== '是' )
         self.preserve_subtitle_filename = ( return_default_config_string('preserve_subtitle_filename')== '是' )
         self.subtitle_filename_postfix = return_default_config_string('subtitle_filename_postfix').split(',')
+        self.remove_string = return_default_config_string('remove_string').split(',')
+        print(self.remove_string)
 
         self.jav_manage = JavManagerDB()
 
@@ -192,7 +194,14 @@ class EmbyFileStructure:
                 break
         return cd_postfix, file_name
 
+    def remove_preconfigured_string(self, file_name: str):
+        for rm_str in self.remove_string:
+            file_name = file_name.replace(rm_str, '')
+
+        return file_name
+
     def rename_single_file(self, file_name: str, name_pattern=DEFAULT_FILENAME_PATTERN):
+        file_name = self.remove_preconfigured_string(file_name)
         subtitle_postfix, file_name = self.extract_subtitle_postfix_filename(file_name)
         cd_postfix, file_name = self.extract_CDs_postfix_filename(file_name)
 

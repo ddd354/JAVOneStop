@@ -38,6 +38,21 @@ def partial_search():
 
     return jsonify({'success': [dict(x) for x in rt]})
 
+@local_manager.route('/update_car_ikoa_stat', methods=['GET'])
+def update_car_ikoa_stat():
+    car = request.args.get('car').upper()
+    stat = request.args.get('stat')
+    need_ikoa_credit = request.args.get('need_ikoa_credit') or "0"
+
+    db_conn = JavManagerDB()
+    db_conn.upcreate_jav({
+        'car': car,
+        'stat': stat,
+        'need_ikoa_credit': need_ikoa_credit
+    })
+
+    return jsonify({'success': 'ok'})
+
 @local_manager.route('/single_scrape', methods=['POST'])
 def single_scrape():
     req_data = json.loads(request.get_data() or '{}')

@@ -170,7 +170,7 @@ class OOFDownloader:
                 # filter out unwanted files
                 download_files = self.filter_task_details(task_detail)
                 if not download_files:
-                    raise Exception(self.translate_map['oof_no_file'])
+                    return {'error': self.translate_map['oof_no_file'] + f' {car}'}
                 break
             except Exception as _e:
                 retry_num += 1
