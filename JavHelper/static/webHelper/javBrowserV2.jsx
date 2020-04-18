@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Pagination from 'rc-pagination'
-import index from 'rc-pagination/assets' // import for pagination styling
+import index from 'rc-pagination/assets' // import for pagination styling do not remove
 import Form from 'react-bootstrap/Form'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'

@@ -3,6 +3,9 @@ import Accordion from 'react-bootstrap/Accordion';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner'
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 import { useTranslation } from 'react-i18next';
 
@@ -56,73 +59,52 @@ const JavCardV2 = ({ update_obj, source_site }) => {
         }
     }
 
-    if (jav_card_stat === 0) {
-        return (
-            <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
-                <div className="jav-image"><img style={{opacity: _manual_opacity}} src={update_obj.img}></img></div>
-                <div className="jav-content" style={{width: "100%"}}>
-                    <p>{update_obj.car} {update_obj.title}</p>
-                    <StatButtonGroup 
-                        setbutstat={(_stat) => {setJavCardStat(_stat)}}
-                        stat={jav_card_stat} 
+    return (
+        <Container>
+        <Row style={border_style} key={update_obj.javid} id="main-javcard">
+            <Col md={{span: 3}}><img style={{opacity: _manual_opacity}} src={update_obj.img}></img></Col>
+            <Col md={{span: 9}}>
+                <Row><Col><p>{update_obj.car} {update_obj.title}</p></Col></Row>
+                <Row><Col>
+                <StatButtonGroup 
+                    setbutstat={(_stat) => {setJavCardStat(_stat)}}
+                    stat={jav_card_stat} 
+                    car={update_obj.car}
+                    magnet_site={magnet_site}
+                    setMagnetSite={setMagnetSite}
+                />
+                </Col></Row>
+                <Row><Col>
+                {
+                    (jav_card_stat === 0) ? <div className="magnetTable">
+                    <JavTable
                         car={update_obj.car}
                         magnet_site={magnet_site}
-                        setMagnetSite={setMagnetSite}
-                    />
-                    <div className="magnetTable">
-                        <JavTable
-                            car={update_obj.car}
-                            magnet_site={magnet_site}
-                            stat={jav_card_stat} 
-                            setJavStat={(_stat) => {setJavCardStat(_stat)}}
-                        />
-                    </div>
-                    <Accordion className="detail-image-section">
-                        <Card>
-                            <Card.Header className="detail-image-button">
-                                <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
-                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
-                                </Accordion.Toggle>
-                            </Card.Header>
-                            <Accordion.Collapse eventKey="0">
-                                <Card.Body>
-                                    <img src={card_jav_obj.image}></img>
-                                </Card.Body>
-                            </Accordion.Collapse>
-                        </Card>
-                    </Accordion>
-                </div>
-            </div>)
-    } else {
-        return (
-            <div className="flex-container" style={border_style} key={update_obj.javid} id="main-javcard">
-                <div className="jav-image"><img style={{opacity: _manual_opacity}} src={update_obj.img}></img></div>
-                <div className="jav-content" style={{width: "100%"}}>
-                    <p>{update_obj.car} {update_obj.title}</p>
-                    <StatButtonGroup  
-                        setbutstat={(_stat) => {setJavCardStat(_stat)}}
                         stat={jav_card_stat} 
-                        car={update_obj.car}
+                        setJavStat={(_stat) => {setJavCardStat(_stat)}}
                     />
-                    <div className="magnetTable">
-                    </div>
-                    <Accordion className="detail-image-section">
-                        <Card>
-                            <Card.Header className="detail-image-button">
-                                <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
-                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
-                                </Accordion.Toggle>
-                            </Card.Header>
-                            <Accordion.Collapse eventKey="0">
-                                <Card.Body>
-                                    <img src={card_jav_obj.image}></img>
-                                </Card.Body>
-                            </Accordion.Collapse>
-                        </Card>
-                    </Accordion>
-                </div>
-            </div>)
-    }
+                </div> : ''
+                }
+                </Col></Row>
+                <Row><Col>
+                <Accordion className="detail-image-section">
+                    <Card>
+                        <Card.Header className="detail-image-button">
+                            <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
+                                {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
+                            </Accordion.Toggle>
+                        </Card.Header>
+                        <Accordion.Collapse eventKey="0">
+                            <Card.Body>
+                                <img style={{maxWidth: '100%'}} src={card_jav_obj.image}></img>
+                            </Card.Body>
+                        </Accordion.Collapse>
+                    </Card>
+                </Accordion>
+                </Col></Row>
+            </Col>
+        </Row>
+        </Container>)
 };
 
 export default memo(JavCardV2);
