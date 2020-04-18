@@ -14,5 +14,3 @@ blitzdb==0.4.4
 aria2p==0.7.1
 Flask-Caching==1.8.0
 cloudscraper==1.2.33
-pycryptodome==3.9.7
-aiohttp-socks==0.3.7

@@ -2,6 +2,18 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.7.1] - 2019-04-17
+### Added
+- alpha version of jav777 support as a download source
+- add configuration to allow user remove certain string when renaming files
+- add UI support for user custom ikoa / dmmc downloader
+- add a overall download search to optimize download flow
+- add an endpoint for car that requires ikoa credit
+### Updated
+- fixed some read and write database issue with car
+- upgrade pillow for security reason
+- upgrade cloudscraper for newer chanllenges
+
 ## [0.7.0] - 2019-03-15
 ### Added
 - readme tab to teach user how to
