@@ -23,7 +23,7 @@ const JavCardV2 = ({ update_obj, source_site }) => {
     const [magnet_site, setMagnetSite] = useState('overall');
 
     const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 0.01;
+    const _manual_opacity = 1;
     
     let border_style = {
         borderColor: 'green', 
