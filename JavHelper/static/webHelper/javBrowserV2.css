@@ -3,6 +3,7 @@ div[id="javBrowserToggleGroup"] {
     align-items: center;
     display: flex;
     height: 100%;
+    max-height: max-content;
 }
 
 .jav-content {
@@ -17,6 +18,7 @@ div[id="javBrowserToggleGroup"] {
 
 .magnetTable div {
     background: transparent;
+    max-height: max-content;
 }
 
 div.detail-image-button {

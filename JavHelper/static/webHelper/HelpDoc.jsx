@@ -3,6 +3,10 @@ import ReactMarkdown from 'react-markdown/with-html';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
+
 import { useTranslation } from 'react-i18next';
 
 const HelpDoc = () => {
@@ -21,7 +25,8 @@ const HelpDoc = () => {
   }, [markdown_source]);
 
   return (
-    <div style={{padding: "1rem 12rem"}}>
+    <Container>
+      <Row><Col>
       <ToggleButtonGroup size="sm" type="radio" value={markdown_source} name="selectMarkdown" 
           onChange={(e) => setMarkdownSource(e)} style={{flexWrap: "wrap", marginLeft: "5px"}}>
           <ToggleButton value={'main_readme'}>
@@ -31,11 +36,14 @@ const HelpDoc = () => {
               {t('javdownloader_readme')}
           </ToggleButton>
       </ToggleButtonGroup>
+      </Col></Row>
+      <Row><Col>
       <ReactMarkdown
         source={ markdown }
         escapeHtml={false}
         />
-    </div>
+      </Col></Row>
+    </Container>
   );
 }
 

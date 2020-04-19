@@ -16,13 +16,9 @@
     font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
 }
 
-div.javConsole {
-    position: fixed;
-    width: 90%;
-    z-index: 900;
-}
-
 div[id="consoleColumn"] {
+    position: fixed;
+    z-index: 900;
     -webkit-transform: translateZ(0);
 }
 
@@ -30,6 +26,20 @@ div.cgarle {
     margin: 0px;
 }
 
-div.javConsoleContainer {
-    height: 260px;
+@media only screen and (min-width: 600px) {
+    div.javConsoleContainer {
+        height: 260px;
+    }
+    div.cgarle {
+        height: 250px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    div.javConsoleContainer {
+        height: 160px;
+    }
+    div.cgarle {
+        height: 150px;
+    }
 }

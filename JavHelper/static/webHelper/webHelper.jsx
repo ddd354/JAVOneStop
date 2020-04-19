@@ -221,7 +221,7 @@ class App extends Component {
         };
 
         return (
-          <Container>
+          <Container fluid>
               <Row className='javConsoleContainer'><Col id="consoleColumn">
                 <StyledLogDiv className='javConsole'>
                   <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
