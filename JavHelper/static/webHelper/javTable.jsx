@@ -29,7 +29,7 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
     return obj_list
   }
 
-  useEffect(() => {
+  /*useEffect(() => {
     if (stat === 0) {
     fetch(`parse_jav/search_magnet_link?car=`+String(car)+`&source=`+magnet_site)
         .then(response => response.json())
@@ -44,7 +44,7 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
     } else {
       setJavData([{'title': 'no magnet search'}]);
     }
-  }, []);  //emtpy array to prevent running on re-render
+  }, []);  //emtpy array to prevent running on re-render*/
 
   // when site changes, pull new data
   useEffect(() => {

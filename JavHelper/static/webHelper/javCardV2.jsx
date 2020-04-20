@@ -61,9 +61,9 @@ const JavCardV2 = ({ update_obj, source_site }) => {
 
     return (
         <Container>
-        <Row style={border_style} key={update_obj.javid} id="main-javcard">
-            <Col md={{span: 3}}><img style={{opacity: _manual_opacity}} src={update_obj.img}></img></Col>
-            <Col md={{span: 9}}>
+        <Row xs={1} md={2} style={border_style} key={update_obj.javid} id="main-javcard">
+            <Col xs={{span: 12, order: 1}} md={{span: 4, order: 1}}><img style={{opacity: _manual_opacity, maxWidth: "100%"}} src={update_obj.img}></img></Col>
+            <Col xs={{span: 12, order: 2}} md={{span: 8, order: 2}}>
                 <Row><Col><p>{update_obj.car} {update_obj.title}</p></Col></Row>
                 <Row><Col>
                 <StatButtonGroup 

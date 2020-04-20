@@ -69,6 +69,17 @@ const JavBroswerV2 = () => {
     // when jav_objs or jav_stat_filter update, update card as well
     useEffect(() => {
         //console.log('updating new jav_objs', jav_objs.length);
+        // only keep max number of jav obj
+        /*let _jav_objs = [];
+        if (jav_objs.length > 50) {
+            _jav_objs = jav_objs.slice(-50);
+            setJavObjs(_jav_objs);
+            console.log('new jav objs length: ', _jav_objs.length);
+        } else {
+            _jav_objs = jav_objs;
+        }*/
+
+        // filter based on filter setup
         setJavObjCards(jav_objs.map(
                 function(jav_obj){
                     if (jav_stat_filter.length > 0) {
@@ -86,6 +97,7 @@ const JavBroswerV2 = () => {
         // this is triggered from pagination click
         //console.log(current, page_size);
         let _target_num = String(current);
+        setHasMoreObj(true);  // always has more if page up
         
         setLoading(true);
         setPageNum(_target_num);
@@ -99,8 +111,6 @@ const JavBroswerV2 = () => {
 
                 if (_target_num === max_page || _target_num === jsonData.success.max_page) {
                     setHasMoreObj(false);
-                } else {
-                    setHasMoreObj(true);
                 }
 
                 if (jsonData.errors) {
@@ -112,30 +122,28 @@ const JavBroswerV2 = () => {
 
     const handleInfiniteJavFetch = () => {
         // this handles infinite scroll data fetch
-        if (has_more_obj) {
-            console.log(t('log_page_incremental'), page_num);
-            let _new_page = String(parseInt(page_num)+1);
-            fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
-            `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
-                .then(response => response.json())
-                .then((jsonData) => {
-                    //console.log(jsonData.success);
-                    setJavObjs(jav_objs.concat(jsonData.success.jav_objs));
-                    setPageNum(_new_page);
-                    setMaxPage(jsonData.success.max_page);
-                    
-                    setPageNum(_new_page);
-                    if (_new_page === max_page || _new_page === jsonData.success.max_page) {
-                        setHasMoreObj(false);
-                    } else {
-                        setHasMoreObj(true);
-                    }
+        console.log(t('log_page_incremental'), page_num);
+        let _new_page = String(parseInt(page_num)+1);
+        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
+        `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
+            .then(response => response.json())
+            .then((jsonData) => {
+                //console.log(jsonData.success);
+                setJavObjs(jav_objs.concat(jsonData.success.jav_objs));
+                setPageNum(_new_page);
+                setMaxPage(jsonData.success.max_page);
+                
+                setPageNum(_new_page);
+                if (_new_page === max_page || _new_page === jsonData.success.max_page) {
+                    setHasMoreObj(false);
+                } else {
+                    setHasMoreObj(true);
+                }
 
-                    if (jsonData.errors) {
-                        console.log('Error: ', jsonData.error);
-                    }
-                })
-        }
+                if (jsonData.errors) {
+                    console.log('Error: ', jsonData.error);
+                }
+            })
     };
 
     const handleFormSearch = (event) => {
@@ -209,13 +217,22 @@ const JavBroswerV2 = () => {
             <div>
                 <InfiniteScroll
                     dataLength={jav_obj_cards.length || 0}
-                    //scrollThreshold={0.9}
+                    scrollThreshold={0.7}
                     hasMore={has_more_obj}
                     next={handleInfiniteJavFetch}
                     loader={"Loading..."}
+                    endMessage={t('scroll_end')}
                     >
                     {jav_obj_cards}
                 </InfiniteScroll>
+                <Button
+                    size="sm"
+                    style={{fontSize: "10px", padding: "1 1 1 1"}}
+                    variant="primary"
+                    onClick={handleInfiniteJavFetch}
+                >
+                    {t('load_more')}
+                </Button>  
             </div>
         </div>
     );
