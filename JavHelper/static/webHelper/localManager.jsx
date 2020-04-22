@@ -11,7 +11,7 @@ import LocalJavCard from './localJavCard'
 
 const LocalJavManager = (props) => {
     const { t, i18n } = useTranslation();
-    const scrape_limiter = new Bottleneck({maxConcurrent: 1});
+    const scrape_limiter = new Bottleneck({maxConcurrent: 4, minTime: 300});
     // store jav objs
     const [jav_objs, setJavObjs] = useState([]);
     const [filter_cars, setFilterCars] = useState([]);

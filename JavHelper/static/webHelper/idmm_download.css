@@ -1,0 +1,7 @@
+div[id="subDownloader"] {
+    margin: 15px 5px 5px 0px;
+    border-color: black;
+    border-style: solid;
+    border-width: thin;
+    padding: 5px 20px 20px 10px;
+}
