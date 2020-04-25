@@ -12,45 +12,66 @@ import { useTranslation } from 'react-i18next';
 import StatButtonGroup from "./statButtonGroup";
 import JavTable from "./javTable";
 import './javBrowserV2.css';
+import { useEffect } from 'react';
 
 
-const JavCardV2 = ({ update_obj, source_site }) => {
+const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler }) => {
     const { t, i18n } = useTranslation();
     
-    const [card_jav_obj, setCardJavObj] = useState(update_obj);
+    //const [card_jav_obj, setCardJavObj] = useState(update_obj);
     const [loading, setLoading] = useState(false);
 
     const [magnet_site, setMagnetSite] = useState('overall');
+    const [border_style, setBorderStyle] = useState({});
 
-    const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 1;
+    //const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
+    const _manual_opacity = 0.01;
     
-    let border_style = {
-        borderColor: 'green', 
-        borderWidth: '2px', 
-        borderStyle: 'solid',
-        marginBottom: '20px',
-        background: 'rgba(51, 204, 51, 0.2)',
-    };
-    if (update_obj.directory) {
-        border_style.borderColor = 'red';
-        border_style.background = 'rgba(255, 0, 0, 0.2)';
-    } else if (jav_card_stat === 4 || jav_card_stat === 1) {
-        border_style.borderColor = 'black';
-        border_style.background = 'rgba(0, 0, 0, 0.2)';
-    } else if (jav_card_stat === 2) {
-        border_style.borderColor = 'yellow';
-        border_style.background = 'rgba(255, 255, 0, 0.2)';
-    }
+    useEffect(() => {
+        if (stat === 3) {
+            setBorderStyle({
+                borderColor: 'red', 
+                borderWidth: '2px', 
+                borderStyle: 'solid',
+                marginBottom: '20px',
+                background: 'rgba(255, 0, 0, 0.2)',
+            })
+        } else if (stat === 0) {
+            setBorderStyle({
+                borderColor: 'green', 
+                borderWidth: '2px', 
+                borderStyle: 'solid',
+                marginBottom: '20px',
+                background: 'rgba(51, 204, 51, 0.2)',
+            }) 
+        } else if (stat === 4 || stat === 1) {
+            setBorderStyle({
+                borderColor: 'black', 
+                borderWidth: '2px', 
+                borderStyle: 'solid',
+                marginBottom: '20px',
+                background: 'rgba(0, 0, 0, 0.2)',
+            })
+        } else if (stat === 2) {
+            setBorderStyle({
+                borderColor: 'yellow', 
+                borderWidth: '2px', 
+                borderStyle: 'solid',
+                marginBottom: '20px',
+                background: 'rgba(255, 255, 0, 0.2)',
+            })
+        }
+    }, [stat]);
+    
 
     const handleShowDetailImage = () => {
-        if (card_jav_obj.image === undefined) {
+        if (update_obj.image === undefined) {
             setLoading(true);
-            fetch(`/${source_site}/get_set_javs?set_type=番号&search_string=`+card_jav_obj.car)
+            fetch(`/${source_site}/get_set_javs?set_type=番号&search_string=`+update_obj.car)
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
-                setCardJavObj(jsonData.success.jav_objs[0]);
+                update_parent_javobj_handler('image', jsonData.success.jav_objs[0].image);
                 if (jsonData.errors) {
                     console.log('Error: ', jsonData.error);
                 }
@@ -67,8 +88,8 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                 <Row><Col><p>{update_obj.car} {update_obj.title}</p></Col></Row>
                 <Row><Col>
                 <StatButtonGroup 
-                    setbutstat={(_stat) => {setJavCardStat(_stat)}}
-                    stat={jav_card_stat} 
+                    setbutstat={(_stat) => {update_parent_javobj_handler('stat', _stat)}}
+                    stat={stat} 
                     car={update_obj.car}
                     magnet_site={magnet_site}
                     setMagnetSite={setMagnetSite}
@@ -76,12 +97,12 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                 </Col></Row>
                 <Row><Col>
                 {
-                    (jav_card_stat === 0) ? <div className="magnetTable">
+                    (stat === 0) ? <div className="magnetTable">
                     <JavTable
                         car={update_obj.car}
                         magnet_site={magnet_site}
-                        stat={jav_card_stat} 
-                        setJavStat={(_stat) => {setJavCardStat(_stat)}}
+                        stat={stat} 
+                        setJavStat={(_stat) => {update_parent_javobj_handler('stat', _stat)}}
                     />
                 </div> : ''
                 }
@@ -96,7 +117,7 @@ const JavCardV2 = ({ update_obj, source_site }) => {
                         </Card.Header>
                         <Accordion.Collapse eventKey="0">
                             <Card.Body>
-                                <img style={{maxWidth: '100%'}} src={card_jav_obj.image}></img>
+                                <img style={{maxWidth: '100%'}} src={update_obj.image}></img>
                             </Card.Body>
                         </Accordion.Collapse>
                     </Card>

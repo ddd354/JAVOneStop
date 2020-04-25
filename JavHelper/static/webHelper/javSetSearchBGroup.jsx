@@ -48,7 +48,8 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
 
     const clickStatFilter = (event) => {
         // triggered from toggle stat filtering group
-        console.log('filter on: ', event);
+        const filter_map = JSON.parse(t('filter_map'));
+        console.log(t('log_filter'), filter_map[event]);
         if (event === 'w_or_noop') {
             setJavStatFilter([0, 2]);
         } else if (event === 'no_filter') {

@@ -51,7 +51,7 @@ const IdmmMonitor = ({ server_addr }) => {
                     setDmmcJobs(dmmc_jobs);
                 }
             });
-        }, 4000);
+        }, 10000);
         return () => clearInterval(interval);
       }, []);
 

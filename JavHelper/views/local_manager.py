@@ -47,7 +47,7 @@ def update_car_ikoa_stat():
     db_conn = JavManagerDB()
     db_conn.upcreate_jav({
         'car': car,
-        'stat': stat,
+        'stat': int(stat),
         'need_ikoa_credit': need_ikoa_credit
     })
 
