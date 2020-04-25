@@ -36,7 +36,8 @@ const JavBroswerV2 = () => {
     const [jav_set_name, setJavSet] = useState('subtitled');
     const [page_num, setPageNum] = useState('1');
     const [max_page, setMaxPage] = useState('25');
-    //const [page_items, setPageItems] = useState();
+    const scroll_trigger = 1.1;
+    
     const [search_string, setSearchString] = useState('');
 
     // initialize component
@@ -251,7 +252,7 @@ const JavBroswerV2 = () => {
             <div>
                 <InfiniteScroll
                     dataLength={jav_obj_cards.length || 0}
-                    scrollThreshold={1.1}
+                    scrollThreshold={scroll_trigger}
                     hasMore={has_more_obj}
                     next={handleInfiniteJavFetch}
                     loader={"Loading..."}
@@ -267,8 +268,15 @@ const JavBroswerV2 = () => {
                 >
                     {t('load_more')}
                 </Button>
-            
             </div>
+            {
+                scroll_trigger > 1 ? <div>
+                    <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
+                        defaultPageSize={1}
+                        onChange={current => setPageNum(String(current))}
+                    />
+                </div> : <div></div>
+            }
         </div>
         </GlobalHotKeys>
     );

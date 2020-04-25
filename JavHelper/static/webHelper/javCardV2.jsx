@@ -25,7 +25,7 @@ const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler
     const [border_style, setBorderStyle] = useState({});
 
     //const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
-    const _manual_opacity = 0.01;
+    const _manual_opacity = 1;
     
     useEffect(() => {
         if (stat === 3) {
