@@ -71,9 +71,10 @@ const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
-                update_parent_javobj_handler('image', jsonData.success.jav_objs[0].image);
-                if (jsonData.errors) {
-                    console.log('Error: ', jsonData.error);
+                if (jsonData.error) {
+                    console.log(jsonData.error);
+                } else {
+                    update_parent_javobj_handler('image', jsonData.success.jav_objs[0].image);
                 }
                 setLoading(false);
             });

@@ -11,7 +11,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
     const { t, i18n } = useTranslation();
 
     const website_set_map = {
-        'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates', 'personal_wanted'],
+        'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates'],
         'javbus_browser': ['subtitled', 'trending_updates'],
         'jav777_browser': ['trending_updates']
     }

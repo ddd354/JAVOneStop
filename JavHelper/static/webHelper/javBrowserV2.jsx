@@ -5,6 +5,7 @@ import Pagination from 'rc-pagination'
 import index from 'rc-pagination/assets' // import for pagination styling do not remove
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
+import Spinner from 'react-bootstrap/Spinner'
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
@@ -41,7 +42,7 @@ const JavBroswerV2 = () => {
     const [search_string, setSearchString] = useState('');
 
     // initialize component
-    useEffect(() => {
+    /*useEffect(() => {
         fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)
             .then(response => response.json())
             .then((jsonData) => {
@@ -52,9 +53,9 @@ const JavBroswerV2 = () => {
                     setJavObjs(jsonData.success.jav_objs);
                     setMaxPage(jsonData.success.max_page);
                 }
-                setLoading(false);
+                //setLoading(false);
             });
-    }, []);
+    }, []);*/
 
     // when switching from different site, force an update
     useEffect(() => {
@@ -91,27 +92,29 @@ const JavBroswerV2 = () => {
     }, [jav_objs, jav_stat_filter]);
 
     useEffect(() => {
-        //console.log('current page change: ', page_num);
-        setHasMoreObj(true);  // always has more if page up
-        
-        setLoading(true);
-        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
-        `&page_num=`+String(page_num)+`&search_string=`+String(search_string))
-            .then(response => response.json())
-            .then((jsonData) => {
-                //console.log(jsonData.success);
-                setJavObjs(jsonData.success.jav_objs);
-                setMaxPage(jsonData.success.max_page);
+        if (!isLoading) {
+            //console.log('current page change: ', page_num);
+            setHasMoreObj(true);  // always has more if page up
+            
+            setLoading(true);
+            fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
+            `&page_num=`+String(page_num)+`&search_string=`+String(search_string))
+                .then(response => response.json())
+                .then((jsonData) => {
+                    if (jsonData.error) {
+                        console.log(jsonData.error);
+                        setPageNum(previousPage => previousPage-1)
+                    } else {
+                        setJavObjs(jsonData.success.jav_objs);
+                        setMaxPage(jsonData.success.max_page);
 
-                if (page_num === max_page || page_num === jsonData.success.max_page) {
-                    setHasMoreObj(false);
-                }
-
-                if (jsonData.errors) {
-                    console.log('Error: ', jsonData.error);
-                }
-                setLoading(false);
-            })
+                        if (page_num === max_page || page_num === jsonData.success.max_page) {
+                            setHasMoreObj(false);
+                        }
+                    }
+                    setLoading(false);
+                })
+        }
     }, [page_num]);
 
     const handleInfiniteJavFetch = () => {
@@ -134,7 +137,7 @@ const JavBroswerV2 = () => {
                     setHasMoreObj(true);
                 }
 
-                if (jsonData.errors) {
+                if (jsonData.error) {
                     console.log('Error: ', jsonData.error);
                 }
             })
@@ -159,7 +162,7 @@ const JavBroswerV2 = () => {
                 //console.log(jsonData.success);
                 setJavObjs(jsonData.success.jav_objs);
                 setMaxPage(jsonData.success.max_page);
-                if (jsonData.errors) {
+                if (jsonData.error) {
                     console.log('Error: ', jsonData.error);
                 }
                 setLoading(false);
@@ -208,6 +211,7 @@ const JavBroswerV2 = () => {
 
     return (
         <GlobalHotKeys keyMap={keyMap} handlers={hotkey_handlers}>
+            {isLoading ? <Spinner id='overlaySpinner' animation="border" size='lg'/> : <div></div>}
         <div>
             <JavBrowserChecker />
             <Container>
@@ -249,33 +253,33 @@ const JavBroswerV2 = () => {
                     onChange={current => setPageNum(String(current))}
                 />
             </div>
-            <div>
-                <InfiniteScroll
-                    dataLength={jav_obj_cards.length || 0}
-                    scrollThreshold={scroll_trigger}
-                    hasMore={has_more_obj}
-                    next={handleInfiniteJavFetch}
-                    loader={"Loading..."}
-                    endMessage={t('scroll_end')}
-                    >
-                    {jav_obj_cards}
-                </InfiniteScroll>
-                <Button
-                    size="sm"
-                    style={{fontSize: "10px", padding: "1 1 1 1"}}
-                    variant="primary"
-                    onClick={handleInfiniteJavFetch}
-                >
-                    {t('load_more')}
-                </Button>
-            </div>
             {
                 scroll_trigger > 1 ? <div>
+                    {jav_obj_cards}
                     <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
                         defaultPageSize={1}
                         onChange={current => setPageNum(String(current))}
                     />
-                </div> : <div></div>
+                </div> : <div>
+                    <InfiniteScroll
+                        dataLength={jav_obj_cards.length || 0}
+                        scrollThreshold={scroll_trigger}
+                        hasMore={has_more_obj}
+                        next={handleInfiniteJavFetch}
+                        loader={"Loading..."}
+                        endMessage={t('scroll_end')}
+                        >
+                        {jav_obj_cards}
+                    </InfiniteScroll>
+                    <Button
+                        size="sm"
+                        style={{fontSize: "10px", padding: "1 1 1 1"}}
+                        variant="primary"
+                        onClick={handleInfiniteJavFetch}
+                    >
+                        {t('load_more')}
+                    </Button>
+                </div>
             }
         </div>
         </GlobalHotKeys>

@@ -2,6 +2,7 @@
 from lxml import etree
 import re
 from copy import deepcopy
+import json
 
 from JavHelper.core.jav_scraper import JavScraper
 from JavHelper.core import JAVNotFoundException
@@ -9,6 +10,8 @@ from JavHelper.core.requester_proxy import return_html_text, return_post_res, re
 from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
 from JavHelper.core.ini_file import return_config_string
 
+
+LOCAL_CF_COOKIES = 'javlib_cf_cookies.json'
 
 class JavLibraryScraper(JavScraper):
     def __init__(self, *args, **kwargs):
@@ -49,8 +52,9 @@ class JavLibraryScraper(JavScraper):
 
         # perform search first
         lib_search_url = self.jav_url + 'vl_searchbyid.php?keyword=' + self.car
-        print(f'accessing {lib_search_url}')
+        #print(f'accessing {lib_search_url}')
         jav_html = return_html_text(lib_search_url, behind_cloudflare=True)
+        #print('page return ok')
 
         # 搜索结果的网页，大部分情况就是这个影片的网页，也有可能是多个结果的网页
         # 尝试找标题，第一种情况：找得到，就是这个影片的网页
@@ -77,6 +81,20 @@ class JavLibraryScraper(JavScraper):
             # 第三种情况：搜索不到这部影片，搜索结果页面什么都没有
             else:
                 raise JAVNotFoundException('{} cannot be found in javlib'.format(self.car))
+
+    @staticmethod
+    def load_local_cookies(return_all=False):
+        raw_cookies = json.load(open(LOCAL_CF_COOKIES, 'r'))
+        if return_all:
+            return raw_cookies
+        else:
+            return {x['name']: x['value'] for x in raw_cookies}
+
+    @staticmethod
+    def update_local_cookies(update_dict: dict or list):
+        with open(LOCAL_CF_COOKIES, 'w') as oof_f:
+            oof_f.write(json.dumps(update_dict))
+        return f'115 cookies updated to local file {LOCAL_CF_COOKIES}'
 
 def find_max_page(search_str: str):
     search_pattern = r'.*?page=(\d*)'
