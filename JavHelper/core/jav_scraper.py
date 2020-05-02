@@ -32,6 +32,7 @@ class JavScraper:
 
     def scrape_jav(self):
         page_content, total_index = self.get_single_jav_page()
+        #import ipdb; ipdb.set_trace()
         self.jav_obj['pick_index'] = self.pick_index
         self.jav_obj['total_index'] = total_index
         #import ipdb; ipdb.set_trace()

@@ -74,6 +74,7 @@ def cloudflare_get(url, cookies={}, proxies=None):
         try:
             cookies.update(JavLibraryScraper.load_local_cookies())  # update cloudflare cookies when updating
             res = cloudscraper.create_scraper().get(url, cookies=cookies, proxies=proxies)
+            #print(res.text)
             return res
         #except cloudscraper.exceptions.CloudflareIUAMError:
         except Exception as e:
