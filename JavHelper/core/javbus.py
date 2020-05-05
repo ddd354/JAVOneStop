@@ -134,7 +134,11 @@ def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=N
             jav_objs_raw[_i].update({k: _value})
 
     try:
-        max_page = root.xpath(xpath_max_page)[-2]
+        _new_max = root.xpath(xpath_max_page)[-2]
+        if _new_max > page_num:
+            max_page = _new_max
+        else:
+            max_page = page_num
     except:
         max_page = page_num
     if not max_page:
