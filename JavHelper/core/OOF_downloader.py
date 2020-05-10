@@ -174,7 +174,7 @@ class OOFDownloader:
                 break
             except Exception as _e:
                 retry_num += 1
-                sleep(5)
+                sleep(15)
                 print(f'current error: {_e}, retrying')
                 e = _e
 

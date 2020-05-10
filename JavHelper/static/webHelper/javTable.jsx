@@ -66,9 +66,9 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
   }, [magnet_site])
 
   let header = [
-    {name:"action", selector:"action"},
-    {name:"title", selector:"title"},
-    {name:"size", selector:"size"}
+    {name:"action", selector:"action", maxWidth: "15%"},
+    {name:"title", selector:"title", maxWidth: "70%", wrap: true},
+    {name:"size", selector:"size", maxWidth: "15%"}
   ];
 
   return(
