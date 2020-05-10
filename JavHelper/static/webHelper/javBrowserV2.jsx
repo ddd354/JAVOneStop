@@ -41,22 +41,6 @@ const JavBroswerV2 = () => {
     
     const [search_string, setSearchString] = useState('');
 
-    // initialize component
-    /*useEffect(() => {
-        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)
-            .then(response => response.json())
-            .then((jsonData) => {
-                if (jsonData.error) {
-                    console.log(jsonData.error);
-                    setJavObjs([]);
-                } else {
-                    setJavObjs(jsonData.success.jav_objs);
-                    setMaxPage(jsonData.success.max_page);
-                }
-                //setLoading(false);
-            });
-    }, []);*/
-
     // when switching from different site, force an update
     useEffect(() => {
         fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)

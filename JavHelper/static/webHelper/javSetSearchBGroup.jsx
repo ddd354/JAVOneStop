@@ -13,6 +13,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
     const website_set_map = {
         'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates'],
         'javbus_browser': ['subtitled', 'trending_updates'],
+        'javdb_browser': ['trending_updates', 'subtitled', 'daily_rank', 'weekly_rank', 'monthly_rank'],
         'jav777_browser': ['trending_updates']
     }
     const [set_toggle_list, setToggleList] = useState(website_set_map[source_site]);
@@ -102,6 +103,9 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
             </ToggleButton>
             <ToggleButton value={'javbus_browser'}>
                 {"javbus"}
+            </ToggleButton>
+            <ToggleButton value={'javdb_browser'}>
+                {"javdb"}
             </ToggleButton>
             <ToggleButton value={'jav777_browser'}>
                 {"jav777"}

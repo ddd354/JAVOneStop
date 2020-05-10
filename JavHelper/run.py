@@ -5,4 +5,4 @@ from JavHelper.app import create_app
 if __name__ == '__main__':
     os.environ['FLASK_ENV'] = 'development'
     app = create_app()
-    app.run(threaded=True, host='0.0.0.0', port=8009)
+    app.run(threaded=True, host='0.0.0.0', port=18009)

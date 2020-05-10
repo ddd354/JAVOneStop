@@ -87,7 +87,10 @@ const resources = {
       'javdownloader_readme': 'Jav Downloader Tutorial',
       'overall': 'overall',
       'load_more': 'load more',
-      'scroll_end': 'this is the end'
+      'scroll_end': 'this is the end',
+      'daily_rank': 'Daily Ranking',
+      'weekly_rank': 'Weekly Ranking',
+      'monthly_rank': 'Monthly Ranking'
     }
   },
   //{t('')}
@@ -175,7 +178,10 @@ const resources = {
       'javdownloader_readme': 'JAV下载器教程',
       'overall': '综合',
       'load_more': '加载更多',
-      'scroll_end': '没有更多'
+      'scroll_end': '没有更多',
+      'daily_rank': '日排行',
+      'weekly_rank': '周排行',
+      'monthly_rank': '月排行'
     }
   }
 };

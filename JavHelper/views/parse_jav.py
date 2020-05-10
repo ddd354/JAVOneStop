@@ -11,6 +11,7 @@ from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
+from JavHelper.core.javdb import JavDBScraper
 from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.file_scanner import EmbyFileStructure
@@ -23,6 +24,7 @@ SOURCES_MAP = {
     'javlibrary': JavLibraryScraper,
     'arzon': ArzonScraper,
     'javbus': JavBusScraper,
+    'javdb': JavDBScraper
 }
 
 

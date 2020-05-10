@@ -97,22 +97,26 @@ def javbus_magnet_search(car: str):
     return magnets
 
 
-def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:
+def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:
+    """
+    website parse function
+    """
     xpath_dict = {
-        'title': '//div[@class="photo-frame"]/img[not(contains(@src, "actress"))]/@title',
-        'javid': '//div[@class="photo-info"]/span/date[1]/text()',
-        'img': '//div[@class="photo-frame"]/img[not(contains(@src, "actress"))]/@src',
-        'car': '//div[@class="photo-info"]/span/date[1]/text()'
+        'title': '//a[@class="box"]/div[@class="video-title"]/text()',
+        'javid': '//a[@class="box"]/div[@class="uid"]/text()',
+        'img': '//div[@class="item-image fix-scale-cover"]/img/@data-src',
+        'car': '//a[@class="box"]/div[@class="uid"]/text()'
     }
-    xpath_max_page = '//ul[@class="pagination pagination-lg"]/li/a/text()'
+    xpath_max_page = '//ul[@class="pagination-list"]/li/a[@class="pagination-link"][last()]/text()'
 
     # force to get url from ini file each time
-    javbus_url = return_config_string(['其他设置', 'javbus网址'])
-    set_url = javbus_url + page_template.format(page_num=page_num, url_parameter=url_parameter)
+    javdb_url = 'https://javdb4.com/'
+    set_url = javdb_url + page_template.format(page_num=page_num, url_parameter=url_parameter)
     print(f'accessing {set_url}')
 
-    res = return_post_res(set_url).content
-    root = etree.HTML(res)
+    # not really behind cloudflare but may prevent python scrape
+    res = return_post_res(set_url, cookies={'over18': "1"}, behind_cloudflare=True).content
+    root = etree.HTML(res.decode('utf-8'))
 
     jav_objs_raw = defaultlist(dict)
     for k, v in xpath_dict.items():
@@ -121,7 +125,7 @@ def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=N
             jav_objs_raw[_i].update({k: _value})
 
     try:
-        max_page = root.xpath(xpath_max_page)[-2]
+        max_page = root.xpath(xpath_max_page)[-1]
     except:
         max_page = page_num
     if not max_page:
