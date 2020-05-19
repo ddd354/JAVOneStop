@@ -20,6 +20,7 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
             console.log(t('log_error'), jsonData.error)
           } else {
             console.log(t('log_idmm_download'), jsonData.success.car);
+            setJavStat(4);
           }
           setLoading(false);
         })
