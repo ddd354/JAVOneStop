@@ -142,9 +142,11 @@ class EmbyFileStructure:
             for i in jav_obj.get('genres', []):
                 f.write("  <genre>" + i + "</genre>\n")
             f.write("  <genre>片商：{}</genre>\n".format(jav_obj.get('studio', '')))
-            for i in jav_obj.get('genres', []):
+            for i in jav_obj.get('tags', []):
                 f.write("  <tag>" + i + "</tag>\n")
-            f.write("  <tag>片商：{}</tag>\n".format(jav_obj.get('studio', '')))
+            #for i in jav_obj.get('genres', []):
+            #    f.write("  <tag>" + i + "</tag>\n")
+            #f.write("  <tag>片商：{}</tag>\n".format(jav_obj.get('studio', '')))
             for i in jav_obj.get('all_actress', []):
                 f.write("  <actor>\n    <name>" + i + "</name>\n    <type>Actor</type><role>{}</role>\n  </actor>\n".format(self.return_actor_role()))
             f.write("</movie>\n")

@@ -10,6 +10,7 @@ from JavHelper.cache import cache
 from JavHelper.core.javdb import javdb_set_page, JavDBScraper
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
+from JavHelper.core.backend_translation import BackendTranslation
 
 
 javdb_browser = Blueprint('javdb_browser', __name__, url_prefix='/javdb_browser')
@@ -88,12 +89,17 @@ def get_set_javs():
                 'javlib_actress_code': search_string, 'page_num': page_num}},
             '分类': {'function': javdb_set_page, 'params': 
                 {'page_template': 'tags?c6={url_parameter}&page={page_num}',
-                'page_num': page_num, 'url_parameter': search_string}},
+                'page_num': page_num, 'url_parameter': search_string}
+            },
+            '系列': {'function': javdb_set_page, 'params': 
+                {'page_template': 'series/{url_parameter}?page={page_num}',
+                'page_num': page_num, 'url_parameter': search_string}
+            }
         }
 
         # verify set type
         if set_type not in search_map:
-            return jsonify({'error': f'{set_type} is not a supported search type'}), 400
+            return jsonify({'error': BackendTranslation()['no_support_set_search'].format(set_type)}), 400
 
         jav_objs, max_page = search_map[set_type]['function'](**search_map[set_type]['params'])
     

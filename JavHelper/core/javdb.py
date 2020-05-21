@@ -29,7 +29,8 @@ class JavDBScraper(JavScraper):
             'search_list_field': {
                 #'plot': no good source,
                 'all_actress': '//div[./strong/text()="演員:"]/span/a/text()',
-                'genres': '//div[./strong/text()="類別:"]/span/a/text()'
+                'genres': '//div[./strong/text()="類別:"]/span/a/text()',
+                'tags': '//div[./strong/text()="系列:"]/span/a/text()'
             },
         }
 

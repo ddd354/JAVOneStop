@@ -16,6 +16,7 @@ class EmbyNfo:
     }
     list_field_mapping = {
         'genres': './/genre',
+        'tags': './/tag',
         'all_actress': './/actor/name'
     }
 

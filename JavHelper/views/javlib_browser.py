@@ -12,6 +12,7 @@ from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.core.aria2_handler import verify_aria2_configs_exist
+from JavHelper.core.backend_translation import BackendTranslation
 
 
 javlib_browser = Blueprint('javlib_browser', __name__, url_prefix='/javlib_browser')
@@ -107,7 +108,7 @@ def get_set_javs():
 
         # verify set type
         if set_type not in search_map:
-            return jsonify({'error': f'{set_type} is not a supported search type'}), 400
+            return jsonify({'error': BackendTranslation()['no_support_set_search'].format(set_type)}), 400
 
         jav_objs, max_page = search_map[set_type]['function'](**search_map[set_type]['params'])
     

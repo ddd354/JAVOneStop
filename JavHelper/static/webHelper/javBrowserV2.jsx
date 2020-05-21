@@ -143,12 +143,13 @@ const JavBroswerV2 = () => {
             `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
             .then(response => response.json())
             .then((jsonData) => {
+                if (jsonData.error) {
+                    setLoading(false);
+                    console.log('Error: ', jsonData.error);
+                }
                 //console.log(jsonData.success);
                 setJavObjs(jsonData.success.jav_objs);
                 setMaxPage(jsonData.success.max_page);
-                if (jsonData.error) {
-                    console.log('Error: ', jsonData.error);
-                }
                 setLoading(false);
             });
     };
@@ -218,6 +219,7 @@ const JavBroswerV2 = () => {
                                 <option>番号</option>
                                 <option>女优</option>
                                 <option>分类</option>
+                                <option>系列</option>
                             </Form.Control>
                             </Form.Group></Col>
                             <Col><Form.Group controlId="formGridSearchText">
