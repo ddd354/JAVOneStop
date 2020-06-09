@@ -3,6 +3,10 @@
         "en": "unknown error {e}",
         "cn": "意外错误: {e}"
     },
+    "no_support_set_search": {
+        "en": "{} is not a supported search type",
+        "cn": "不支持\"{}\"的搜索"
+    },
     "oof_cookie_error": {
         "cn": "获取115签名失败，请检查是否填入正确的cookies",
         "en": "Failure to get 115 signiture, check cookies are correct"
@@ -22,6 +26,10 @@
     "oof_fail_magnet": {
         "en": "download {car} failed on {create_magnet_e}",
         "cn": "{car}添加磁链失败: {create_magnet_e}"
+    },
+    "oof_no_task_found": {
+        "en": "download {car} failed on: cannot find download task from first page of magnet task; please visit 115 and clean up pending tasks",
+        "cn": "{car}添加磁链失败: 无法在离线下载第一页找到下载任务, 请前往115清理失败或者正在进行的任务"
     },
     "oof_no_file": {
         "en": "there is no download file found in 115 task",

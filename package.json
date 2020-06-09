@@ -33,6 +33,7 @@
     "react-bootstrap": "^1.0.0-beta.16",
     "react-data-table-component": "^6.0.4",
     "react-debounce-input": "^3.2.2",
+    "react-hotkeys": "^2.0.0-pre9",
     "react-i18next": "^11.3.1",
     "react-iframe": "^1.8.0",
     "react-infinite-scroll-component": "^5.0.4",

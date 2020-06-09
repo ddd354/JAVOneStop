@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import useDeepCompareEffect from 'use-deep-compare-effect'
+
 import Pagination from 'rc-pagination'
-import index from 'rc-pagination/assets' // import for pagination styling
+import index from 'rc-pagination/assets' // import for pagination styling do not remove
 import Form from 'react-bootstrap/Form'
-import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button'
+import Spinner from 'react-bootstrap/Spinner'
+
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { GlobalHotKeys } from "react-hotkeys";
+import Bottleneck from "bottleneck";
 
 import JavBrowserChecker from './javBrowserChecker';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +26,7 @@ const JavBroswerV2 = () => {
     const { t, i18n } = useTranslation();
     const [source_site, setSourceSite] = useState('javbus_browser');
     const [isLoading, setLoading] = useState(true);
+    const batch_limiter = new Bottleneck({maxConcurrent: 1});
 
     const [jav_objs, setJavObjs] = useState([]);
     const [jav_stat_filter, setJavStatFilter] = useState([0, 2]);
@@ -28,24 +37,9 @@ const JavBroswerV2 = () => {
     const [jav_set_name, setJavSet] = useState('subtitled');
     const [page_num, setPageNum] = useState('1');
     const [max_page, setMaxPage] = useState('25');
-    //const [page_items, setPageItems] = useState();
+    const scroll_trigger = 1.1;
+    
     const [search_string, setSearchString] = useState('');
-
-    // initialize component
-    useEffect(() => {
-        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)
-            .then(response => response.json())
-            .then((jsonData) => {
-                if (jsonData.error) {
-                    console.log(jsonData.error);
-                    setJavObjs([]);
-                } else {
-                    setJavObjs(jsonData.success.jav_objs);
-                    setMaxPage(jsonData.success.max_page);
-                }
-                setLoading(false);
-            });
-    }, []);
 
     // when switching from different site, force an update
     useEffect(() => {
@@ -65,74 +59,72 @@ const JavBroswerV2 = () => {
 
     // when jav_objs or jav_stat_filter update, update card as well
     useEffect(() => {
-        //console.log('updating new jav_objs', jav_objs.length);
+        // filter based on filter setup
         setJavObjCards(jav_objs.map(
-                function(jav_obj){
-                    if (jav_stat_filter.length > 0) {
-                        if (jav_stat_filter.includes(jav_obj.stat)){
-                            return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} source_site={source_site} />
-                        }
-                    } else {
-                        return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} source_site={source_site} />
-                    }
+            function(jav_obj, index){
+                if (jav_stat_filter.includes(jav_obj.stat) || jav_stat_filter.length <= 0){
+                    return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} stat={jav_obj.stat} source_site={source_site} 
+                    update_parent_javobj_handler={(field, value) => {
+                        let _jav_objs = Object.assign([], jav_objs);
+                        _jav_objs[index][field] = value;
+                        //console.log('updated ', field, ': ', value, ' on index: ', index);
+                        setJavObjs(_jav_objs);
+                    }} />
                 }
-            ))
+            }
+        ))
     }, [jav_objs, jav_stat_filter]);
 
-    const handlePageUpdate = (current, page_size) => {
-        // this is triggered from pagination click
-        //console.log(current, page_size);
-        let _target_num = String(current);
-        
-        setLoading(true);
-        setPageNum(_target_num);
+    useEffect(() => {
+        if (!isLoading) {
+            //console.log('current page change: ', page_num);
+            setHasMoreObj(true);  // always has more if page up
+            
+            setLoading(true);
+            fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
+            `&page_num=`+String(page_num)+`&search_string=`+String(search_string))
+                .then(response => response.json())
+                .then((jsonData) => {
+                    if (jsonData.error) {
+                        console.log(jsonData.error);
+                        setPageNum(previousPage => previousPage-1)
+                    } else {
+                        setJavObjs(jsonData.success.jav_objs);
+                        setMaxPage(jsonData.success.max_page);
+
+                        if (page_num === max_page || page_num === jsonData.success.max_page) {
+                            setHasMoreObj(false);
+                        }
+                    }
+                    setLoading(false);
+                })
+        }
+    }, [page_num]);
+
+    const handleInfiniteJavFetch = () => {
+        // this handles infinite scroll data fetch
+        console.log(t('log_page_incremental'), page_num);
+        let _new_page = String(parseInt(page_num)+1);
         fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
-        `&page_num=`+String(_target_num)+`&search_string=`+String(search_string))
+        `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
-                setJavObjs(jsonData.success.jav_objs);
+                setJavObjs(jav_objs.concat(jsonData.success.jav_objs));
+                setPageNum(_new_page);
                 setMaxPage(jsonData.success.max_page);
-
-                if (_target_num === max_page || _target_num === jsonData.success.max_page) {
+                
+                setPageNum(_new_page);
+                if (_new_page === max_page || _new_page === jsonData.success.max_page) {
                     setHasMoreObj(false);
                 } else {
                     setHasMoreObj(true);
                 }
 
-                if (jsonData.errors) {
+                if (jsonData.error) {
                     console.log('Error: ', jsonData.error);
                 }
-                setLoading(false);
             })
-    };
-
-    const handleInfiniteJavFetch = () => {
-        // this handles infinite scroll data fetch
-        if (has_more_obj) {
-            console.log(t('log_page_incremental'), page_num);
-            let _new_page = String(parseInt(page_num)+1);
-            fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
-            `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
-                .then(response => response.json())
-                .then((jsonData) => {
-                    //console.log(jsonData.success);
-                    setJavObjs(jav_objs.concat(jsonData.success.jav_objs));
-                    setPageNum(_new_page);
-                    setMaxPage(jsonData.success.max_page);
-                    
-                    setPageNum(_new_page);
-                    if (_new_page === max_page || _new_page === jsonData.success.max_page) {
-                        setHasMoreObj(false);
-                    } else {
-                        setHasMoreObj(true);
-                    }
-
-                    if (jsonData.errors) {
-                        console.log('Error: ', jsonData.error);
-                    }
-                })
-        }
     };
 
     const handleFormSearch = (event) => {
@@ -151,22 +143,65 @@ const JavBroswerV2 = () => {
             `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
             .then(response => response.json())
             .then((jsonData) => {
+                if (jsonData.error) {
+                    setLoading(false);
+                    console.log('Error: ', jsonData.error);
+                }
                 //console.log(jsonData.success);
                 setJavObjs(jsonData.success.jav_objs);
                 setMaxPage(jsonData.success.max_page);
-                if (jsonData.errors) {
-                    console.log('Error: ', jsonData.error);
-                }
                 setLoading(false);
             });
     };
 
+    const keyMap = {
+        next_page: 'd',
+        previous_page: 'a',
+        mark_all_1: '1'
+    };
+
+    function handle_mark_1 () {
+        //console.log('pressed 1');
+        const stat_map = JSON.parse(t('jav_stat_map'));
+        setJavObjs(currentObj => {
+            currentObj.map((_obj, index) => {
+                if (_obj.stat === 2){
+                    //console.log('updating to 1 for: ', _obj.car);
+                    batch_limiter.schedule(() => fetch(`/local_manager/update_car_ikoa_stat?car=`+String(_obj.car)+`&stat=`+String(1)))
+                    .then(response => response.json())
+                    .then((jsonData) => {
+                        //console.log(jsonData.success);
+                        if (jsonData.success) {
+                            setJavObjs(previousObj => {
+                                let _new_objs = Object.assign([], previousObj);
+                                _new_objs[index].stat = 1;
+                                console.log(t('log_update_jav_stat'), _new_objs[index].car, stat_map[1]);
+                                return _new_objs
+                            });
+                        } else {
+                            console.log('Fail to update stat: ', _obj.car, stat_map[1]);
+                        }
+                    });
+                }
+            });
+            return currentObj
+        })
+    }
+
+    const hotkey_handlers = {
+        next_page: event => setPageNum(prevIndex => String(parseInt(prevIndex)+1)),
+        previous_page: event => setPageNum(prevIndex => String(parseInt(prevIndex)-1)),
+        mark_all_1: event => handle_mark_1(),
+    }
+
     return (
+        <GlobalHotKeys keyMap={keyMap} handlers={hotkey_handlers}>
+            {isLoading ? <Spinner id='overlaySpinner' animation="border" size='lg'/> : <div></div>}
         <div>
             <JavBrowserChecker />
-            <div style={{display: "flex"}}>
-                <div style={{width: "50%", display: "flex", justifyContent: "center", alignItems: "center",
-                 marginRight: "15px"}}>
+            <Container>
+                <Row>
+                <Col xs={{span: 12, order: 1}} md={{span: 6, order: 1}}>
                     <JavSetSearchGroup jav_set_name={jav_set_name} 
                         isLoading={isLoading} setLoading={setLoading}
                         source_site={source_site} setSourceSite={setSourceSite}
@@ -174,8 +209,8 @@ const JavBroswerV2 = () => {
                         setJavObjs={setJavObjs} setMaxPage={setMaxPage} setPageNum={setPageNum}
                         jav_stat_filter={jav_stat_filter} setJavStatFilter={setJavStatFilter}
                     />
-                </div>
-                <div style={{width: "50%"}}>
+                </Col>
+                <Col xs={{span: 12, order: 2}} md={{span: 6, order: 2}}>
                     <Form onSubmit={handleFormSearch}>
                         <Form.Row>
                             <Col style={{minWidth: "100px"}}><Form.Group controlId="formGridSearchType">
@@ -184,6 +219,7 @@ const JavBroswerV2 = () => {
                                 <option>番号</option>
                                 <option>女优</option>
                                 <option>分类</option>
+                                <option>系列</option>
                             </Form.Control>
                             </Form.Group></Col>
                             <Col><Form.Group controlId="formGridSearchText">
@@ -194,26 +230,45 @@ const JavBroswerV2 = () => {
                             <Button variant="primary" type="submit">{t('Submit')}</Button></Col>
                         </Form.Row>
                     </Form>
-                </div>
-            </div>
+                </Col>
+                </Row>
+            </Container>
             <div>
                 <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
                     defaultPageSize={1}
-                    onChange={handlePageUpdate}
+                    onChange={current => setPageNum(String(current))}
                 />
             </div>
-            <div>
-                <InfiniteScroll
-                    dataLength={jav_obj_cards.length || 0}
-                    //scrollThreshold={0.9}
-                    hasMore={has_more_obj}
-                    next={handleInfiniteJavFetch}
-                    loader={"Loading..."}
-                    >
+            {
+                scroll_trigger > 1 ? <div>
                     {jav_obj_cards}
-                </InfiniteScroll>
-            </div>
+                    <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
+                        defaultPageSize={1}
+                        onChange={current => setPageNum(String(current))}
+                    />
+                </div> : <div>
+                    <InfiniteScroll
+                        dataLength={jav_obj_cards.length || 0}
+                        scrollThreshold={scroll_trigger}
+                        hasMore={has_more_obj}
+                        next={handleInfiniteJavFetch}
+                        loader={"Loading..."}
+                        endMessage={t('scroll_end')}
+                        >
+                        {jav_obj_cards}
+                    </InfiniteScroll>
+                    <Button
+                        size="sm"
+                        style={{fontSize: "10px", padding: "1 1 1 1"}}
+                        variant="primary"
+                        onClick={handleInfiniteJavFetch}
+                    >
+                        {t('load_more')}
+                    </Button>
+                </div>
+            }
         </div>
+        </GlobalHotKeys>
     );
 };
 

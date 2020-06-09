@@ -5,15 +5,28 @@ from ast import literal_eval
 from flask import Blueprint, jsonify, request, Response
 
 from JavHelper.core.OOF_downloader import OOFDownloader
+from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core import IniNotFoundException
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.ini_file import load_ini_file, return_config_string, set_value_ini_file, return_default_config_string
+from JavHelper.core.nfo_parser import EmbyNfo
 
 """
 This endpoint is pretty dangerous since it needs permission to r/w no-app directory
 """
 
 directory_scan = Blueprint('directory_scan', __name__, url_prefix='/directory_scan')
+
+@directory_scan.route('/remove_existing_tag', methods=['GET'])
+def remove_existing_tag():
+    """
+    This endpoint is used to scan javs already exist locally and update db
+    """
+    emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
+    # scan folder
+    emby_folder.remove_tags()
+
+    return 'ok'
 
 @directory_scan.route('/rescan_emby_folder', methods=['GET'])
 def rescan_emby_folder():
@@ -48,9 +61,24 @@ def update_oof_cookies():
 
     return jsonify({'status': status})
 
+@directory_scan.route('/update_javlib_cf_cookies', methods=['POST'])
+def update_javlib_cf_cookies():
+    req_data = json.loads(request.get_data() or '{}')
+    update_dict = json.loads(req_data['update_dict'])
+
+    status = JavLibraryScraper.update_local_cookies(update_dict)
+
+    return jsonify({'status': status})
+
 @directory_scan.route('/read_oof_cookies', methods=['GET'])
 def read_oof_cookies():
     return jsonify({'oof_cookies': OOFDownloader.load_local_cookies(
+        return_all=request.args.get('return_all', False)
+    )})  # convert returned obj to dict format
+
+@directory_scan.route('/read_javlib_cf_cookies', methods=['GET'])
+def read_javlib_cf_cookies():
+    return jsonify({'javlib_cf_cookies': JavLibraryScraper.load_local_cookies(
         return_all=request.args.get('return_all', False)
     )})  # convert returned obj to dict format
 

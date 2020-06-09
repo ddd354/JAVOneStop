@@ -11,8 +11,9 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
     const { t, i18n } = useTranslation();
 
     const website_set_map = {
-        'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates', 'personal_wanted'],
+        'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates'],
         'javbus_browser': ['subtitled', 'trending_updates'],
+        'javdb_browser': ['trending_updates', 'subtitled', 'daily_rank', 'weekly_rank', 'monthly_rank'],
         'jav777_browser': ['trending_updates']
     }
     const [set_toggle_list, setToggleList] = useState(website_set_map[source_site]);
@@ -48,7 +49,8 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
 
     const clickStatFilter = (event) => {
         // triggered from toggle stat filtering group
-        console.log('filter on: ', event);
+        const filter_map = JSON.parse(t('filter_map'));
+        console.log(t('log_filter'), filter_map[event]);
         if (event === 'w_or_noop') {
             setJavStatFilter([0, 2]);
         } else if (event === 'no_filter') {
@@ -72,7 +74,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
   
   
     return(
-        <div>
+        <div id="javBrowserToggleGroup">
         <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
             onChange={clickJavSetName} style={{flexWrap: "wrap"}}>
             {set_toggle_list.map(
@@ -101,6 +103,9 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
             </ToggleButton>
             <ToggleButton value={'javbus_browser'}>
                 {"javbus"}
+            </ToggleButton>
+            <ToggleButton value={'javdb_browser'}>
+                {"javdb"}
             </ToggleButton>
             <ToggleButton value={'jav777_browser'}>
                 {"jav777"}

@@ -36,7 +36,7 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'emby_address': "",
     'emby_api': "",
     'javlibrary_url': "http://www.p42u.com/cn/",
-    'jav_obj_priority': "javlibrary,javbus,arzon",
+    'jav_obj_priority': "javlibrary,javbus,javdb,arzon",
     'folder_structure': "{year}/{car}",
     'display_language': 'cn',
     'remove_string': '',
@@ -151,7 +151,7 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("百度人体分析", "Secret Key", "")
     config_settings.add_section("其他设置")
     config_settings.set("其他设置", "界面语言(cn/en)", "cn")
-    config_settings.set("其他设置", "刮削信息优先度", "javlibrary,javbus,arzon")
+    config_settings.set("其他设置", "刮削信息优先度", "javlibrary,javbus,javdb,arzon")
     config_settings.set("其他设置", "javlibrary网址", "http://www.p42u.com/cn/")  # supported
     config_settings.set("其他设置", "javbus网址", "https://www.buscdn.work/")
     config_settings.set("其他设置", "ikoa_dmmc", "")

@@ -29,6 +29,7 @@ const resources = {
       "emby_addr_tip": "Need to enter full address and port; Example: http://localhost:8096/",
       "Local Config": "Local Config",
       "115 Cookies Update": "115 Cookies Update",
+      "javlibrary cloudflare cookies": "javlibrary cloudflare cookies",
       "handle_multi_cds": "Handle A/B CD filenames",
       "subtitle_filename_postfix": "Postfixes for subtitled videos; separated by comma",
       "preserve_subtitle_filename": "Handle subtitlted video filenames",
@@ -79,10 +80,17 @@ const resources = {
       'log_aria2_download': 'aria2 downloadeding: ',
       'log_idmm_download': 'idmm downloader job added: ',
       'log_update_jav_stat': 'Update DB Stat: ',
+      'log_filter': 'filter on: ',
+      'filter_map': JSON.stringify({'w_or_noop': 'wanted / no opnion', 'no_filter': 'none'}),
       'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading'}),
       'main_readme': 'Main ReadMe',
       'javdownloader_readme': 'Jav Downloader Tutorial',
-      'overall': 'overall'
+      'overall': 'overall',
+      'load_more': 'load more',
+      'scroll_end': 'this is the end',
+      'daily_rank': 'Daily Ranking',
+      'weekly_rank': 'Weekly Ranking',
+      'monthly_rank': 'Monthly Ranking'
     }
   },
   //{t('')}
@@ -112,6 +120,7 @@ const resources = {
       "emby_addr_tip": "填写完整的地址和端口, 例子: http://localhost:8096/",
       "Local Config": "本地配置",
       "115 Cookies Update": "更新115 Cookies",
+      "javlibrary cloudflare cookies": "更新Javlibrary cloudflare cookies",
       "handle_multi_cds": "处理A/B CD 后缀文件名",
       "subtitle_filename_postfix": "指定带字幕文件的后缀; 逗号隔开",
       "preserve_subtitle_filename": "处理字幕文件后缀",
@@ -162,10 +171,17 @@ const resources = {
       'log_aria2_download': '下载添加至aria2: ',
       'log_idmm_download': '下载添加至idmm下载器',
       'log_update_jav_stat': '更新数据库文档: ',
+      'log_filter': '启用过滤器: ',
+      'filter_map': JSON.stringify({'w_or_noop': '想要/没想法', 'no_filter': '无'}),
       'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中'}),
       'main_readme': '快速入门介绍',
       'javdownloader_readme': 'JAV下载器教程',
-      'overall': '综合'
+      'overall': '综合',
+      'load_more': '加载更多',
+      'scroll_end': '没有更多',
+      'daily_rank': '日排行',
+      'weekly_rank': '周排行',
+      'monthly_rank': '月排行'
     }
   }
 };

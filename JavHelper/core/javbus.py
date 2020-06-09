@@ -97,7 +97,7 @@ def javbus_magnet_search(car: str):
     gid = re.search(gid_match, res).groups()[0]
 
     res = return_get_res(magnet_url_template.format(gid=gid), headers={'referer': main_url_template.format(car=car)}).content
-    root = etree.HTML(res)
+    root = etree.HTML(res.decode('utf-8'))
 
     magnets = defaultlist(dict)
     for k, v in magnet_xpath.items():
@@ -118,6 +118,7 @@ def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=N
         'car': '//div[@class="photo-info"]/span/date[1]/text()'
     }
     xpath_max_page = '//ul[@class="pagination pagination-lg"]/li/a/text()'
+    max_page = page_num  # default value
 
     # force to get url from ini file each time
     javbus_url = return_config_string(['其他设置', 'javbus网址'])
@@ -134,10 +135,10 @@ def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=N
             jav_objs_raw[_i].update({k: _value})
 
     try:
-        max_page = root.xpath(xpath_max_page)[-2]
+        _new_max = root.xpath(xpath_max_page)[-2]
+        if int(_new_max) > int(page_num):
+            max_page = _new_max
     except:
-        max_page = page_num
-    if not max_page:
-        max_page = page_num
+        pass
     
     return jav_objs_raw, max_page

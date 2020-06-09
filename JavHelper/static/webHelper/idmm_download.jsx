@@ -4,6 +4,7 @@ import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 
+import './idmm_download.css'
 import { useTranslation } from 'react-i18next';
 
 const IdmmMonitor = ({ server_addr }) => {
@@ -50,28 +51,34 @@ const IdmmMonitor = ({ server_addr }) => {
                     setDmmcJobs(dmmc_jobs);
                 }
             });
-        }, 4000);
+        }, 10000);
         return () => clearInterval(interval);
       }, []);
 
     return (
     <Container fluid>
         <Row>
-        <Col>
-        <p>iKOA download queue</p>
-        {
-            ikoa_jobs.map(job => {
-                return <div><p>{job.car} {job.state}:</p><ProgressBar key={job.key} animated now={job.progress || ''} label={(job.speed || '')}/></div>
-            })
-        }
+        <Col xs={{span: 12, order: 1}} md={{span:6, order: 1}}>
+            <div id="subDownloader">
+            <h3>iKOA download queue</h3>
+            <p>Total Job #: {ikoa_jobs.length}</p>
+            {
+                ikoa_jobs.map(job => {
+                    return <div><p>{job.car} {job.state}:</p><ProgressBar key={job.key} animated now={job.progress || ''} label={(job.speed || '')}/></div>
+                })
+            }
+            </div>
         </Col>
-        <Col>
-        <p>DMMC download queue</p>
-        {
-            dmmc_jobs.map(job => {
-                return <div><p>{job.car} {job.state}:</p><ProgressBar key={job.key} animated now={job.progress || ''} label={(job.speed || '')}/></div>
-            })
-        }
+        <Col xs={{span: 12, order: 2}} md={{span:6, order: 2}}>
+            <div id="subDownloader">
+            <h3>DMMC download queue</h3>
+            <p>Total Job #: {dmmc_jobs.length}</p>
+            {
+                dmmc_jobs.map(job => {
+                    return <div><p>{job.car} {job.state}:</p><ProgressBar key={job.key} animated now={job.progress || ''} label={(job.speed || '')}/></div>
+                })
+            }
+            </div>
         </Col>
         </Row>
     </Container>

@@ -11,6 +11,7 @@ from JavHelper.core.jav777 import jav777_set_page, Jav777Scraper
 from JavHelper.core.javbus import JavBusScraper
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
+from JavHelper.core.backend_translation import BackendTranslation
 
 
 jav777_browser = Blueprint('jav777_browser', __name__, url_prefix='/jav777_browser')
@@ -75,7 +76,7 @@ def get_set_javs():
         # parse set without search string
         # verify set type
         if set_type not in SET_TYPE_MAP:
-            return jsonify({'error': f'{set_type} is not a supported set type'}), 400
+            return jsonify({'error': BackendTranslation()['no_support_set_search'].format(set_type)}), 400
 
         jav_objs, max_page = jav777_set_page(SET_TYPE_MAP[set_type], page_num)
     else:

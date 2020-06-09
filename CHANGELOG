@@ -2,7 +2,19 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
-## [0.7.1] - 2019-04-17
+## [0.7.2] - 2020-06-08
+### Added
+- testing new keyboard shortcut for jav browser
+- added javdb to jav browser and parser
+### Updated
+- added ignore for cloudflare cookies json
+- up the allowable 115 file size from 100 to 200MB
+- better error handling for 115 downloader
+- no genres will no longer be copied from tags nfo
+- update cloudflare scraper handling
+- reshape a lot of jav browser layout for small screens
+
+## [0.7.1] - 2020-04-17
 ### Added
 - alpha version of jav777 support as a download source
 - add configuration to allow user remove certain string when renaming files
@@ -14,7 +26,7 @@ communicate with Emby to add actresses images.
 - upgrade pillow for security reason
 - upgrade cloudscraper for newer chanllenges
 
-## [0.7.0] - 2019-03-15
+## [0.7.0] - 2020-03-15
 ### Added
 - readme tab to teach user how to
 - toast error messages for misconfigured 115 / aria2 server
@@ -26,7 +38,7 @@ communicate with Emby to add actresses images.
 - bug fix for not infinite scroll when switch between fully loaded page and new page
 - remove cache from reading the source site (since we need newest db stat)
 
-## [0.6.4] - 2019-03-13
+## [0.6.4] - 2020-03-13
 ### Added
 - 115 downloader error message translations
 - ui elements to switch between different sources for magnet link search
@@ -35,22 +47,22 @@ communicate with Emby to add actresses images.
 - retry logic for 115 downloader
 - fix bug for release date (changes to "premiered" in nfo)
 
-## [0.6.3] - 2019-03-09
+## [0.6.3] - 2020-03-09
 ### Updated
 - fix cloudscraper import issue
 
-## [0.6.2] - 2019-03-09
+## [0.6.2] - 2020-03-09
 ### Updated
 - fix opacity issue
 
-## [0.6.1] - 2019-03-09
+## [0.6.1] - 2020-03-09
 ### Added
 - now user can configure jav sources and priority in the configuration tool
 ### Updated
 - better loading animation since javlibrary now is very slow
 - fixed detailed image tab when browsing javbus
 
-## [0.6.0] - 2019-03-08
+## [0.6.0] - 2020-03-08
 ### Added
 - added javbus support (user needs to manually edit settings.ini for now to add javbus scrape)
 ### Updated
@@ -60,7 +72,7 @@ communicate with Emby to add actresses images.
 ### Removed
 - completely removed older javbrower code (now only v2 exists)
 
-## [0.5.3] - 2019-03-04
+## [0.5.3] - 2020-03-04
 ### Added
 - [JavBrowserV2] jav browser now has a detailed image tab for each jav
 - add role when writing nfo for better visual
@@ -73,7 +85,7 @@ communicate with Emby to add actresses images.
 - fix the pagenation issue where sometimes it won't get updated
 - pin log console to the top for better log viewing
 
-## [0.5.0] - 2019-02-27
+## [0.5.0] - 2020-02-27
 ### Added
 - local jav manager
 - new scraper class to ease new implementation
@@ -84,7 +96,7 @@ communicate with Emby to add actresses images.
 - user can configure saved folder structure in the configure tool
 - fix a bug to rebuild index when doing db search locally
 
-## [0.4.2] - 2019-02-17
+## [0.4.2] - 2020-02-17
 ### Added
 - docker deployment script
 - now use chinese by default
@@ -94,14 +106,14 @@ communicate with Emby to add actresses images.
 - better jav search functions
 - alpha mobile view version
 
-## [0.4.1] - 2019-02-12
+## [0.4.1] - 2020-02-12
 ### Updated
 - fix T28 R18 jav scrape
 - fix problematic rename for subtitled video
 - upgrade pyinstaller version for security reason
 - backend only will handle one request at a time to avoid concurrency issue for blitzDB and 115 download
 
-## [0.4.0] - 2019-02-12
+## [0.4.0] - 2020-02-12
 ### Added
 - local blitzDB to handle jav file status look up
 - jav manager - 115 - aria2 download support
@@ -114,7 +126,7 @@ communicate with Emby to add actresses images.
 ### Removed
 - no longer support "C" as cd postfix
 
-## [0.3.0] - 2019-02-05
+## [0.3.0] - 2020-02-05
 ### Added
 - warashi scraper which is used for emby actor images
 - Handle multiple CD filename postfix

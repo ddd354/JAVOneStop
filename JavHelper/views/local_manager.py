@@ -47,7 +47,7 @@ def update_car_ikoa_stat():
     db_conn = JavManagerDB()
     db_conn.upcreate_jav({
         'car': car,
-        'stat': stat,
+        'stat': int(stat),
         'need_ikoa_credit': need_ikoa_credit
     })
 
@@ -96,7 +96,7 @@ def single_scrape():
     # move video file
     jav_obj = emby_folder.put_processed_file(jav_obj)
 
-    return jsonify({'success': jav_obj, 'errors': errors})
+    return jsonify({'success': jav_obj, 'error': errors})
 
 @local_manager.route('/update_jav_dict', methods=['POST'])
 def update_jav_dict():

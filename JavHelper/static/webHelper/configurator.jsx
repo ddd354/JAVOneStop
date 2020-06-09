@@ -15,6 +15,7 @@ import OofValidator from "./oofValidator"
 
 const JavConfigurator = (props) => {
     const [oof_json, setOofJson] = useState({});
+    const [javlib_cf_json, setJavlibCFJson] = useState({});
     const { t, i18n } = useTranslation();
     
     // init current 115 cookies
@@ -27,6 +28,16 @@ const JavConfigurator = (props) => {
                     setOofJson({});
                 } else {
                     setOofJson(jsonData.oof_cookies);
+                }
+            });
+        fetch(`/directory_scan/read_javlib_cf_cookies?return_all=True`)
+            .then(response => response.json())
+            .then((jsonData) => {
+                if (jsonData.error) {
+                  console.log(jsonData.error);
+                  setJavlibCFJson({});
+                } else {
+                  setJavlibCFJson(jsonData.javlib_cf_cookies);
                 }
             });
     }, []);
@@ -154,11 +165,41 @@ const JavConfigurator = (props) => {
             });
     };
 
+    const handleJavlibCFJsonUpdate = (event) => {
+      if (event.error) {
+          return 
+      }
+      console.log('Processing request form: ', event.json);
+      //setOofFormData(event.json);  // retain submitted form data
+      fetch('/directory_scan/update_javlib_cf_cookies',
+          {method: 'post',
+          body: JSON.stringify({
+                  "update_dict": event.json
+          })})
+          .then(response => {
+              return [response.json(), response.status];
+          })
+          .then((res_list) => {
+              if (res_list[1] === 200) {
+                  // jsonData is parsed json object received from url
+                  res_list[0].then((jsonData) => {
+                      //console.log(jsonData.status);
+                      console.log('javlibrary cloudflare cookies updated')
+                  })
+              } else {
+                  res_list[0].then((jsonData) => {
+                      console.log(jsonData.errors.split("\n"));
+                  })
+              }
+          });
+  };
+
     return (
         <Tabs>
         <TabList>
             <Tab>{t('Local Config')}</Tab>
             <Tab>{t('115 Cookies Update')}</Tab>
+            <Tab>{t('javlibrary cloudflare cookies')}</Tab>
         </TabList>
 
         <TabPanel>
@@ -179,6 +220,18 @@ const JavConfigurator = (props) => {
                     local       = {locale}
                     theme       = 'dark_vscode_tribute'
                     placeholder = { oof_json }
+                    width       = '80%'
+                />
+            </StyledDiv>
+        </TabPanel>
+        <TabPanel>
+            <StyledDiv>
+                <JSONInput
+                    id          = 'javlib_cf_editor'
+                    onChange    = {handleJavlibCFJsonUpdate}
+                    local       = {locale}
+                    theme       = 'dark_vscode_tribute'
+                    placeholder = { javlib_cf_json }
                     width       = '80%'
                 />
             </StyledDiv>

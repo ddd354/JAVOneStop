@@ -16,6 +16,10 @@ LOCAL_OOF_COOKIES = '115_cookies.json'
 STANDARD_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
 STANDARD_HEADERS = {"Content-Type": "application/x-www-form-urlencoded", 'User-Agent': STANDARD_UA}
 
+
+class NoTaskException(Exception):
+    pass
+
 class OOFDownloader:
     def __init__(self):
         self.cookies = self.load_local_cookies()
@@ -83,11 +87,15 @@ class OOFDownloader:
         """
         Only works if task is in first page
         """
+        oof_file_id = None
         task_list = self.get_first_lixian_list().get('tasks', [])
         for task in task_list:
             if task.get('info_hash') == hash_str:
                 oof_file_id = task.get('file_id')  # this is actually cid
                 break
+
+        if not oof_file_id:
+            raise NoTaskException(f'cannot find {hash_str} task from task list')
 
         url_template = """https://webapi.115.com/files?aid=1&cid={}&o=user_ptime&asc=0&offset=0
         &show_dir=1&limit=56&code=&scid=&snap=0&natsort=1&record_open_time=1&source=&format=json"""
@@ -112,7 +120,7 @@ class OOFDownloader:
                 'pickup_code': file_obj.get('pc'),  # IMPORTANT, used for download
                 'size': byte_to_MB(file_obj.get('s', 0)),
             }
-            if processed_file_obj['size'] < 100 or processed_file_obj['sha'] in in_shas:
+            if processed_file_obj['size'] < 200 or processed_file_obj['sha'] in in_shas:
                 continue
             else:
                 processed_file_obj['size'] = str(processed_file_obj['size'])+'MB'
@@ -158,7 +166,8 @@ class OOFDownloader:
         try:
             created_task = self.post_magnet_to_oof(magnet)
             if created_task.get('errcode') == 10008:
-                return {'error': self.translate_map['oof_magnet_exists'].format(car=car)}
+                #return {'error': self.translate_map['oof_magnet_exists'].format(car=car)}
+                print(f'{car} magnet already exist continue')
         except Exception as create_magnet_e:
             return {'error': self.translate_map['oof_fail_magnet'].format(car=car, create_magnet_e=create_magnet_e)}
 
@@ -172,9 +181,11 @@ class OOFDownloader:
                 if not download_files:
                     return {'error': self.translate_map['oof_no_file'] + f' {car}'}
                 break
+            except NoTaskException as _e:
+                return {'error': self.translate_map['oof_no_task_found'].format(car)}
             except Exception as _e:
                 retry_num += 1
-                sleep(5)
+                sleep(15)
                 print(f'current error: {_e}, retrying')
                 e = _e
 

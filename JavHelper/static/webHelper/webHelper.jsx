@@ -3,6 +3,9 @@ import ndjsonStream from 'can-ndjson-stream';
 
 import { Hook, Console, Decode } from 'console-feed'
 
+import Container from 'react-bootstrap/Container'
+import Row from 'react-bootstrap/Row'
+import Col from 'react-bootstrap/Col'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Form from "react-jsonschema-form";
@@ -218,53 +221,53 @@ class App extends Component {
         };
 
         return (
-            <div>
-              <div className='javConsoleContainer'>
+          <Container fluid>
+              <Row className='javConsoleContainer'><Col id="consoleColumn">
                 <StyledLogDiv className='javConsole'>
                   <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
                 </StyledLogDiv>
-              </div>
-            <Tabs>
-            <TabList>
-              <Tab>{t('helper_page')}</Tab>
-              <Tab>{t('JavLibrary Manager')}</Tab>
-              <Tab>{t('Main Tool')}</Tab>
-              <Tab>{t('Rename Tool')}</Tab>
-              <Tab>{t('Handy Features')}</Tab>
-              <Tab>{t('Settings')}</Tab>
-            </TabList>
+              </Col></Row>
+              <Row><Col><Tabs>
+              <TabList>
+                <Tab>{t('helper_page')}</Tab>
+                <Tab>{t('JavLibrary Manager')}</Tab>
+                <Tab>{t('Main Tool')}</Tab>
+                <Tab>{t('Rename Tool')}</Tab>
+                <Tab>{t('Handy Features')}</Tab>
+                <Tab>{t('Settings')}</Tab>
+              </TabList>
 
-            <TabPanel>
-              <HelpDoc />
-            </TabPanel>
-            <TabPanel>
-              <JavBroswerV2 />
-            </TabPanel>
-            <TabPanel>
-                <StyledDiv>
-                  <LocalJavManager scan_path={this.state.settings_form_data.file_path}/>
-                </StyledDiv>
-            </TabPanel>
-            <TabPanel>
-                <StyledDiv>
-                <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
-                    <div>
-                      <button type="submit">{t('Preview File / Execute')}</button>
-                    </div>
-                </Form>
-                </StyledDiv>
-                <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
-            </TabPanel>
-            <TabPanel>
-              <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
-              <IdmmMonitor server_addr={this.state.settings_form_data.ikoa_dmmc_server} />
-            </TabPanel>
-            <TabPanel>
-              <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
-            </TabPanel>
-            </Tabs>
-            </div>
-           )
+              <TabPanel>
+                <HelpDoc />
+              </TabPanel>
+              <TabPanel>
+                <JavBroswerV2 />
+              </TabPanel>
+              <TabPanel>
+                  <StyledDiv>
+                    <LocalJavManager scan_path={this.state.settings_form_data.file_path}/>
+                  </StyledDiv>
+              </TabPanel>
+              <TabPanel>
+                  <StyledDiv>
+                  <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
+                      <div>
+                        <button type="submit">{t('Preview File / Execute')}</button>
+                      </div>
+                  </Form>
+                  </StyledDiv>
+                  <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
+              </TabPanel>
+              <TabPanel>
+                <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
+                <IdmmMonitor server_addr={this.state.settings_form_data.ikoa_dmmc_server} />
+              </TabPanel>
+              <TabPanel>
+                <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
+              </TabPanel>
+              </Tabs></Col></Row>
+          </Container>
+          )
         }
 }
 
