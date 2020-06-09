@@ -9,12 +9,24 @@ from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core import IniNotFoundException
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.ini_file import load_ini_file, return_config_string, set_value_ini_file, return_default_config_string
+from JavHelper.core.nfo_parser import EmbyNfo
 
 """
 This endpoint is pretty dangerous since it needs permission to r/w no-app directory
 """
 
 directory_scan = Blueprint('directory_scan', __name__, url_prefix='/directory_scan')
+
+@directory_scan.route('/remove_existing_tag', methods=['GET'])
+def remove_existing_tag():
+    """
+    This endpoint is used to scan javs already exist locally and update db
+    """
+    emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
+    # scan folder
+    emby_folder.remove_tags()
+
+    return 'ok'
 
 @directory_scan.route('/rescan_emby_folder', methods=['GET'])
 def rescan_emby_folder():

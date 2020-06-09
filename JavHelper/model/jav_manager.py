@@ -50,7 +50,7 @@ class JavManagerDB:
         _jav_doc = JavObj(jav_obj)
         _jav_doc.save(self.jav_db)
         self.jav_db.commit()
-        print('writed ', jav_obj)
+        #print('writed ', jav_obj)
 
     def get_by_pk(self, pk: str):
         return self.jav_db.get(JavObj, {'pk': pk.upper()})

@@ -16,7 +16,7 @@ class EmbyNfo:
     }
     list_field_mapping = {
         'genres': './/genre',
-        'tags': './/tag',
+        #'tags': './/tag',
         'all_actress': './/actor/name'
     }
 
@@ -30,7 +30,10 @@ class EmbyNfo:
 
         tree = Et.parse(file_path)
         for k, v in self.single_field_mapping.items():
-            self.jav_obj[k] = tree.find(v).text
+            try:
+                self.jav_obj[k] = tree.find(v).text
+            except:
+                pass
 
         for k, v in self.list_field_mapping.items():
             self.jav_obj[k] = [ele.text for ele in tree.findall(v)]
