@@ -18,6 +18,7 @@ import JavBrowserChecker from './javBrowserChecker';
 import { useTranslation } from 'react-i18next';
 import JavSetSearchGroup from './javSetSearchBGroup';
 import JavCardV2 from './JavCardV2';
+import OofValidator from "./oofValidator"
 import './javBrowserV2.css';
 
 
@@ -200,7 +201,7 @@ const JavBroswerV2 = () => {
                 </Col>
                 </Row>
                 <Row>
-                    <Col></Col>
+                    <Col><OofValidator /></Col>
                 </Row>
             </Container>
             <div>

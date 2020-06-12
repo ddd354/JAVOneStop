@@ -13,7 +13,7 @@ const IdmmMonitor = ({ server_addr }) => {
 
     const { t, i18n } = useTranslation();
 
-    // update job progress every 2s
+    // update job progress every 20s
     useEffect(() => {
         const interval = setInterval(() => {
             fetch(server_addr+`flask_celery/list_all_jobs`)
@@ -51,7 +51,7 @@ const IdmmMonitor = ({ server_addr }) => {
                     setDmmcJobs(dmmc_jobs);
                 }
             });
-        }, 10000);
+        }, 20000);
         return () => clearInterval(interval);
       }, []);
 
