@@ -147,6 +147,7 @@ def parse_single():
 def search_magnet_link():
     car = request.args.get('car')
     source = request.args.get('source')
+    print(f'>>>> accessing {car} - {source}')
 
     source_func_map = {
         'overall': priority_download_search,

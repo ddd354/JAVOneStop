@@ -6,7 +6,7 @@ import './javBrowserV2.css'
 import JavMagnetButton from './javMagnetButton'
 
 
-const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
+const JavTable = ({ car, magnet_site, stat, url_access, setJavStat }) => {
   const [jav_data, setJavData] = useState([]);
 
   const addDownloadButton = (obj_list, car) => {
@@ -15,12 +15,14 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
       if (row.idmm !== undefined) {
         row['action'] = <JavMagnetButton car={car} 
           download_link={row.idmm} 
+          url_access={url_access}
           setJavStat={setJavStat}
           type='iframe'
         />;
       } else {
         row['action'] = <JavMagnetButton car={car} 
           download_link={row['magnet'] || row['web_link']} 
+          url_access={url_access}
           setJavStat={setJavStat}
         />;
       }
@@ -29,28 +31,11 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
     return obj_list
   }
 
-  /*useEffect(() => {
-    if (stat === 0) {
-    fetch(`parse_jav/search_magnet_link?car=`+String(car)+`&source=`+magnet_site)
-        .then(response => response.json())
-        .then((jsonData) => {
-          //console.log(jsonData);
-          if (jsonData.success === undefined) {
-            setJavData([{'title': 'not found'}]);
-          } else {
-            setJavData(addDownloadButton(jsonData.success, car));
-          }
-        })
-    } else {
-      setJavData([{'title': 'no magnet search'}]);
-    }
-  }, []);  //emtpy array to prevent running on re-render*/
-
-  // when site changes, pull new data
+  // when site or stat changes, pull new data
   useEffect(() => {
     if (stat === 0) {
       setJavData([]);  // set to empty to show spinner
-      fetch(`parse_jav/search_magnet_link?car=`+String(car)+`&source=`+magnet_site)
+      url_access.schedule(() => fetch(`parse_jav/search_magnet_link?car=`+String(car)+`&source=`+magnet_site))
           .then(response => response.json())
           .then((jsonData) => {
             //console.log(jsonData);
@@ -63,7 +48,7 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
     } else {
       setJavData([{'title': 'no magnet search'}]);
     }
-  }, [magnet_site])
+  }, [magnet_site, stat])
 
   let header = [
     {name:"action", selector:"action", maxWidth: "15%"},
@@ -71,17 +56,22 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
     {name:"size", selector:"size", maxWidth: "15%"}
   ];
 
-  return(
-    <DataTable
-      title="Jav List"
-      columns={header}
-      data={jav_data}
-      dense
-      noTableHead
-      noHeader
-      noDataComponent={<Spinner animation="border" as="span" size="lg" variant="primary" />}
-    />
-)};
+  if (stat == 0){
+    return(
+      <div className="magnetTable">
+      <DataTable
+        title="Jav List"
+        columns={header}
+        data={jav_data}
+        dense
+        noTableHead
+        noHeader
+        noDataComponent={<Spinner animation="border" as="span" size="lg" variant="primary" />}
+      />
+      </div>
+    )
+  } else { return `` }
+};
 
 export default JavTable;
 

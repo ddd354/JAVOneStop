@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import Pagination from 'rc-pagination'
 import index from 'rc-pagination/assets' // import for pagination styling do not remove
@@ -26,9 +25,11 @@ const JavBroswerV2 = () => {
     const { t, i18n } = useTranslation();
     const [source_site, setSourceSite] = useState('javbus_browser');
     const [isLoading, setLoading] = useState(true);
-    const batch_limiter = new Bottleneck({maxConcurrent: 1});
+
+    const [jav_browser_batch_limiter, setUrlLimiter] = useState(new Bottleneck({maxConcurrent: 1}));
 
     const [jav_objs, setJavObjs] = useState([]);
+    const [mark_1, setMarkOne] = useState(0);
     const [jav_stat_filter, setJavStatFilter] = useState([0, 2]);
 
     const [jav_obj_cards, setJavObjCards] = useState([]);
@@ -58,22 +59,10 @@ const JavBroswerV2 = () => {
     }, [source_site]);
 
     // when jav_objs or jav_stat_filter update, update card as well
-    useEffect(() => {
+    /*useEffect(() => {
         // filter based on filter setup
-        setJavObjCards(jav_objs.map(
-            function(jav_obj, index){
-                if (jav_stat_filter.includes(jav_obj.stat) || jav_stat_filter.length <= 0){
-                    return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} stat={jav_obj.stat} source_site={source_site} 
-                    update_parent_javobj_handler={(field, value) => {
-                        let _jav_objs = Object.assign([], jav_objs);
-                        _jav_objs[index][field] = value;
-                        //console.log('updated ', field, ': ', value, ' on index: ', index);
-                        setJavObjs(_jav_objs);
-                    }} />
-                }
-            }
-        ))
-    }, [jav_objs, jav_stat_filter]);
+        setJavObjCards()
+    }, [jav_objs, jav_stat_filter]);*/
 
     useEffect(() => {
         if (!isLoading) {
@@ -162,30 +151,8 @@ const JavBroswerV2 = () => {
 
     function handle_mark_1 () {
         //console.log('pressed 1');
-        const stat_map = JSON.parse(t('jav_stat_map'));
-        setJavObjs(currentObj => {
-            currentObj.map((_obj, index) => {
-                if (_obj.stat === 2){
-                    //console.log('updating to 1 for: ', _obj.car);
-                    batch_limiter.schedule(() => fetch(`/local_manager/update_car_ikoa_stat?car=`+String(_obj.car)+`&stat=`+String(1)))
-                    .then(response => response.json())
-                    .then((jsonData) => {
-                        //console.log(jsonData.success);
-                        if (jsonData.success) {
-                            setJavObjs(previousObj => {
-                                let _new_objs = Object.assign([], previousObj);
-                                _new_objs[index].stat = 1;
-                                console.log(t('log_update_jav_stat'), _new_objs[index].car, stat_map[1]);
-                                return _new_objs
-                            });
-                        } else {
-                            console.log('Fail to update stat: ', _obj.car, stat_map[1]);
-                        }
-                    });
-                }
-            });
-            return currentObj
-        })
+        setMarkOne(1);
+        setTimeout(setMarkOne(0), 1000);
     }
 
     const hotkey_handlers = {
@@ -232,6 +199,9 @@ const JavBroswerV2 = () => {
                     </Form>
                 </Col>
                 </Row>
+                <Row>
+                    <Col></Col>
+                </Row>
             </Container>
             <div>
                 <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
@@ -241,7 +211,14 @@ const JavBroswerV2 = () => {
             </div>
             {
                 scroll_trigger > 1 ? <div>
-                    {jav_obj_cards}
+                    {
+                        jav_objs.map(
+                            function(jav_obj){
+                                return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} source_site={source_site} jav_stat_filter={jav_stat_filter}
+                                    url_access={jav_browser_batch_limiter} mark_1={mark_1} />
+                                }
+                        )
+                    }
                     <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
                         defaultPageSize={1}
                         onChange={current => setPageNum(String(current))}

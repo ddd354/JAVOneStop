@@ -4,7 +4,13 @@ import Spinner from 'react-bootstrap/Spinner'
 
 import { useTranslation } from 'react-i18next';
 
-const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
+function test_fetch(link) {
+  return new Promise(resolve => {
+    setTimeout(() => {resolve({'success': 'okok'})}, 10000)
+  })
+}
+
+const JavMagnetButton = ({ car, download_link, url_access, setJavStat, type }) => {
   const { t, i18n } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
@@ -13,7 +19,8 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
 
   useEffect(() => {
       if (isLoading && type === 'iframe') {
-        fetch(download_link)
+        url_access.schedule(() => fetch(download_link))
+        //test_fetch(download_link)
         .then(response => response.json())
         .then((jsonData) => {
           if (jsonData.success === undefined) {
@@ -25,12 +32,13 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
           setLoading(false);
         })
       } else if (isLoading) {
-        fetch('/javlib_browser/download_via_aria',
+        url_access.schedule(fetch('/javlib_browser/download_via_aria',
               {method: 'post',
               body: JSON.stringify({
                       "car": _car,
                       "magnet": _download_link
-              })})
+              })}))
+        //test_fetch(download_link)
         .then(response => response.json())
         .then((jsonData) => {
           if (jsonData.success === undefined) {
