@@ -10,7 +10,7 @@ function test_fetch(link) {
   })
 }
 
-const JavMagnetButton = ({ car, download_link, url_access, setJavStat, type }) => {
+const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
   const { t, i18n } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
@@ -19,8 +19,7 @@ const JavMagnetButton = ({ car, download_link, url_access, setJavStat, type }) =
 
   useEffect(() => {
       if (isLoading && type === 'iframe') {
-        url_access.schedule(() => fetch(download_link))
-        //test_fetch(download_link)
+        fetch(download_link)
         .then(response => response.json())
         .then((jsonData) => {
           if (jsonData.success === undefined) {
@@ -32,13 +31,12 @@ const JavMagnetButton = ({ car, download_link, url_access, setJavStat, type }) =
           setLoading(false);
         })
       } else if (isLoading) {
-        url_access.schedule(() => fetch('/javlib_browser/download_via_aria',
+        fetch('/javlib_browser/download_via_aria',
               {method: 'post',
               body: JSON.stringify({
                       "car": _car,
                       "magnet": _download_link
-              })}))
-        //test_fetch(download_link)
+              })})
         .then(response => response.json())
         .then((jsonData) => {
           if (jsonData.success === undefined) {

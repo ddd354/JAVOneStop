@@ -124,7 +124,6 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
                             car={card_jav_obj.car}
                             magnet_site={magnet_site}
                             stat={jav_stat} 
-                            url_access={url_access}
                             setJavStat={(_stat) => {
                                 setJavStat(_stat)
                             }}
