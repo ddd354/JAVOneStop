@@ -4,6 +4,12 @@ import Spinner from 'react-bootstrap/Spinner'
 
 import { useTranslation } from 'react-i18next';
 
+function test_fetch(link) {
+  return new Promise(resolve => {
+    setTimeout(() => {resolve({'success': 'okok'})}, 10000)
+  })
+}
+
 const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
   const { t, i18n } = useTranslation();
 

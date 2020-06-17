@@ -10,8 +10,6 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { StyledDiv } from "./styling";
 import "./configurator.css"
 
-import OofValidator from "./oofValidator"
-
 
 const JavConfigurator = (props) => {
     const [oof_json, setOofJson] = useState({});
@@ -212,7 +210,6 @@ const JavConfigurator = (props) => {
             </StyledDiv>
         </TabPanel>
         <TabPanel>
-            <OofValidator />
             <StyledDiv>
                 <JSONInput
                     id          = 'oof_editor'

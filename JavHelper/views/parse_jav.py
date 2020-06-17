@@ -147,6 +147,7 @@ def parse_single():
 def search_magnet_link():
     car = request.args.get('car')
     source = request.args.get('source')
+    print(f'>>>> accessing {car} - {source}')
 
     source_func_map = {
         'overall': priority_download_search,
@@ -184,7 +185,7 @@ def need_ikoa_credit(car: str):
 def search_ikoa_dmmc(car: str):
     # prototype
     server_addr = return_default_config_string('ikoa_dmmc_server')
-    res = requests.get(server_addr+'lookup?id={}'.format(car), timeout=10)
+    res = requests.get(server_addr+'lookup?id={}'.format(car), timeout=120)
     #print(res.text)
     rt = []
     sources = res.json()['success']['sources']

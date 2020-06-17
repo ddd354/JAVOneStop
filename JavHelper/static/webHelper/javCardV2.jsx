@@ -15,20 +15,36 @@ import './javBrowserV2.css';
 import { useEffect } from 'react';
 
 
-const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler }) => {
+const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_1 }) => {
     const { t, i18n } = useTranslation();
     
-    //const [card_jav_obj, setCardJavObj] = useState(update_obj);
+    const [card_jav_obj, setCardJavObj] = useState(update_obj);
+    const [jav_stat, setJavStat] = useState(card_jav_obj.stat);
     const [loading, setLoading] = useState(false);
 
     const [magnet_site, setMagnetSite] = useState('overall');
     const [border_style, setBorderStyle] = useState({});
-
-    //const [jav_card_stat, setJavCardStat] = useState(update_obj.stat);
     const _manual_opacity = 1;
+
+    // trigger by parent shortcut key to mark jav read
+    useEffect(() => {
+        if (mark_1 === 1 && jav_stat === 2) {
+            //console.log('updating to 1 for: ', _obj.car);
+            url_access.schedule(() => fetch(`/local_manager/update_car_ikoa_stat?car=`+String(update_obj.car)+`&stat=`+String(1)))
+            .then(response => response.json())
+            .then((jsonData) => {
+                //console.log(jsonData.success);
+                if (jsonData.success) {
+                    setJavStat(1)
+                } else {
+                    console.log('Fail to update stat: ', _obj.car, stat_map[1]);
+                }
+            });
+        }
+    }, [mark_1])
     
     useEffect(() => {
-        if (stat === 3) {
+        if (jav_stat === 3) {
             setBorderStyle({
                 borderColor: 'red', 
                 borderWidth: '2px', 
@@ -36,7 +52,7 @@ const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler
                 marginBottom: '20px',
                 background: 'rgba(255, 0, 0, 0.2)',
             })
-        } else if (stat === 0) {
+        } else if (jav_stat === 0) {
             setBorderStyle({
                 borderColor: 'green', 
                 borderWidth: '2px', 
@@ -44,7 +60,7 @@ const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler
                 marginBottom: '20px',
                 background: 'rgba(51, 204, 51, 0.2)',
             }) 
-        } else if (stat === 4 || stat === 1) {
+        } else if (jav_stat === 4 || jav_stat === 1) {
             setBorderStyle({
                 borderColor: 'black', 
                 borderWidth: '2px', 
@@ -52,7 +68,7 @@ const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler
                 marginBottom: '20px',
                 background: 'rgba(0, 0, 0, 0.2)',
             })
-        } else if (stat === 2) {
+        } else if (jav_stat === 2) {
             setBorderStyle({
                 borderColor: 'yellow', 
                 borderWidth: '2px', 
@@ -61,72 +77,79 @@ const JavCardV2 = ({ update_obj, stat, source_site, update_parent_javobj_handler
                 background: 'rgba(255, 255, 0, 0.2)',
             })
         }
-    }, [stat]);
+    }, [jav_stat]);
     
 
     const handleShowDetailImage = () => {
-        if (update_obj.image === undefined) {
+        if (card_jav_obj.image === undefined) {
             setLoading(true);
-            fetch(`/${source_site}/get_set_javs?set_type=番号&search_string=`+update_obj.car)
+            fetch(`/${source_site}/get_set_javs?set_type=番号&search_string=`+card_jav_obj.car)
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
                 if (jsonData.error) {
                     console.log(jsonData.error);
                 } else {
-                    update_parent_javobj_handler('image', jsonData.success.jav_objs[0].image);
+                    setCardJavObj(old_obj => {
+                        old_obj.image = jsonData.success.jav_objs[0].image
+                        return old_obj
+                    })
                 }
                 setLoading(false);
             });
         }
     }
 
-    return (
-        <Container>
-        <Row xs={1} md={2} style={border_style} key={update_obj.javid} id="main-javcard">
-            <Col xs={{span: 12, order: 1}} md={{span: 4, order: 1}}><img style={{opacity: _manual_opacity, maxWidth: "100%"}} src={update_obj.img}></img></Col>
-            <Col xs={{span: 12, order: 2}} md={{span: 8, order: 2}}>
-                <Row><Col><p>{update_obj.car} {update_obj.title}</p></Col></Row>
-                <Row><Col>
-                <StatButtonGroup 
-                    setbutstat={(_stat) => {update_parent_javobj_handler('stat', _stat)}}
-                    stat={stat} 
-                    car={update_obj.car}
-                    magnet_site={magnet_site}
-                    setMagnetSite={setMagnetSite}
-                />
-                </Col></Row>
-                <Row><Col>
-                {
-                    (stat === 0) ? <div className="magnetTable">
-                    <JavTable
-                        car={update_obj.car}
+    // use card_jav_obj.stat instead of internal jav_stat since we want to keep original state for easier button click
+    if ((jav_stat_filter.length > 0 && jav_stat_filter.includes(card_jav_obj.stat)) || jav_stat_filter.length == 0) {
+        return (
+            <Container>
+            <Row xs={1} md={2} style={border_style} key={card_jav_obj.javid} id="main-javcard">
+                <Col xs={{span: 12, order: 1}} md={{span: 4, order: 1}}><img style={{opacity: _manual_opacity, maxWidth: "100%"}} src={card_jav_obj.img}></img></Col>
+                <Col xs={{span: 12, order: 2}} md={{span: 8, order: 2}}>
+                    <Row><Col><p>{card_jav_obj.car} {card_jav_obj.title}</p></Col></Row>
+                    <Row><Col>
+                    <StatButtonGroup 
+                        setbutstat={(_stat) => {
+                            setJavStat(_stat)
+                        }}
+                        stat={jav_stat} 
+                        car={card_jav_obj.car}
                         magnet_site={magnet_site}
-                        stat={stat} 
-                        setJavStat={(_stat) => {update_parent_javobj_handler('stat', _stat)}}
+                        setMagnetSite={setMagnetSite}
                     />
-                </div> : ''
-                }
-                </Col></Row>
-                <Row><Col>
-                <Accordion className="detail-image-section">
-                    <Card>
-                        <Card.Header className="detail-image-button">
-                            <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
-                                {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
-                            </Accordion.Toggle>
-                        </Card.Header>
-                        <Accordion.Collapse eventKey="0">
-                            <Card.Body>
-                                <img style={{maxWidth: '100%'}} src={update_obj.image}></img>
-                            </Card.Body>
-                        </Accordion.Collapse>
-                    </Card>
-                </Accordion>
-                </Col></Row>
-            </Col>
-        </Row>
-        </Container>)
+                    </Col></Row>
+                    <Row><Col>
+                        <JavTable
+                            car={card_jav_obj.car}
+                            magnet_site={magnet_site}
+                            stat={jav_stat} 
+                            setJavStat={(_stat) => {
+                                setJavStat(_stat)
+                            }}
+                        />
+                    </Col></Row>
+                    <Row><Col>
+                    <Accordion className="detail-image-section">
+                        <Card>
+                            <Card.Header className="detail-image-button">
+                                <Accordion.Toggle as={Button} variant="link" eventKey="0" onClick={handleShowDetailImage}>
+                                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : t('load_detail_image_tab_name')}
+                                </Accordion.Toggle>
+                            </Card.Header>
+                            <Accordion.Collapse eventKey="0">
+                                <Card.Body>
+                                    <img style={{maxWidth: '100%'}} src={card_jav_obj.image}></img>
+                                </Card.Body>
+                            </Accordion.Collapse>
+                        </Card>
+                    </Accordion>
+                    </Col></Row>
+                </Col>
+            </Row>
+            </Container>)
+    } else { return `` }
+    
 };
 
 export default memo(JavCardV2);
