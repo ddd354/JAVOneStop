@@ -40,13 +40,14 @@ class JavManagerDB:
         # pull existing data since this is update function
         try:
             current_jav_obj = dict(self.get_by_pk(jav_obj['car']))
+            print(f'current dict {current_jav_obj}')
             # overwrite current db dict with input dict
             current_jav_obj.update(jav_obj)
+            jav_obj = current_jav_obj
         except DoesNotExist:
             # set default to no opinion
             #0-want, 1-viewed, 2-no opinion 3-local 4-downloading
             jav_obj.setdefault('stat', 2)
-
         _jav_doc = JavObj(jav_obj)
         _jav_doc.save(self.jav_db)
         self.jav_db.commit()

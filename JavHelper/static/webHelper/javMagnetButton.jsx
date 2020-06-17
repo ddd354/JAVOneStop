@@ -25,8 +25,12 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
           if (jsonData.success === undefined) {
             console.log(t('log_error'), jsonData.error)
           } else {
-            console.log(t('log_idmm_download'), jsonData.success.car);
-            setJavStat(4);
+            // set db stat to 4
+            fetch(`/local_manager/update_car_ikoa_stat?car=${jsonData.success.car}&stat=4`)
+              .then(() => {
+                console.log(t('log_idmm_download'), jsonData.success.car);
+                setJavStat(4);
+              })
           }
           setLoading(false);
         })
@@ -42,8 +46,11 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
           if (jsonData.success === undefined) {
             console.log(t('log_error'), jsonData.error)
           } else {
-            console.log(t('log_aria2_download'), jsonData.success.car);
-            setJavStat(4);
+            fetch(`/local_manager/update_car_ikoa_stat?car=${jsonData.success.car}&stat=4`)
+              .then(() => {
+                console.log(t('log_aria2_download'), jsonData.success.car);
+                setJavStat(4);
+              })
           }
           setLoading(false);
         })
