@@ -147,7 +147,7 @@ def rename_path_on_json():
 
 @directory_scan.route('/pre_scan_files', methods=['GET'])
 def pre_scan_files():
-    path = request.args.get('path')
+    path = request.args.get('path') or return_default_config_string('file_path')
     file_list = []
 
     # handle usual error

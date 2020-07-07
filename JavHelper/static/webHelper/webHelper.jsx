@@ -22,6 +22,7 @@ import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
 import HelpDoc from "./HelpDoc"
+import LocalManager from './localManager/local_manager_app'
 
 class App extends Component {
     constructor(props) {
@@ -245,7 +246,7 @@ class App extends Component {
               </TabPanel>
               <TabPanel>
                   <StyledDiv>
-                    <LocalJavManager scan_path={this.state.settings_form_data.file_path}/>
+                    <LocalManager/>
                   </StyledDiv>
               </TabPanel>
               <TabPanel>

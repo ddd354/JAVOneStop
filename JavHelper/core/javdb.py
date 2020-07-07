@@ -23,7 +23,7 @@ class JavDBScraper(JavScraper):
                 #'year': processed from release date
                 'length': '//div[strong="時長:"]/span/text()',
                 # 'director': no good source
-                'image': '///img[@class="box video-cover"]/@src',
+                'image': '///img[@class="video-cover"]/@src',
                 #'score': no good source
             },
             'search_list_field': {
