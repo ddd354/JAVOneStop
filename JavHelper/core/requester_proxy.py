@@ -78,7 +78,7 @@ def cloudflare_get(url, cookies={}, proxies=None):
             return res
         #except cloudscraper.exceptions.CloudflareIUAMError:
         except Exception as e:
-            print(f'cloudflare get failed on {e}, retrying')
+            print(f'cloudflare get failed on {e}, retrying {url}')
             retry = retry - 1
             sleep(5)
     
