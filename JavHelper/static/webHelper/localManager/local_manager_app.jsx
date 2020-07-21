@@ -20,17 +20,19 @@ const LocalManager = () => {
                 <LocalManagerConfigurator 
                 scan_path={currentState.context.scan_path} 
                 rescan={_ => setCurrentState('RESCAN')}
-                scraping={currentState.context.scraping}
-                scrape_handler={_ => setCurrentState('SCRAPE', {value: currentState.context.show_list})}
+                loading={currentState.context.loading}
+                preview_rename_handler={_ => setCurrentState('BATCH_PREVIEW_RENAME')}
+                rename_handler={_ => setCurrentState('BATCH_RENAME')}
+                scrape_handler={_ => setCurrentState('BATCH_SCRAPE')}
+                search_handler={(search_str) => setCurrentState('SEARCH_DB', {data: search_str})}
                 />
             </Col>
         </Row>
         <Row>
             <Col>
-                {currentState.context.show_list.map(ind_file => {
-                    return <LocalJavCard key={ind_file.car} jav_info={ind_file}
-                    scraping={currentState.context.scraping}
-                    scrape_handler={_ => setCurrentState('SCRAPE', {value: [ind_file]})}
+                {currentState.context.show_list.map(ind_machine => {
+                    return <LocalJavCard key={ind_machine.car} stateMachine={ind_machine.machine}
+                    loading={currentState.context.loading}
                     />
                 })}
             </Col>

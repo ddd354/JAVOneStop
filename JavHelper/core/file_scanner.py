@@ -19,7 +19,7 @@ DEFAULT_FILENAME_PATTERN = r'^.*?(?P<pre>[a-zA-Z]{2,6})\W*(?P<digit>\d{1,6}).*?$
 
 
 class EmbyFileStructure:
-    def __init__(self, root_path):
+    def __init__(self, root_path=return_default_config_string('file_path')):
         if not os.path.exists(root_path):
             raise Exception(f'{root_path} does not exist')
         if not os.path.isdir(root_path):
@@ -36,7 +36,11 @@ class EmbyFileStructure:
         self.remove_string = return_default_config_string('remove_string').split(',')
         print(self.remove_string)
 
-        self.jav_manage = JavManagerDB()
+    @property
+    def jav_manage(self):
+        # need to dynamically return this so this is not called everytime init the class
+        # may encounter weird error
+        return JavManagerDB()
 
     def write_images(self, jav_obj):
         poster_name = POSTER_NAME
@@ -220,6 +224,27 @@ class EmbyFileStructure:
         new_file_name = name_group.group('pre') + '-' + name_digits + subtitle_postfix + cd_postfix
         return new_file_name
 
+    def preview_rename_single_file(self, full_file_name: str, name_pattern=DEFAULT_FILENAME_PATTERN):
+        # this is used for true single rename, not path rename
+        file_name, ind_ext = os.path.splitext(full_file_name)
+
+        file_name = self.remove_preconfigured_string(file_name)
+        subtitle_postfix, file_name = self.extract_subtitle_postfix_filename(file_name)
+        cd_postfix, file_name = self.extract_CDs_postfix_filename(file_name)
+
+        name_group = re.search(name_pattern, file_name)
+        name_digits = name_group.group('digit')
+
+        # only keep 0 under 3 digits
+        # keep 045, 0830 > 830, 1130, 0002 > 002, 005
+        if name_digits.isdigit():
+            name_digits = str(int(name_digits))
+        while len(name_digits) < 3:
+            name_digits = '0' + name_digits
+
+        new_file_name = name_group.group('pre') + '-' + name_digits + subtitle_postfix + cd_postfix
+        return new_file_name+ind_ext
+
     def rename_directory_preview(self, name_pattern=None):
         # apply default name pattern
         if not name_pattern:
@@ -263,6 +288,16 @@ class EmbyFileStructure:
                 res.append({'file_name': ind_file, 'new_file_name': new_file_name})
 
         return res
+
+    def rename_single_file_actual(self, jav_obj):
+        try:
+            ind_file = jav_obj['file_name']
+            new_file_name = jav_obj['new_file_name']
+            # rename
+            os.rename(os.path.join(self.root_path, ind_file), os.path.join(self.root_path, new_file_name))
+            return f'renamed {ind_file} to {new_file_name}'
+        except Exception as e:
+            raise Exception(f'failed to renamed {ind_file} to due to {e}')
 
     @staticmethod
     def rename_directory(path, file_objs):

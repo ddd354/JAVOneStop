@@ -1,31 +1,90 @@
 import React from 'react'
+import { useService } from '@xstate/react';
 
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
+import Image from 'react-bootstrap/Image'
 
+import {DebounceInput} from 'react-debounce-input';
 import { useTranslation } from 'react-i18next';
 
 
-const LocalJavCard = ({jav_info, scraping, scrape_handler}) => {
+const hasFileName = (file_name) => {
+    return Boolean(file_name) && !file_name.endsWith('.nfo')
+}
+
+function isDict(v) {
+    return typeof v==='object' && v!==null && !(v instanceof Array) && !(v instanceof Date);
+}
+
+const LocalJavCard = ({stateMachine, loading}) => {
     const { t, i18n } = useTranslation();
+    const [localState, setLocalState] = useService(stateMachine);
+
+    if (localState.matches('finish')) {
+        return (<p></p>)
+    }
 
     return(
         <Container fluid>
         <Row>
-            <Col>{jav_info.car}</Col>
-            <Col><Button variant="primary" size="sm" onClick={scrape_handler} disabled={scraping}>
-                {(scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('scrape_all')}
-                </Button></Col>
+            <Col>{localState.context.jav_info.car}</Col>
+            {Boolean(localState.context.jav_info.car) && <Col><Row>
+                <Button variant="primary" size="sm" 
+                    onClick={_ => setLocalState('SCRAPE_DB', {data: localState.context.jav_info.car})} 
+                    disabled={loading || localState.context.loading}>
+                    {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('refresh_db')}
+                    </Button>
+                </Row></Col>}
+            {localState.matches('show_info') && hasFileName(localState.context.jav_info.file_name) && <Col><Row>
+            <Button variant="primary" size="sm" 
+                onClick={_ => setLocalState('PREVIEW_RENAME')} 
+                disabled={loading || localState.context.loading}>
+                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('preview_rename')}
+                </Button>
+            <Button variant="primary" size="sm" 
+            onClick={_ => setLocalState('SCRAPE')} 
+            disabled={loading || localState.context.loading}>
+            {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('single_scrape')}
+            </Button>
+            <Button variant="primary" size="sm" 
+                onClick={_ => setLocalState('FORCE_RENAME')} 
+                disabled={loading || localState.context.loading}>
+                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('force_rename')}
+                </Button>
+            </Row></Col>}
+            {localState.matches('preview_rename') && 
+            <Col><DebounceInput
+                minLength={1}
+                value={localState.context.new_file_name}
+                debounceTimeout={3000}
+                onChange={event => setLocalState('UP_PREVIEW_NAME', {data: event.target.value})} />
+                <Button variant="primary" size="sm" 
+                onClick={_ => setLocalState('RENAME')} 
+                disabled={loading || localState.context.loading}>
+                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('rename')}
+                </Button>
+                <Button variant="primary" size="sm" 
+                onClick={_ => setLocalState('BACK_INFO')} 
+                disabled={loading || localState.context.loading}>
+                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('exit_rename')}
+                </Button>
+            </Col>
+            }
         </Row>
         <Row>
-            <Col>{jav_info.image || jav_info.img}</Col>
-            <Col>{
-                Object.keys(jav_info).map(function(key){
-                    if (key != 'image' && key != 'img' && key != 'car') {
-                        return (<p key={`${jav_info.car}_${key}`}>{key}: {jav_info[key]}</p>)
+            <Col><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
+            <Col>
+            {
+                localState.context.new_file_name && <p style={{color: 'red'}}>new_name: {localState.context.new_file_name}</p>
+            }
+            {
+                Object.keys(localState.context.jav_info).map(function(key){
+                    if (key != 'image' && key != 'img' && key != 'car' && !isDict(localState.context.jav_info[key])) {
+                        return (<p key={`${localState.context.jav_info.car}_${key}`}>{key}: {`${localState.context.jav_info[key]}`}</p>)
                     }
                 })
             }</Col>

@@ -28,7 +28,10 @@ function updateScanDirectory(scan_path, call_back) {
         })
 }
 
-const LocalManagerConfigurator = ({scan_path, rescan, scraping, scrape_handler}) => {
+const LocalManagerConfigurator = ({scan_path, rescan, loading, 
+    preview_rename_handler, rename_handler, scrape_handler, search_handler}) => {
+
+    const [searchStr, setSearchStr] = useState();
     const { t, i18n } = useTranslation();
 
     return (
@@ -41,10 +44,41 @@ const LocalManagerConfigurator = ({scan_path, rescan, scraping, scrape_handler})
                 value={scan_path}
                 debounceTimeout={3000}
                 onChange={event => updateScanDirectory(event.target.value, rescan)} />
+            <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan)}>{'\u27F3'}</Button>
             </Col>
-            <Col><Button variant="primary" size="sm" onClick={scrape_handler} disabled={scraping}>
-                {(scraping) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('scrape_all')}
-            </Button></Col>
+            <Col>
+                <Row>
+                    <Col>
+                    <Button variant="primary" size="sm" onClick={scrape_handler} disabled={loading}>
+                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('scrape_all')}
+                    </Button>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                    <Button variant="primary" size="sm" onClick={preview_rename_handler} disabled={loading}>
+                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('preview_rename_all')}
+                    </Button>
+                    </Col>
+                    <Col>
+                    <Button variant="primary" size="sm" onClick={rename_handler} disabled={loading}>
+                    {(loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('rename_all')}
+                    </Button>
+                    </Col>
+                </Row>
+            </Col>
+            <Col>
+            <p>Search DB: </p>
+            <DebounceInput
+                minLength={1}
+                value={searchStr}
+                debounceTimeout={3000}
+                onChange={event => {
+                    setSearchStr(event.target.value);
+                    search_handler(event.target.value);
+                    }} />
+            <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan)}>{'\u27F3'}</Button>
+            </Col>
         </Row>
         </Container>
     )
