@@ -5,7 +5,6 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button';
-import Spinner from 'react-bootstrap/Spinner';
 import Image from 'react-bootstrap/Image'
 
 import {DebounceInput} from 'react-debounce-input';
@@ -36,26 +35,28 @@ const LocalJavCard = ({stateMachine, loading}) => {
                 <Button variant="primary" size="sm" 
                     onClick={_ => setLocalState('SCRAPE_DB', {data: localState.context.jav_info.car})} 
                     disabled={loading || localState.context.loading}>
-                    {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('refresh_db')}
+                    {t('refresh_db')}
                     </Button>
                 </Row></Col>}
+
             {localState.matches('show_info') && hasFileName(localState.context.jav_info.file_name) && <Col><Row>
             <Button variant="primary" size="sm" 
                 onClick={_ => setLocalState('PREVIEW_RENAME')} 
                 disabled={loading || localState.context.loading}>
-                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('preview_rename')}
+                {t('preview_rename')}
                 </Button>
             <Button variant="primary" size="sm" 
             onClick={_ => setLocalState('SCRAPE')} 
             disabled={loading || localState.context.loading}>
-            {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('single_scrape')}
+            {t('single_scrape')}
             </Button>
             <Button variant="primary" size="sm" 
                 onClick={_ => setLocalState('FORCE_RENAME')} 
                 disabled={loading || localState.context.loading}>
-                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('force_rename')}
+                {t('force_rename')}
                 </Button>
             </Row></Col>}
+
             {localState.matches('preview_rename') && 
             <Col><DebounceInput
                 minLength={1}
@@ -65,12 +66,12 @@ const LocalJavCard = ({stateMachine, loading}) => {
                 <Button variant="primary" size="sm" 
                 onClick={_ => setLocalState('RENAME')} 
                 disabled={loading || localState.context.loading}>
-                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('rename')}
+                {t('rename')}
                 </Button>
                 <Button variant="primary" size="sm" 
                 onClick={_ => setLocalState('BACK_INFO')} 
                 disabled={loading || localState.context.loading}>
-                {(loading || localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : t('exit_rename')}
+                {t('exit_rename')}
                 </Button>
             </Col>
             }

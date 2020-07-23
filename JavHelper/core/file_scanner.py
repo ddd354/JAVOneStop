@@ -295,7 +295,7 @@ class EmbyFileStructure:
             new_file_name = jav_obj['new_file_name']
             # rename
             os.rename(os.path.join(self.root_path, ind_file), os.path.join(self.root_path, new_file_name))
-            return f'renamed {ind_file} to {new_file_name}'
+            return f'renamed {ind_file} to {new_file_name}', ind_file
         except Exception as e:
             raise Exception(f'failed to renamed {ind_file} to due to {e}')
 

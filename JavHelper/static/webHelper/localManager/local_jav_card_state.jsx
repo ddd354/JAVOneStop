@@ -1,4 +1,6 @@
-import { Machine, assign, sendParent } from 'xstate';
+import { Machine, assign, sendParent, actions } from 'xstate';
+
+const { pure } = actions;
 
 const invokeScrape = (ctx, evt) => {
     return fetch('/local_manager/single_scrape',
@@ -27,7 +29,10 @@ const invokeRename = (ctx, evt) => {
                 "file_obj": post_obj
         })})
         .then(response => response.json())
-        .then((jsonData) => jsonData.success)
+        .then((jsonData) => {
+            console.log(jsonData.success.msg);
+            return jsonData.success.old_file_name
+        })
 }
 
 const invokePreviewRename = (ctx, evt) => {
@@ -128,21 +133,19 @@ const createLocalJacCardState = (jav_info) => {
                 },
                 check_preview_name: {
                     // verify whether rename is actually needed
-                    on: {
-                        '': [
-                            {
-                                target: 'preview_rename', 
-                                cond: (context, event) => context.jav_info.file_name != context.new_file_name
-                            },
-                            {
-                                target: 'show_info', 
-                                actions: [
-                                    (ctx, evt) => {console.log(`no rename needed for ${ctx.jav_info.file_name}`)}, 
-                                    assign((context, event) => { return {new_file_name: ''} })
-                                ]
-                            }
-                        ]
-                    }
+                    always: [
+                        {
+                            target: 'preview_rename', 
+                            cond: (context, event) => context.jav_info.file_name != context.new_file_name
+                        },
+                        {
+                            target: 'show_info', 
+                            actions: [
+                                //(ctx, evt) => {console.log(`no rename needed for ${ctx.jav_info.file_name}`)}, 
+                                assign((context, event) => { return {new_file_name: ''} })
+                            ]
+                        }
+                    ]
                 },
                 preview_rename: {
                     on: {
@@ -169,9 +172,9 @@ const createLocalJacCardState = (jav_info) => {
                         onDone: {
                             target: 'show_info',
                             actions: [
-                                (ctx, evt) => console.log(evt.data),
-                                assign((context, event) => {return {new_file_name: ''}}), 
-                                sendParent('REFRESH')
+                                //(ctx, evt) => console.log('rename complete, old name: ', evt.data),
+                                assign((ctx, evt) => {return {new_file_name: ''}}),
+                                pure((ctx, evt) => sendParent({type: 'RENAME_REFRESH', data: evt.data})),
                             ]
                         },
                         onError: {

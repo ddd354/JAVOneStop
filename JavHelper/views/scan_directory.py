@@ -122,9 +122,9 @@ def rename_single_file():
     req_data = json.loads(request.get_data() or '{}')
     file_objs = req_data['file_obj']
     
-    res = EmbyFileStructure().rename_single_file_actual(file_objs)
+    res, old_file_name = EmbyFileStructure().rename_single_file_actual(file_objs)
 
-    return jsonify({'success': res})
+    return jsonify({'success': {'msg': res, 'old_file_name': old_file_name}})
 
 @directory_scan.route('/rename_path_preview', methods=['GET'])
 def rename_path_preview():

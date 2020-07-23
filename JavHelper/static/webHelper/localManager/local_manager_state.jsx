@@ -29,7 +29,7 @@ export const localManagerState = Machine({
     context: {
         scan_path: '',
         show_list: [],
-        loading: false,
+        loading: true,
     },
     states: {
         set_path: {
@@ -38,9 +38,8 @@ export const localManagerState = Machine({
                 src: invokeSetScanDirectory,
                 onDone:  {
                     target: 'scan_directory',
-                    actions: assign((context, event) => { 
-                        //console.log(event);
-                        return {scan_path: event.data}
+                    actions: assign((context, event) => {
+                        return {scan_path: event.data, show_list: [], loading: true}
                     })
                 },
                 onError: {
@@ -57,13 +56,17 @@ export const localManagerState = Machine({
                     target: 'show_directory',
                     actions: assign((context, event) => { 
                         //console.log(event);
-                        let show_list = [];
+                        let show_list = context.show_list;
+                        let _car_list = show_list.map(x => x.car);
 
                         event.data.forEach(jav_obj => {
-                            show_list.push({
-                                car: jav_obj.car,
-                                machine: spawn(createLocalJacCardState(jav_obj))
-                            })
+                            if (!_car_list.includes(jav_obj.car)) {
+                                show_list.push({
+                                    car: jav_obj.car,
+                                    file_name: jav_obj.file_name,
+                                    machine: spawn(createLocalJacCardState(jav_obj))
+                                })
+                            }
                         })
 
                         return {show_list: show_list, loading: false}
@@ -76,8 +79,14 @@ export const localManagerState = Machine({
         },
         show_directory: {
             on: {
-                REFRESH: {
-                    target: 'scan_directory'
+                RENAME_REFRESH: {
+                    target: 'scan_directory',
+                    actions: assign((ctx, evt) => {
+                        //console.log('deleting: ', evt);
+                        return {show_list: ctx.show_list.filter((x) => {
+                            return x.file_name != evt.data
+                        })}
+                    })
                 },
                 BATCH_PREVIEW_RENAME: {
                     target: 'show_directory',
@@ -88,12 +97,14 @@ export const localManagerState = Machine({
                     })
                 },
                 BATCH_RENAME: {
-                    target: 'show_directory',
-                    actions: pure((ctx, evt) => {
-                        return ctx.show_list.map((ind_card) => {
-                            return send('RENAME', {to: ind_card.machine})
+                    target: 'set_path',
+                    actions: [
+                        pure((ctx, evt) => {
+                            return ctx.show_list.map((ind_card) => {
+                                return send('RENAME', {to: ind_card.machine})
+                            })
                         })
-                    })
+                    ]
                 },
                 BATCH_SCRAPE: {
                     target: 'has_scrape_task',
@@ -140,23 +151,19 @@ export const localManagerState = Machine({
             }
         },
         has_scrape_task: {
-            on: {
-                '': [
-                    {target: 'scrape', cond: (context, event) => context.show_list.length > 0},
-                    {target: 'scan_directory'}
-                ]
-            }
+            always: [
+                {target: 'scrape', cond: (context, event) => context.show_list.length > 0},
+                {target: 'scan_directory'}
+            ]
         },
         scrape: {
             // based on incoming event jav_obj data, scrape accordingly
-            on: {
-                '': {
-                    target: 'wait_for_complete',
-                    actions: pure((context, event) => {
-                        //console.log('send SCRAPE to ', context.show_list[0].machine);
-                        return send('SCRAPE', {to: context.show_list[0].machine})
-                    })
-                }
+            always: {
+                target: 'wait_for_complete',
+                actions: pure((context, event) => {
+                    //console.log('send SCRAPE to ', context.show_list[0].machine);
+                    return send('SCRAPE', {to: context.show_list[0].machine})
+                })
             }
         },
         wait_for_complete: {
