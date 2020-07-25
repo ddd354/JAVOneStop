@@ -30,6 +30,7 @@ export const localManagerState = Machine({
         scan_path: '',
         show_list: [],
         loading: true,
+        t: undefined,
     },
     states: {
         set_path: {
@@ -64,7 +65,7 @@ export const localManagerState = Machine({
                                 show_list.push({
                                     car: jav_obj.car,
                                     file_name: jav_obj.file_name,
-                                    machine: spawn(createLocalJacCardState(jav_obj))
+                                    machine: spawn(createLocalJacCardState(jav_obj, context.t))
                                 })
                             }
                         })
@@ -90,15 +91,18 @@ export const localManagerState = Machine({
                 },
                 BATCH_PREVIEW_RENAME: {
                     target: 'show_directory',
-                    actions: pure((ctx, evt) => {
+                    actions: [
+                        pure((ctx, evt) => {
                         return ctx.show_list.map((ind_card) => {
                             return send('PREVIEW_RENAME', {to: ind_card.machine})
                         })
                     })
+                    ]
                 },
                 BATCH_RENAME: {
                     target: 'set_path',
                     actions: [
+                        assign({loading: true}),
                         pure((ctx, evt) => {
                             return ctx.show_list.map((ind_card) => {
                                 return send('RENAME', {to: ind_card.machine})
@@ -109,14 +113,14 @@ export const localManagerState = Machine({
                 BATCH_SCRAPE: {
                     target: 'has_scrape_task',
                     actions: [
-                        (ctx, evt) => console.log('start batch scrape'),
+                        (ctx, evt) => console.log(ctx.t('start_batch_srape')),
                         assign({loading: true})
                     ]
                 },
                 SEARCH_DB: {
                     target: 'searching',
                     actions: [
-                        (ctx, evt) => console.log('searching db'),
+                        (ctx, evt) => console.log(ctx.t('search_db')),
                         assign({loading: true})
                     ]
                 }
@@ -144,7 +148,7 @@ export const localManagerState = Machine({
                 onError: {
                     target: 'show_directory',
                     actions: [
-                        (ctx, evt) => console.log('search db failed'),
+                        (ctx, evt) => console.log(ctx.t('search_db_fail')),
                         assign({loading: false})
                     ]
                 }

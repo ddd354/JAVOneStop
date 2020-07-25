@@ -4,6 +4,7 @@ import { useMachine } from '@xstate/react';
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
+import { useTranslation } from 'react-i18next';
 
 import { localManagerState } from './local_manager_state'
 import LocalManagerConfigurator from './local_manager_configurator'
@@ -11,7 +12,12 @@ import LocalJavCard from './local_jav_card'
 
 
 const LocalManager = () => {
-    const [currentState, setCurrentState] = useMachine(localManagerState)
+    const { t, i18n } = useTranslation();
+    const initializedMachine = localManagerState.withContext({
+        ...localManagerState.context,
+        t: t
+    });
+    const [currentState, setCurrentState] = useMachine(initializedMachine)
 
     return (
         <Container fluid>

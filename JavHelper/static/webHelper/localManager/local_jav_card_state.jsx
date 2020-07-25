@@ -1,4 +1,5 @@
 import { Machine, assign, sendParent, actions } from 'xstate';
+import { useTranslation } from 'react-i18next';
 
 const { pure } = actions;
 
@@ -9,7 +10,13 @@ const invokeScrape = (ctx, evt) => {
                 "update_dict": ctx.jav_info
         })})
     .then(response => response.json())
-    .then(jsonData => jsonData.success)
+    .then(jsonData => {
+        if (jsonData.success) {
+            return jsonData.success
+        } else {
+            throw ctx.jav_info.car
+        }
+    })
 }
 
 const invokeScrapeForDB = (ctx, evt) => {
@@ -43,19 +50,20 @@ const invokePreviewRename = (ctx, evt) => {
 
 const hasFileName = (ctx, evt) => {
     let cond = Boolean(ctx.jav_info.file_name) && !ctx.jav_info.file_name.endsWith('.nfo');
-    if (!cond) {
+    /*if (!cond) {
         console.log('Cannot perform ', evt.type, ' no file name to act on');
-    }
+    }*/
     return cond
 }
 
-const createLocalJacCardState = (jav_info) => {
+const createLocalJacCardState = (jav_info, t) => {
     return  Machine({
             id: 'indLocalJavCard',
             initial: 'show_info',
             context: {
                 loading: false,
                 new_file_name: '',
+                t,
                 jav_info
             },
             states: {
@@ -96,17 +104,17 @@ const createLocalJacCardState = (jav_info) => {
                             target: 'show_info',
                             actions: assign((context, event) => {
                                 if (event.data.car) {
-                                    console.log('updating context', event.data);
+                                    //console.log('updating context', event.data);
                                     return {jav_info: event.data, loading: false}
                                 } else {
-                                    console.log('refresh db failed!')
+                                    console.log(context.t('refresh_db_fail'))
                                 }
                             })
                         },
                         onError: {
                             target: 'show_info',
                             actions: (ctx, evt) => {
-                                console.log('refresh db failed!')
+                                console.log(ctx.t('refresh_db_fail'))
                             }
                         }
                     }
@@ -126,7 +134,7 @@ const createLocalJacCardState = (jav_info) => {
                         onError: {
                             target: 'show_info',
                             actions: (ctx, evt) => {
-                                console.log('load preview rename failed!')
+                                console.log(ctx.t('preview_name_fail'))
                             }
                         }
                     }
@@ -180,7 +188,7 @@ const createLocalJacCardState = (jav_info) => {
                         onError: {
                             target: 'show_info',
                             actions: (ctx, evt) => {
-                                console.log('rename file failed!')
+                                console.log(ctx.t('rename_fail_msg'), ctx.jav_info.file_name)
                             }
                         }
                     }
@@ -193,14 +201,17 @@ const createLocalJacCardState = (jav_info) => {
                         onDone: {
                             target: 'finish',
                             actions: [
-                                (ctx, evt) => console.log(`scraped ${evt.data.car}`),
+                                (ctx, evt) => console.log(ctx.t('good_scrape'), evt.data.car),
                                 assign((context, event) => {return {jav_info: {}, loading: false}}),
                                 sendParent('SCRAPE_COMPLETE')
                             ]
                         },
                         onError: {
                             target: 'show_info',
-                            actions: [sendParent('SCRAPE_COMPLETE'), (ctx, evt) => console.log('single error: ', evt.data)]
+                            actions: [
+                                (ctx, evt) => console.log(ctx.t('fail_scrape'), evt.data),
+                                sendParent('SCRAPE_COMPLETE'),
+                            ]
                         }
                     }
                 },

@@ -8,6 +8,7 @@ import traceback
 import codecs
 from copy import deepcopy
 
+from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.nfo_parser import EmbyNfo
 from JavHelper.core.ini_file import return_default_config_string
@@ -295,7 +296,7 @@ class EmbyFileStructure:
             new_file_name = jav_obj['new_file_name']
             # rename
             os.rename(os.path.join(self.root_path, ind_file), os.path.join(self.root_path, new_file_name))
-            return f'renamed {ind_file} to {new_file_name}', ind_file
+            return BackendTranslation()['rename_ok_msg'].format(ind_file, new_file_name), ind_file
         except Exception as e:
             raise Exception(f'failed to renamed {ind_file} to due to {e}')
 

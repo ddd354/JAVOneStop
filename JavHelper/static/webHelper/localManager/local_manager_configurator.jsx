@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import {DebounceInput} from 'react-debounce-input';
 
 
-function updateScanDirectory(scan_path, call_back) {
-    console.log(`updating path to ${scan_path}`)
+function updateScanDirectory(scan_path, call_back, translation) {
+    //console.log(`updating path to ${scan_path}`)
     fetch('/directory_scan/update_local_ini',
         {method: 'post',
         body: JSON.stringify({
@@ -20,10 +20,10 @@ function updateScanDirectory(scan_path, call_back) {
         .then(response => response.json())
         .then((jsonData) => {
             if (jsonData.status != undefined) {
-                console.log('Succeessful updated scan path: ', scan_path);
+                console.log(translation('update_scan_path'), scan_path);
                 call_back()
             } else {
-                console.log('update fail')
+                console.log(translation('update_scan_path_fail'))
             }
         })
 }
@@ -44,7 +44,7 @@ const LocalManagerConfigurator = ({scan_path, rescan, loading,
                 value={scan_path}
                 debounceTimeout={3000}
                 onChange={event => updateScanDirectory(event.target.value, rescan)} />
-            <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan)}>{'\u27F3'}</Button>
+            <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan, t)}>{'\u27F3'}</Button>
             </Col>
             <Col>
                 <Row>

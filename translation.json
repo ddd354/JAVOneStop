@@ -54,5 +54,9 @@
     "aria2_cannot_contact_server": {
         "en": "cannot add url to server, please verify aria2 server is running or the setup is correct",
         "cn": "无法添加任务至aria2服务器, 请检查服务器正在运行并正确设置了所有服务器参数"
+    },
+    "rename_ok_msg": {
+        "en": "renamed {} to {}",
+        "cn": "重命名 {} 至 {}"
     }
 }
