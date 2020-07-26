@@ -14,7 +14,7 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@v1
       with:
-        python-version: 3.7.7
+        python-version: 3.7.8
 
     - name: Install Python Packages
       run: |
@@ -30,7 +30,7 @@ jobs:
           --add-data="JAV_HELP.md:." \
           --add-data="JavHelper/templates:JavHelper/templates" \
           --add-data="JavHelper/static:JavHelper/static" \
-          --add-data="/Users/runner/hostedtoolcache/Python/3.7.7/x64/lib/python3.7/site-packages/cloudscraper:cloudscraper" \
+          --add-data="/Users/runner/hostedtoolcache/Python/3.7.8/x64/lib/python3.7/site-packages/cloudscraper:cloudscraper" \
           --hidden-import="js2py" \
           --hidden-import="cloudscraper" \
           --hidden-import="cloudscraper_exception" \
