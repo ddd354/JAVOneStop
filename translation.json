@@ -29,7 +29,7 @@
     },
     "oof_no_task_found": {
         "en": "download {car} failed on: cannot find download task from first page of magnet task; please visit 115 and clean up pending tasks",
-        "cn": "{car}添加磁链失败: 无法在离线下载第一页找到下载任务, 请前往115清理失败或者正在进行的任务"
+        "cn": "{}添加磁链失败: 无法在离线下载第一页找到下载任务, 请前往115清理失败或者正在进行的任务"
     },
     "oof_no_file": {
         "en": "there is no download file found in 115 task",
@@ -54,5 +54,9 @@
     "aria2_cannot_contact_server": {
         "en": "cannot add url to server, please verify aria2 server is running or the setup is correct",
         "cn": "无法添加任务至aria2服务器, 请检查服务器正在运行并正确设置了所有服务器参数"
+    },
+    "rename_ok_msg": {
+        "en": "renamed {} to {}",
+        "cn": "重命名 {} 至 {}"
     }
 }

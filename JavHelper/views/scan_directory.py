@@ -3,6 +3,7 @@ import os
 import json
 from ast import literal_eval
 from flask import Blueprint, jsonify, request, Response
+from time import sleep
 
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core.javlibrary import JavLibraryScraper
@@ -107,6 +108,24 @@ def read_local_ini():
         return jsonify({'local_config': load_ini_file()._sections})  # convert returned obj to dict format
 
 
+@directory_scan.route('/preview_single_rename', methods=['GET'])
+def preview_single_rename():
+    file_name = request.args.get('file_name')
+
+    res = EmbyFileStructure().preview_rename_single_file(file_name)
+
+    return jsonify({'success': res})
+
+
+@directory_scan.route('/rename_single_file', methods=['POST'])
+def rename_single_file():
+    req_data = json.loads(request.get_data() or '{}')
+    file_objs = req_data['file_obj']
+    
+    res, old_file_name = EmbyFileStructure().rename_single_file_actual(file_objs)
+
+    return jsonify({'success': {'msg': res, 'old_file_name': old_file_name}})
+
 @directory_scan.route('/rename_path_preview', methods=['GET'])
 def rename_path_preview():
     path = request.args.get('path')
@@ -147,7 +166,7 @@ def rename_path_on_json():
 
 @directory_scan.route('/pre_scan_files', methods=['GET'])
 def pre_scan_files():
-    path = request.args.get('path')
+    path = request.args.get('path') or return_default_config_string('file_path')
     file_list = []
 
     # handle usual error
@@ -156,19 +175,31 @@ def pre_scan_files():
     if not os.path.isdir(path):
         return jsonify({'response': [{'file_name': f'{path} is not a valid directory for scan'}]}), 400
 
-    for file_name in os.listdir(path):
-        # filter out dot file
-        if file_name.startswith('.'):
-            continue
-        # don't care about directory size
-        elif os.path.isdir(os.path.join(path, file_name)):
-            #file_list.append({'file_name': file_name, 'size': 'folder - will not process'})
-            # longer care about directory, just skip them
-            pass
-        else:
-            file_size = os.path.getsize(os.path.join(path, file_name)) >> 20
-            _car = os.path.splitext(file_name)[0]
-            file_list.append({'file_name': file_name, 'car': _car, 'size': f'{file_size}MB'})
+    retry_num = 0
+    # implement a retry method since sometimes the rename is too quick for os to handle
+    # example: python made rename (incomplete), then front end immediately call dir scan, 
+    # dir scan get a list of files pre-renamed, rename completed, 
+    # subsequent getsize will fail since the old filename no longer exists
+    while retry_num < 3:
+        try:
+            for file_name in os.listdir(path):
+                # filter out dot file
+                if file_name.startswith('.'):
+                    continue
+                # don't care about directory size
+                elif os.path.isdir(os.path.join(path, file_name)):
+                    #file_list.append({'file_name': file_name, 'size': 'folder - will not process'})
+                    # longer care about directory, just skip them
+                    pass
+                else:
+                    file_size = os.path.getsize(os.path.join(path, file_name)) >> 20
+                    _car = os.path.splitext(file_name)[0]
+                    file_list.append({'file_name': file_name, 'car': _car, 'size': f'{file_size}MB'})
+            break
+        except Exception as e:
+            print(f'{e} happens, retry')
+            retry_num += 1
+            sleep(3)
 
     return jsonify({'response': file_list,
                     'header': [

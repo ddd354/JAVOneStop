@@ -17,6 +17,10 @@ from JavHelper.model.jav_manager import JavManagerDB
 
 local_manager = Blueprint('local_manager', __name__, url_prefix='/local_manager')
 
+@local_manager.route('/directory_path', methods=['GET'])
+def directory_path():
+    return jsonify({'success': return_default_config_string('file_path')})
+
 @local_manager.route('/readme', methods=['GET'])
 def readme():
     source_filename_map = {

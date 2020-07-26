@@ -46,7 +46,28 @@ const resources = {
       'downloading': 'downloading',
       'personal_wanted': 'still wanted',
       'search_car_allow_partial': 'Search car (allow partial search)',
+
+      //rename part
       'Rename Tool': 'Rename Tool',
+      'preview_rename_all': 'Preview Rename All',
+      'rename_all': 'Rename All',
+      'preview_rename': 'Preview Rename',
+      'rename': 'Rename',
+      'force_rename': 'Force Rename',
+      'exit_rename': 'No Rename',
+
+      // local manager
+      'refresh_db_fail': 'refresh db failed!',
+      'update_scan_path': 'Succeessful updated scan path: ',
+      'update_scan_path_fail': 'Update scan path failed',
+      'rename_fail_msg': 'Rename file failed',
+      'start_batch_srape': 'start batch scrape',
+      'search_db': 'searching db',
+      'search_db_fail': 'search db failed',
+      'preview_name_fail': 'load preview rename failed!',
+      'good_scrape': 'Scraped ',
+      'fail_scrape': 'single scrape error: ',
+
       'scrape_all': 'Scrape All',
       'local': 'Local',
       'not_organized': 'Not Organized',
@@ -137,15 +158,39 @@ const resources = {
       'downloading': '下载中',
       'personal_wanted': '还未下载',
       'search_car_allow_partial': '搜索番号(支持部分搜索)',
+
+      // rename part
       'Rename Tool': '重命名工具',
+      'preview_rename_all': '预览重命名所有',
+      'rename_all': '重命名所有',
+      'preview_rename': '预览重命名',
+      'rename': '重命名',
+      'force_rename': '手动重命名',
+      'exit_rename': '不重命名',
+
+      // scrape part
       'scrape_all': '刮削整理所有',
+      'single_scrape': "刮削整理当前",
+      'refresh_db': "刷新数据库刮削信息",
+
+      // local manager
+      'refresh_db_fail': '刷新数据库失败',
+      'update_scan_path': '成功更新扫描路径: ',
+      'update_scan_path_fail': '更新路径失败',
+      'rename_fail_msg': '重命名文件失败',
+      'start_batch_srape': '开始批量刮削',
+      'search_db': '数据库搜索中',
+      'search_db_fail': '数据库搜索失败',
+      'preview_name_fail': '预览重命名失败',
+      'good_scrape': '刮削完成 ',
+      'fail_scrape': '刮削失败: ',
+
+
       'local': '本地',
       'not_organized': '未整理',
       'migrate_jav': "移动文件",
       'rewrite_nfo': "重写Nfo",
-      'single_scrape': "刮削整理当前",
       'rewrite_images': "重写图片",
-      'refresh_db': "刷新数据库刮削信息",
       'javtab_field': '键',
       'javtab_value': '数据',
       'javtab_action': '执行命令',
