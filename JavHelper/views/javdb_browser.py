@@ -17,9 +17,9 @@ javdb_browser = Blueprint('javdb_browser', __name__, url_prefix='/javdb_browser'
 SET_TYPE_MAP = {
     'trending_updates': '?page={page_num}',
     'subtitled': '?page={page_num}&vft=2',
-    'daily_rank': 'rankings/video_daily',
-    'weekly_rank': 'rankings/video_weekly',
-    'monthly_rank': 'rankings/video_monthly',
+    'daily_rank': 'rankings/video_censored?period=daily',
+    'weekly_rank': 'rankings/video_censored?period=weekly',
+    'monthly_rank': 'rankings/video_censored?period=monthly',
 }
 
 def search_by_car(car: str, **kwargs):
@@ -112,11 +112,11 @@ def get_set_javs():
     db_conn = JavManagerDB()
     for jav_obj in rt_jav_objs:
         if db_conn.pk_exist(str(jav_obj.get('car'))):
-            jav_obj.update(
-                dict(
-                    db_conn.get_by_pk(str(jav_obj.get('car')))
-                )
-            )
+            # for javdb, we cannot trust in db img link
+            db_obj = dict( db_conn.get_by_pk(str(jav_obj.get('car'))) )
+            db_obj.pop('img')
+            
+            jav_obj.update(db_obj)
         else:
             jav_obj['stat'] = 2
             db_conn.upcreate_jav(jav_obj)

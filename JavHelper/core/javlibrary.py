@@ -38,6 +38,11 @@ class JavLibraryScraper(JavScraper):
         self.jav_url = return_config_string(['其他设置', 'javlibrary网址'])
 
     def postprocess(self):
+        if self.jav_obj.get('image'):
+            # remove invalid image link
+            if 'noimagepl' in self.jav_obj['image']:
+                self.jav_obj.pop('image')
+                
         if ' - JAVLibrary' in self.jav_obj['title']:
             self.jav_obj['title'] = self.jav_obj['title'].replace(' - JAVLibrary', '')
 

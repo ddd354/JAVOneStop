@@ -43,6 +43,11 @@ class JavDBScraper(JavScraper):
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')
+
+            # sometimes javdb keeps invalid image
+            if 'noimage' in self.jav_obj['image']:
+                self.jav_obj.pop('image')
+
         if self.jav_obj.get('length'):
             self.jav_obj['length'] = self.jav_obj['length'].lstrip(' ')[:-3]
 

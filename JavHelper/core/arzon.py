@@ -36,6 +36,11 @@ class ArzonScraper(JavScraper):
         return session
 
     def postprocess(self):
+        if self.jav_obj.get('image'):
+            # remove invalid image link
+            if 'noimagepl' in self.jav_obj['image']:
+                self.jav_obj.pop('image')
+
         if self.jav_obj.get('plot') and isinstance(self.jav_obj['plot'], list):
             _temp = deepcopy(self.jav_obj['plot'])
             _temp = ''.join(_temp)
