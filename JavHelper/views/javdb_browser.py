@@ -114,7 +114,8 @@ def get_set_javs():
         if db_conn.pk_exist(str(jav_obj.get('car'))):
             # for javdb, we cannot trust in db img link
             db_obj = dict( db_conn.get_by_pk(str(jav_obj.get('car'))) )
-            db_obj.pop('img')
+            if db_obj.get('img'):
+                db_obj.pop('img')
             
             jav_obj.update(db_obj)
         else:
