@@ -21,6 +21,15 @@ const invokeSearchDB = (ctx, evt) => {
         .then((jsonData) => jsonData['success'])
 }
 
+const cardReadyToScrape = (ele) => {
+    return ele.machine.state.matches('show_info')
+}
+
+const everyCardFinishes = (context, event) => {
+    //console.log('check card list');
+    return context.show_list.length > 0 && context.show_list.every(cardReadyToScrape);
+}
+
 const { pure } = actions;
 
 export const localManagerState = Machine({
@@ -155,31 +164,43 @@ export const localManagerState = Machine({
             }
         },
         has_scrape_task: {
-            always: [
-                {target: 'scrape', cond: (context, event) => context.show_list.length > 0},
-                {target: 'scan_directory'}
-            ]
+            after: {
+                5000: [
+                    {target: 'scrape', cond: everyCardFinishes},
+                    {target: 'has_scrape_task', cond: (c, v) => c.show_list.length > 0},
+                    {target: 'scan_directory'}
+                ]
+            }
         },
         scrape: {
             // based on incoming event jav_obj data, scrape accordingly
             always: {
-                target: 'wait_for_complete',
-                actions: pure((context, event) => {
-                    //console.log('send SCRAPE to ', context.show_list[0].machine);
-                    return send('SCRAPE', {to: context.show_list[0].machine})
-                })
-            }
-        },
-        wait_for_complete: {
-            on: {
-                SCRAPE_COMPLETE: {
-                    target: 'has_scrape_task',
-                    actions: assign({show_list: (context, event) => context.show_list.slice(1)})  // get rid of first item
-                }
+                target: 'has_scrape_task',
+                actions: [
+                    pure((context, event) => {
+                        //console.log('send SCRAPE to ', context.show_list[0].machine);
+                        return send('SCRAPE', {to: context.show_list[0].machine})}),
+                    pure((context, event) => {
+                        if (context.show_list.length > 1) {
+                            return send('SCRAPE', {to: context.show_list[1].machine})}
+                        }),
+                    pure((context, event) => {
+                        if (context.show_list.length > 2) {
+                            return send('SCRAPE', {to: context.show_list[2].machine})}
+                        }),
+                ]
             }
         },
     },
     on: {
         RESCAN: {target: '.set_path'},
+        SCRAPE_COMPLETE: {
+            actions: [
+                //(ctx, evt) => console.log('scrape_complete', ctx, evt),
+                assign((ctx, evt) => {
+                    return {show_list: ctx.show_list.filter(card => card.car !== evt.data.car)}
+                })
+            ]
+        }
     }
 });

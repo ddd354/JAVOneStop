@@ -17,3 +17,4 @@ yarn.lock
 run.spec
 rewrite_his.sh
 *.backup
+*.db

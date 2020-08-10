@@ -21,6 +21,6 @@ echo Delete old container...
 docker rm -f $containerName
 
 echo Run new container...
-docker run -d -p 8009:8009 -v "$1":/usr/data1 --name $containerName $imageName
+docker run -d -p 8009:8009 -v "$1":/usr/data1 ./jav_manager.db:/usr/src/app/jav_manager.db --name $containerName $imageName
 
 fi
