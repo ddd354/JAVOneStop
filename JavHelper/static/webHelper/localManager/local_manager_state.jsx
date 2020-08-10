@@ -198,7 +198,7 @@ export const localManagerState = Machine({
             actions: [
                 //(ctx, evt) => console.log('scrape_complete', ctx, evt),
                 assign((ctx, evt) => {
-                    return {show_list: ctx.show_list.filter(card => card.car !== evt.data.car)}
+                    return {show_list: ctx.show_list.filter(card => card.file_name !== evt.data.file_name)}
                 })
             ]
         }
