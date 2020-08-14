@@ -212,6 +212,7 @@ const createLocalJacCardState = (jav_info, t) => {
                             target: 'finish',
                             actions: [
                                 (ctx, evt) => console.log(ctx.t('fail_scrape'), evt.data),
+                                assign((context, event) => {return {jav_info: {}, loading: false}}),
                                 pure((ctx, evt) => sendParent({type: 'SCRAPE_COMPLETE', data: evt.data})),
                             ]
                         }

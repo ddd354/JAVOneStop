@@ -1,6 +1,7 @@
 from math import ceil
 from blitzdb import Document, FileBackend
 from blitzdb.document import DoesNotExist
+from time import sleep
 
 
 class JavObj(Document):
@@ -8,7 +9,17 @@ class JavObj(Document):
 
 class JavManagerDB:
     def __init__(self):
-        self.jav_db = FileBackend('jav_manager.db')
+        retry = 0
+        while retry < 3:
+            try:
+                self.jav_db = FileBackend('jav_manager.db')
+            except Exception as e:
+                print(f'read file db error {e}, gonna retry')
+                retry += 1
+                sleep(5)
+        
+        if not self.jav_db:
+            raise Exception('read local db error')
 
     def create_indexes(self):
         print('creating index for stat')
