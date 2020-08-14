@@ -207,10 +207,12 @@ const createLocalJacCardState = (jav_info, t) => {
                             ]
                         },
                         onError: {
-                            target: 'show_info',
+                            // when scrape fail, it goes into finish state as well
+                            // will re-appear when refreshing 
+                            target: 'finish',
                             actions: [
                                 (ctx, evt) => console.log(ctx.t('fail_scrape'), evt.data),
-                                sendParent('SCRAPE_COMPLETE'),
+                                pure((ctx, evt) => sendParent({type: 'SCRAPE_COMPLETE', data: evt.data})),
                             ]
                         }
                     }
