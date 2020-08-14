@@ -13,6 +13,7 @@ class JavManagerDB:
         while retry < 3:
             try:
                 self.jav_db = FileBackend('jav_manager.db')
+                break
             except Exception as e:
                 print(f'read file db error {e}, gonna retry')
                 retry += 1
