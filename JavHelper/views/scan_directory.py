@@ -201,7 +201,7 @@ def pre_scan_files():
             retry_num += 1
             sleep(3)
 
-    return jsonify({'response': file_list,
+    return jsonify({'response': sorted(file_list, key=lambda k: k.get('file_name')),
                     'header': [
                         {'name': 'File Name', 'selector': 'file_name', 'sortable': True},
                         {'name': 'Size', 'selector': 'size', 'sortable': True}

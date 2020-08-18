@@ -8,17 +8,16 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import Form from "react-jsonschema-form";
 import Button from '@material-ui/core/Button';
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup'
+import ToggleButton from 'react-bootstrap/ToggleButton'
 
 import { withTranslation } from 'react-i18next';
 import i18n from './i18n';
 
 import IdmmMonitor from "./idmm_download"
-import LocalJavManager from "./localManager"
 import JavConfigurator from "./configurator"
 import JavBroswerV2 from "./javBrowserV2"
-import FileTable from "./fileTable";
 import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
 import HelpDoc from "./HelpDoc"
@@ -34,11 +33,13 @@ class App extends Component {
           files_table: [],
           form_data: {},
           settings_form_data: {},
-          logs: []
+          logs: [],
+          language: 'cn'
         };
         this.filePathHandler = this.filePathHandler.bind(this);
         this.embyImageHandler = this.embyImageHandler.bind(this);
         this.settingsFormHandler = this.settingsFormHandler.bind(this);
+        this.changeLanguage = this.changeLanguage.bind(this);
     }
 
     async componentDidMount () {
@@ -72,7 +73,10 @@ class App extends Component {
                 console.log(this.props.t('log_error'), jsonData.error);
               }
               //console.log('Using local config: ', jsonData.local_config);
-              this.setState({ settings_form_data: jsonData.local_config, form_data: jsonData.local_config });
+              this.setState({ settings_form_data: jsonData.local_config, 
+                form_data: jsonData.local_config, 
+                language: jsonData.local_config.display_language,
+              });
               i18n.changeLanguage(jsonData.local_config.display_language);
             })
     }
@@ -188,6 +192,30 @@ class App extends Component {
             });
     }
 
+    changeLanguage (lng) {
+      // update ini file
+      fetch('/directory_scan/update_local_ini',
+        {method: 'post',
+        body: JSON.stringify({
+                "update_dict": {display_language: lng}
+        })})
+        .then(response => {
+            return [response.json(), response.status];
+        })
+        .then((res_list) => {
+            if (res_list[1] === 200) {
+                //console.log(res_list);
+                this.setState({language: lng})
+                i18n.changeLanguage(lng);
+            } else {
+                res_list[0].then((jsonData) => {
+                    console.log(jsonData.errors.split("\n"));
+                })
+
+            }
+        });
+    }
+
     render() {
         const { t } = this.props;
         const form_schema = {
@@ -233,12 +261,15 @@ class App extends Component {
                 <Tab>{t('helper_page')}</Tab>
                 <Tab>{t('JavLibrary Manager')}</Tab>
                 <Tab>{t('Main Tool')}</Tab>
-                <Tab>{t('Rename Tool')}</Tab>
                 <Tab>{t('Handy Features')}</Tab>
                 <Tab>{t('Settings')}</Tab>
               </TabList>
 
               <TabPanel>
+              <ToggleButtonGroup type="radio" name='language' value={this.state.language} onChange={this.changeLanguage}>
+                <ToggleButton value={'cn'}>中文</ToggleButton>
+                <ToggleButton value={'en'}>English</ToggleButton>
+              </ToggleButtonGroup>
                 <HelpDoc />
               </TabPanel>
               <TabPanel>
@@ -248,16 +279,6 @@ class App extends Component {
                   <StyledDiv>
                     <LocalManager/>
                   </StyledDiv>
-              </TabPanel>
-              <TabPanel>
-                  <StyledDiv>
-                  <Form schema={form_schema} uiSchema={form_ui} formData={this.state.form_data} onSubmit={this.filePathHandler}>
-                      <div>
-                        <button type="submit">{t('Preview File / Execute')}</button>
-                      </div>
-                  </Form>
-                  </StyledDiv>
-                  <FileTable header={this.state.file_table_header} file_data={this.state.files_table}/>
               </TabPanel>
               <TabPanel>
                 <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>

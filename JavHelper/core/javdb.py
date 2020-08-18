@@ -2,6 +2,7 @@
 from lxml import etree
 import re
 from copy import deepcopy
+import json
 
 from JavHelper.core.jav_scraper import JavScraper
 from JavHelper.core import JAVNotFoundException
@@ -43,10 +44,30 @@ class JavDBScraper(JavScraper):
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')
+
+            # sometimes javdb keeps invalid image
+            if 'noimage' in self.jav_obj['image']:
+                self.jav_obj.pop('image')
+
         if self.jav_obj.get('length'):
             self.jav_obj['length'] = self.jav_obj['length'].lstrip(' ')[:-3]
 
     def get_single_jav_page(self):
+        # new autocomplete search, no rate limit
+        # https://javdb.com/videos/search_autocomplete.json?q=luxu-1298
+        search_url = self.jav_url + 'videos/search_autocomplete.json?q={}'.format(self.car)
+        jav_search_result = return_html_text(search_url, behind_cloudflare=True)
+        try:
+            jav_search_result = json.loads(jav_search_result)
+            self.total_index = len(jav_search_result)
+            for i, _rst in enumerate(jav_search_result):
+                if _rst['number'] == self.car.upper():
+                    result_first_url = self.jav_url + 'v/{}'.format(_rst['uid'])
+                    return return_get_res(result_first_url).content.decode('utf-8'), self.total_index
+        except Exception as e:
+            print(f'issue encounter when autocomplete search javdb {self.car} - {e}')
+            pass
+
         # perform search first, not reliable at all, often multiple results
         # https://javdb4.com/search?q=MILK-08&f=all
         search_url = self.jav_url + 'search?q={}&f=all'.format(self.car)
