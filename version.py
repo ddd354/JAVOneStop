@@ -1,5 +1,5 @@
 MAJOR = 0
 MINOR = 7
-PATCH = 5
+PATCH = 6
 
 VERSION = '{}.{}.{}'.format(MAJOR, MINOR, PATCH)
