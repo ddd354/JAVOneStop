@@ -95,7 +95,7 @@ const JavBroswerV2 = () => {
         // this handles infinite scroll data fetch
         console.log(t('log_page_incremental'), page_num);
         let _new_page = String(parseInt(page_num)+1);
-        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+jav_set_name+
         `&page_num=`+String(_new_page)+`&search_string=`+String(search_string))
             .then(response => response.json())
             .then((jsonData) => {
