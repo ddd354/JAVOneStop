@@ -15,6 +15,7 @@ from JavHelper.core.jav777 import jav777_set_page
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core.backend_translation import BackendTranslation
+from JavHelper.core.aria2_handler import verify_aria2_configs_exist
 
 
 # support for all jav scrape library
@@ -172,5 +173,59 @@ def search_magnet_link():
 
     return jsonify({'error': f'{car} not found in all sources'})
 
+
+@jav_browser.route('/update_db_jav', methods=['POST'])
+def update_db_jav():
+    req_data = json.loads(request.get_data() or '{}')
+    jav_pk = req_data.get('pk')
+    update_data = req_data.get('data')
+
+    if not jav_pk:
+        return jsonify({'error': 'no pk found in posted json'}), 400
+
+    db_conn = JavManagerDB()
+    try:
+        current_jav_obj = dict(db_conn.get_by_pk(jav_pk))
+    except DoesNotExist:
+        current_jav_obj = {'car': jav_pk}
+
+    current_jav_obj.update(update_data)
+    db_conn.upcreate_jav(current_jav_obj)
+
+    return jsonify({'success': dict(current_jav_obj)})
+
+
+@jav_browser.route('/download_via_aria', methods=['POST'])
+def download_via_aria():
+    req_data = json.loads(request.get_data() or '{}')
+    car = req_data.get('car')
+    magnet = req_data.get('magnet')
+
+    if not car or not magnet:
+        return jsonify({'error': 'required fields are not found in posted json'}), 400
+
+    oof_downloader = OOFDownloader()
+
+    jav_obj = oof_downloader.handle_jav_download(car, magnet)
+    if not jav_obj.get('error'):
+        return jsonify({'success': jav_obj})
+    else:
+        return jsonify({'error': jav_obj.get('error')}), 400
+
+@jav_browser.route('/diagnose_downloader_setup', methods=['GET'])
+def diagnose_downloader_setup():
+    error_list = {}
+    try:
+        OOFDownloader()
+    except FileNotFoundError:
+        error_list['oof_cookies'] = BackendTranslation()['oof_cookies_not_found']
+
+    if not verify_aria2_configs_exist():
+        error_list['aria2_setup'] = BackendTranslation()['aria2_setup_error']
+
+    if error_list:
+        return jsonify({'error': error_list}), 500
+    
+    return jsonify({'success': 1})
 
 # ---------------------------utilities-------------------------------

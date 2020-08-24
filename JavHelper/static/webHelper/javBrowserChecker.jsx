@@ -9,7 +9,7 @@ const JavBrowserChecker = () => {
     // initialize with non-dismissible warnings (unless reload)
     useEffect(() => {
         let _warning = [];
-        fetch(`/javlib_browser/diagnose_downloader_setup`)
+        fetch(`/jav_browser/diagnose_downloader_setup`)
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);

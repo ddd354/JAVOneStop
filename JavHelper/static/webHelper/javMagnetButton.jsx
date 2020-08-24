@@ -35,7 +35,7 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
           setLoading(false);
         })
       } else if (isLoading) {
-        fetch('/javlib_browser/download_via_aria',
+        fetch('/jav_browser/download_via_aria',
               {method: 'post',
               body: JSON.stringify({
                       "car": _car,

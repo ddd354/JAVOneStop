@@ -17,7 +17,7 @@ const StatButtonGroup = (props) => {
   const buttonClicked = (event) => {
     const stat_map = JSON.parse(t('jav_stat_map'));
     //console.log(event[0], event.slice(2));
-    fetch('/javlib_browser/update_db_jav',
+    fetch('/jav_browser/update_db_jav',
           {method: 'post',
           body: JSON.stringify({
                   "pk": event.slice(2),
