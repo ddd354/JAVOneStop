@@ -11,10 +11,11 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
     const { t, i18n } = useTranslation();
 
     const website_set_map = {
-        'javlib_browser': ['most_wanted', 'best_rated', 'trending_updates'],
-        'javbus_browser': ['subtitled', 'trending_updates'],
-        'javdb_browser': ['trending_updates', 'subtitled', 'daily_rank', 'weekly_rank', 'monthly_rank'],
-        'jav777_browser': ['trending_updates']
+        'jav321': ['trending_updates', 'hot_downloads', 'new_release'],
+        'javlib': ['most_wanted', 'best_rated', 'trending_updates'],
+        'javbus': ['subtitled', 'trending_updates'],
+        'javdb': ['trending_updates', 'subtitled', 'daily_rank', 'weekly_rank', 'monthly_rank'],
+        'jav777': ['trending_updates']
     }
     const [set_toggle_list, setToggleList] = useState(website_set_map[source_site]);
 
@@ -34,7 +35,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
         setJavSet(event);
         setSearchString(''); // clean out search string for future page clicks
         setPageNum('1'); // always get 1st page when switching jav sets
-        fetch(`/${source_site}/get_set_javs?set_type=`+String(event)+`&page_num=`+String(1))
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+String(event)+`&page_num=`+String(1))
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
@@ -98,16 +99,19 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
         </ToggleButtonGroup>
         <ToggleButtonGroup size="sm" type="radio" value={source_site} name="selectSourceSet" 
             onChange={changeSourceSite} style={{flexWrap: "wrap", marginLeft: "5px", marginTop: "5px"}}>
-            <ToggleButton value={'javlib_browser'}>
+            <ToggleButton value={'javlib'}>
                 {"javlibrary"}
             </ToggleButton>
-            <ToggleButton value={'javbus_browser'}>
+            <ToggleButton value={'jav321'}>
+                {"jav321"}
+            </ToggleButton>
+            <ToggleButton value={'javbus'}>
                 {"javbus"}
             </ToggleButton>
-            <ToggleButton value={'javdb_browser'}>
+            <ToggleButton value={'javdb'}>
                 {"javdb"}
             </ToggleButton>
-            <ToggleButton value={'jav777_browser'}>
+            <ToggleButton value={'jav777'}>
                 {"jav777"}
             </ToggleButton>
         </ToggleButtonGroup>

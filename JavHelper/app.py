@@ -16,10 +16,7 @@ from JavHelper.cache import cache
 from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.views.emby_actress import emby_actress
 from JavHelper.views.parse_jav import parse_jav
-from JavHelper.views.javlib_browser import javlib_browser
-from JavHelper.views.javbus_browser import javbus_browser
-from JavHelper.views.javdb_browser import javdb_browser
-from JavHelper.views.jav777_browser import jav777_browser
+from JavHelper.views.jav_browser import jav_browser
 from JavHelper.views.local_manager import local_manager
 from JavHelper.views.scan_directory import directory_scan
 from JavHelper.utils import resource_path
@@ -36,10 +33,7 @@ def create_app():
 
     app.register_blueprint(emby_actress)
     app.register_blueprint(parse_jav)
-    app.register_blueprint(javlib_browser)
-    app.register_blueprint(javbus_browser)
-    app.register_blueprint(javdb_browser)
-    app.register_blueprint(jav777_browser)
+    app.register_blueprint(jav_browser)
     app.register_blueprint(directory_scan)
     app.register_blueprint(local_manager)
 

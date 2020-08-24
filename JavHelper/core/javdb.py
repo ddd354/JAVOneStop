@@ -10,6 +10,8 @@ from JavHelper.core.requester_proxy import return_html_text, return_post_res, re
 from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
 from JavHelper.core.ini_file import return_config_string
 from JavHelper.core.utils import parsed_size_to_int
+from JavHelper.model.jav_manager import JavManagerDB
+from JavHelper.core.backend_translation import BackendTranslation
 
 
 class JavDBScraper(JavScraper):
@@ -154,3 +156,69 @@ def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=No
         max_page = page_num
     
     return jav_objs_raw, max_page
+
+
+def javdb_search(set_type: str, search_string: str, page_num=1):
+    def search_by_car(car: str, **kwargs):
+        car = car.upper()
+        jav_obj = JavDBScraper({'car': car}).scrape_jav()
+        db_conn = JavManagerDB()
+
+        if db_conn.pk_exist(str(jav_obj.get('car'))):
+            jav_obj.update(
+                dict(
+                    db_conn.get_by_pk(str(jav_obj.get('car')))
+                )
+            )
+        else:
+            jav_obj['stat'] = 2
+            db_conn.upcreate_jav(jav_obj)
+
+        # use the full image (image key) instead of img (much smaller)
+        jav_obj['img'] = jav_obj.get('image', '')
+        
+        return [jav_obj], 1
+
+    def search_for_actress(javlib_actress_code: str, page_num=1):
+        search_url = 'actors/{url_parameter}?page={page_num}'
+        db_conn = JavManagerDB()
+
+        # get actress first page
+        jav_objs, max_page = javdb_set_page(search_url, 
+            page_num=page_num, 
+            url_parameter=javlib_actress_code
+        )
+
+        for jav_obj in jav_objs:
+            if db_conn.pk_exist(str(jav_obj.get('car'))):
+                jav_obj.update(
+                    dict(
+                        db_conn.get_by_pk(str(jav_obj.get('car')))
+                    )
+                )
+            else:
+                jav_obj['stat'] = 2
+                db_conn.upcreate_jav(jav_obj)
+        
+        return jav_objs, max_page
+
+    search_map = {
+        '番号': {'function': search_by_car, 'params': {'car': search_string}},
+        '女优': {'function': search_for_actress, 'params': {
+            'javlib_actress_code': search_string, 'page_num': page_num}},
+        '分类': {'function': javdb_set_page, 'params': 
+            {'page_template': 'tags?c6={url_parameter}&page={page_num}',
+            'page_num': page_num, 'url_parameter': search_string}
+        },
+        '系列': {'function': javdb_set_page, 'params': 
+            {'page_template': 'series/{url_parameter}?page={page_num}',
+            'page_num': page_num, 'url_parameter': search_string}
+        }
+    }
+
+    # verify set type
+    if set_type not in search_map:
+        raise Exception(BackendTranslation()['no_support_set_search'].format(set_type))
+
+    jav_objs, max_page = search_map[set_type]['function'](**search_map[set_type]['params'])
+    return jav_objs, max_page

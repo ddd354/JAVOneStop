@@ -24,7 +24,7 @@ import './javBrowserV2.css';
 
 const JavBroswerV2 = () => {
     const { t, i18n } = useTranslation();
-    const [source_site, setSourceSite] = useState('javbus_browser');
+    const [source_site, setSourceSite] = useState('javbus');
     const [isLoading, setLoading] = useState(true);
 
     const [jav_browser_batch_limiter, setUrlLimiter] = useState(new Bottleneck({maxConcurrent: 1}));
@@ -45,7 +45,7 @@ const JavBroswerV2 = () => {
 
     // when switching from different site, force an update
     useEffect(() => {
-        fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name)
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=${jav_set_name}`)
             .then(response => response.json())
             .then((jsonData) => {
                 if (jsonData.error) {
@@ -71,7 +71,7 @@ const JavBroswerV2 = () => {
             setHasMoreObj(true);  // always has more if page up
             
             setLoading(true);
-            fetch(`/${source_site}/get_set_javs?set_type=`+jav_set_name+
+            fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+jav_set_name+
             `&page_num=`+String(page_num)+`&search_string=`+String(search_string))
                 .then(response => response.json())
                 .then((jsonData) => {
@@ -129,7 +129,7 @@ const JavBroswerV2 = () => {
         setPageNum('1');  
         setHasMoreObj(true);
 
-        fetch(`/${source_site}/get_set_javs?set_type=`+String(event.target.elements[0].value)+
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+String(event.target.elements[0].value)+
             `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
             .then(response => response.json())
             .then((jsonData) => {

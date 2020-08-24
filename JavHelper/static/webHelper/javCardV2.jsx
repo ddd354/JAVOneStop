@@ -83,7 +83,7 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
     const handleShowDetailImage = () => {
         if (card_jav_obj.image === undefined) {
             setLoading(true);
-            fetch(`/${source_site}/get_set_javs?set_type=番号&search_string=`+card_jav_obj.car)
+            fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=番号&search_string=`+card_jav_obj.car)
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
