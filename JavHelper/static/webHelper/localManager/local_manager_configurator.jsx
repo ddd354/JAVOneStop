@@ -37,16 +37,16 @@ const LocalManagerConfigurator = ({scan_path, rescan, loading,
     return (
         <Container fluid>
         <Row>
-            <Col>
-            <p>Scan Directory: </p>
-            <DebounceInput
-                minLength={1}
-                value={scan_path}
-                debounceTimeout={3000}
-                onChange={event => updateScanDirectory(event.target.value, rescan)} />
-            <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan, t)}>{'\u27F3'}</Button>
+            <Col xs={12}>
+                <p>Scan Directory: </p>
+                <DebounceInput
+                    minLength={1}
+                    value={scan_path}
+                    debounceTimeout={3000}
+                    onChange={event => updateScanDirectory(event.target.value, rescan)} />
+                <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan, t)}>{'\u27F3'}</Button>
             </Col>
-            <Col>
+            <Col xs={12}>
                 <Row>
                     <Col>
                     <Button variant="primary" size="sm" onClick={scrape_handler} disabled={loading}>
@@ -67,17 +67,17 @@ const LocalManagerConfigurator = ({scan_path, rescan, loading,
                     </Col>
                 </Row>
             </Col>
-            <Col>
-            <p>Search DB: </p>
-            <DebounceInput
-                minLength={1}
-                value={searchStr}
-                debounceTimeout={3000}
-                onChange={event => {
-                    setSearchStr(event.target.value);
-                    search_handler(event.target.value);
-                    }} />
-            <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan)}>{'\u27F3'}</Button>
+            <Col xs={12}>
+                <p>Search DB: </p>
+                <DebounceInput
+                    minLength={1}
+                    value={searchStr}
+                    debounceTimeout={3000}
+                    onChange={event => {
+                        setSearchStr(event.target.value);
+                        search_handler(event.target.value);
+                        }} />
+                <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan)}>{'\u27F3'}</Button>
             </Col>
         </Row>
         </Container>

@@ -20,7 +20,7 @@ const LocalManager = () => {
     const [currentState, setCurrentState] = useMachine(initializedMachine)
 
     return (
-        <Container fluid>
+        <Container fluid style={{margin: "0", padding: "0"}}>
         <Row>
             <Col>
                 <LocalManagerConfigurator 

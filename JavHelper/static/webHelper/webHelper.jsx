@@ -276,9 +276,7 @@ class App extends Component {
                 <JavBroswerV2 />
               </TabPanel>
               <TabPanel>
-                  <StyledDiv>
-                    <LocalManager/>
-                  </StyledDiv>
+                <LocalManager/>
               </TabPanel>
               <TabPanel>
                 <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>

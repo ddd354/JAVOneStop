@@ -62,7 +62,7 @@ class Jav321Scraper(JavScraper):
 
         jav_search_content = return_post_res(search_url, data={'sn': self.car}, behind_cloudflare=True).content
 
-        if '抱歉，未找到您要找的AV' in jav_search_content:
+        if '抱歉，未找到您要找的AV' in str(jav_search_content):
             raise JAVNotFoundException('{} cannot be found in jav321'.format(self.car))
 
         self.total_index = 1  # jav321 only return optimal result
