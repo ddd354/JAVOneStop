@@ -194,6 +194,14 @@ def update_db_jav():
 
     return jsonify({'success': dict(current_jav_obj)})
 
+@jav_browser.route('/oof_quota', methods=['GET'])
+def oof_quota():
+    try:
+        return jsonify({'success': OOFDownloader().check_quota()})
+    except FileNotFoundError:
+        return jsonify({'error': BackendTranslation()['oof_cookies_not_found']}), 500
+
+    
 
 @jav_browser.route('/download_via_aria', methods=['POST'])
 def download_via_aria():

@@ -25,6 +25,13 @@ class OOFDownloader:
         self.cookies = self.load_local_cookies()
         self.translate_map = BackendTranslation()
 
+    def check_quota(self):
+        r = requests.get('https://115.com/web/lixian/?ct=lixian&ac=get_quota_package_info', cookies=self.cookies)
+        r = json.loads(r.text)
+        return '{} / {}'.format(
+            r['surplus'], r['count']
+        )
+
     def get_oof_userid(self):
         r = requests.get('https://115.com/?cid=0&offset=0&mode=wangpan', cookies=self.cookies)
         userid_filter = r'.*user_id\ \=\ \'(\d*)\'\;'

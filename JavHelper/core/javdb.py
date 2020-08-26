@@ -139,7 +139,7 @@ def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=No
     print(f'accessing {set_url}')
 
     # not really behind cloudflare but may prevent python scrape
-    res = return_post_res(set_url, cookies={'over18': "1"}, behind_cloudflare=True).content
+    res = return_get_res(set_url, cookies={'over18': "1"}, behind_cloudflare=True).content
     root = etree.HTML(res.decode('utf-8'))
 
     jav_objs_raw = defaultlist(dict)

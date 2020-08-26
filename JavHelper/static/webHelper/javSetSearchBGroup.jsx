@@ -1,14 +1,26 @@
-import React, { useState }  from 'react';
+import React, { useState, useEffect }  from 'react';
 import Spinner from 'react-bootstrap/Spinner'
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
 import ToggleButton from 'react-bootstrap/ToggleButton';
 
 import { useTranslation } from 'react-i18next';
 
+
 const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading, setLoading,
     setJavSet, setSearchString, setJavObjs, setMaxPage, setPageNum, 
     jav_stat_filter, setJavStatFilter }) => {
     const { t, i18n } = useTranslation();
+    const [oofQuota, setOofQuota] = useState('');
+
+    // set the initial value to get quota
+    useEffect(() => {
+        fetch(`/jav_browser/oof_quota`)
+        .then(response => response.json())
+        .then((jsonData) => {
+            console.log(jsonData.success);
+            setOofQuota(jsonData.success)
+        });
+    }, [])
 
     const website_set_map = {
         'jav321': ['trending_updates', 'hot_downloads', 'new_release'],
@@ -76,6 +88,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
   
     return(
         <div id="javBrowserToggleGroup">
+        <p>{ oofQuota }</p>
         <ToggleButtonGroup size="sm" type="radio" value={jav_set_name} name="pickJavSet" 
             onChange={clickJavSetName} style={{flexWrap: "wrap"}}>
             {set_toggle_list.map(
