@@ -35,7 +35,8 @@ def find_images(car: str):
     db_conn = JavManagerDB()
     try:
         jav_obj = dict(db_conn.get_by_pk(car))
-    except DoesNotExist:
+    except (DoesNotExist, TypeError) as e:
+        # typeerror to catch dict(None)
         jav_obj = {'car': car}
 
     sources = return_default_config_string('jav_obj_priority').split(',')

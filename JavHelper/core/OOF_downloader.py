@@ -168,7 +168,8 @@ class OOFDownloader:
         db_conn = JavManagerDB()
         try:
             jav_obj = dict(db_conn.get_by_pk(car))
-        except DoesNotExist:
+        except (DoesNotExist, TypeError) as e:
+            # typeerror to catch dict(None)
             jav_obj = {'car': car}
 
         retry_num = 0
