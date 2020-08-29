@@ -200,7 +200,8 @@ def update_db_jav():
     db_conn = JavManagerDB()
     try:
         current_jav_obj = dict(db_conn.get_by_pk(jav_pk))
-    except DoesNotExist:
+    except (DoesNotExist, TypeError) as e:
+        # typeerror to catch dict(None)
         current_jav_obj = {'car': jav_pk}
 
     current_jav_obj.update(update_data)

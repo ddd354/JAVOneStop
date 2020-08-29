@@ -24,6 +24,6 @@ echo Delete old container...
 docker rm -f $containerName
 
 echo Run new container...
-docker run -d -p 8009:8009 -v "$1":/usr/data1 -v --name $containerName $imageName
+docker run -d -p 8009:8009 -v "$1":/usr/data1 --name $containerName $imageName
 
 fi
