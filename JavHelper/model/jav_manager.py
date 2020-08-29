@@ -39,7 +39,7 @@ class SqliteJavManagerDB:
         return self.jav_db.find()
 
     def partial_search(self, search_string: str):
-        rt = self.whole_db.query("SELECT * FROM jav_obj WHERE `pk` LIKE '{}%' LIMIT 20".format(search_string))
+        rt = self.whole_db.query("SELECT * FROM jav_obj WHERE `car` LIKE '{}%' LIMIT 20".format(search_string))
         return [self.reverse_prepare_obj(x) for x in rt]
 
     def query_on_filter(self, filter_on: dict, page=1, limit=8):
@@ -58,7 +58,7 @@ class SqliteJavManagerDB:
     def reverse_prepare_obj(input_obj: dict):
         if input_obj is None:
             return input_obj
-            
+
         rt = {}
         for k, v in input_obj.items():
             if k.startswith('_l_') and v:
@@ -106,10 +106,10 @@ class SqliteJavManagerDB:
         #print(f'written \n {jav_obj} \n')
 
     def get_by_pk(self, pk: str):
-        return self.reverse_prepare_obj(self.jav_db.find_one(pk=pk.upper()))
+        return self.reverse_prepare_obj(self.jav_db.find_one(car=pk.upper()))
 
     def pk_exist(self, pk: str):
-        rt = self.jav_db.find_one(pk=pk.upper())
+        rt = self.jav_db.find_one(car=pk.upper())
         if rt:
             return True
         else:
