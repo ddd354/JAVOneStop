@@ -7,6 +7,9 @@ import Col from 'react-bootstrap/Col'
 import Button from 'react-bootstrap/Button';
 import Image from 'react-bootstrap/Image'
 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import DataTable from 'react-data-table-component';
+
 import {DebounceInput} from 'react-debounce-input';
 import { useTranslation } from 'react-i18next';
 
@@ -77,11 +80,26 @@ const LocalJavCard = ({stateMachine, loading}) => {
             }
         </Row>
         <Row>
-            <Col><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
+            {//<Col><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
+            }
             <Col>
             {
+                // red high lighted text for new file rename
                 localState.context.new_file_name && <p style={{color: 'red'}}>new_name: {localState.context.new_file_name}</p>
             }
+            <TabList>
+                <Tab>{t('nfo_write_info')}</Tab>
+                {
+                    Object.keys(localState.context.jav_info).map(function(key){
+                        if (isDict(localState.context.jav_info[key])) {
+                            return (<Tab>{key}</Tab>)
+                        }
+                    })
+                }
+            </TabList>
+            <TabPanel>
+                <DataTable columns={[{selector:'key'}, {selector:'data'}]}/>
+            </TabPanel>
             {
                 Object.keys(localState.context.jav_info).map(function(key){
                     if (key != 'image' && key != 'img' && key != 'car' && !isDict(localState.context.jav_info[key])) {

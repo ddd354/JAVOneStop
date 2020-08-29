@@ -47,6 +47,11 @@ const resources = {
       'personal_wanted': 'still wanted',
       'search_car_allow_partial': 'Search car (allow partial search)',
 
+      // jav browser
+      'still_wanted': 'Wanted', 
+      'still_downloading': 'Downloading', 
+      'iceboxed': 'Iceboxed',
+
       //rename part
       'Rename Tool': 'Rename Tool',
       'preview_rename_all': 'Preview Rename All',
@@ -67,6 +72,10 @@ const resources = {
       'preview_name_fail': 'load preview rename failed!',
       'good_scrape': 'Scraped ',
       'fail_scrape': 'single scrape error: ',
+      'nfo_write_info': 'NFO write Info',
+
+      // configurator
+      'db_type': 'DB Type',
 
       'scrape_all': 'Scrape All',
       'local': 'Local',
@@ -103,7 +112,7 @@ const resources = {
       'log_update_jav_stat': 'Update DB Stat: ',
       'log_filter': 'filter on: ',
       'filter_map': JSON.stringify({'w_or_noop': 'wanted / no opnion', 'no_filter': 'none'}),
-      'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading'}),
+      'jav_stat_map': JSON.stringify({0: 'want', 1: 'viewed', 2: 'no opinion', 3: 'local', 4: 'downloading', 5: 'iceboxed'}),
       'main_readme': 'Main ReadMe',
       'javdownloader_readme': 'Jav Downloader Tutorial',
       'overall': 'overall',
@@ -159,6 +168,11 @@ const resources = {
       'personal_wanted': '还未下载',
       'search_car_allow_partial': '搜索番号(支持部分搜索)',
 
+      // jav browser
+      'still_wanted': '想要的', 
+      'still_downloading': '下载中', 
+      'iceboxed': '冷冻箱',
+
       // rename part
       'Rename Tool': '重命名工具',
       'preview_rename_all': '预览重命名所有',
@@ -184,6 +198,10 @@ const resources = {
       'preview_name_fail': '预览重命名失败',
       'good_scrape': '刮削完成 ',
       'fail_scrape': '刮削失败: ',
+      'nfo_write_info': 'NFO写入值',
+
+      // configurator
+      'db_type': '数据库类型',
 
 
       'local': '本地',
@@ -218,7 +236,7 @@ const resources = {
       'log_update_jav_stat': '更新数据库文档: ',
       'log_filter': '启用过滤器: ',
       'filter_map': JSON.stringify({'w_or_noop': '想要/没想法', 'no_filter': '无'}),
-      'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中'}),
+      'jav_stat_map': JSON.stringify({0: '想要', 1: '已阅', 2: '没想法', 3: '本地', 4: '下载中', 5: '冷冻箱'}),
       'main_readme': '快速入门介绍',
       'javdownloader_readme': 'JAV下载器教程',
       'overall': '综合',

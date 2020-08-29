@@ -21,7 +21,8 @@ DEFAULT_UPDATE_MAPPING = {
     'folder_structure': ['本地设置', '保存路径模板'],
     'display_language': ["其他设置", "界面语言(cn/en)"],
     'remove_string': ["重命名影片", "移除字符"],
-    'ikoa_dmmc_server': ["其他设置", "ikoa_dmmc"]
+    'ikoa_dmmc_server': ["其他设置", "ikoa_dmmc"],
+    'db_type': ["其他设置", "数据库类型"],
 }
 DEFAULT_UPDATE_VALUE_MAPPING = {
     'aria_address': "",
@@ -40,7 +41,8 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'folder_structure': "{year}/{car}",
     'display_language': 'cn',
     'remove_string': '',
-    'ikoa_dmmc_server': ''
+    'ikoa_dmmc_server': '',
+    'db_type': 'blitz'
 }
 
 def verify_ini_file(ini_file_name=DEFAULT_INI):

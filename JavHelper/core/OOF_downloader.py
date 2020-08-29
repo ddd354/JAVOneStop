@@ -7,9 +7,14 @@ from time import sleep
 from traceback import print_exc
 
 from JavHelper.core.backend_translation import BackendTranslation
-from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.aria2_handler import get_aria2
 from JavHelper.core.utils import byte_to_MB
+from JavHelper.core.ini_file import return_default_config_string
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 LOCAL_OOF_COOKIES = '115_cookies.json'

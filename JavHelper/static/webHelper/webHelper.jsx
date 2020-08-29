@@ -65,7 +65,8 @@ class App extends Component {
             'display_language': ["其他设置", "界面语言(cn/en)"],
             'jav_obj_priority': ['其他设置', '刮削信息优先度'],
             'remove_string': ["重命名影片", "移除字符"],
-            'ikoa_dmmc_server': ["其他设置", "ikoa_dmmc"]
+            'ikoa_dmmc_server': ["其他设置", "ikoa_dmmc"],
+            'db_type': ["其他设置", "数据库类型"]
             }`)
             .then(response => response.json())
             .then((jsonData) => {

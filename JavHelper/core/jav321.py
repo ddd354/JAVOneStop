@@ -7,11 +7,15 @@ from JavHelper.core.jav_scraper import JavScraper
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text, return_post_res, return_get_res
 from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
-from JavHelper.core.ini_file import return_config_string
+from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core.utils import parsed_size_to_int
 from JavHelper.core.file_scanner import DEFAULT_FILENAME_PATTERN
-from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.backend_translation import BackendTranslation
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 class Jav321Scraper(JavScraper):

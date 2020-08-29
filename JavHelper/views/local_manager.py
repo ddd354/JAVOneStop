@@ -12,10 +12,21 @@ from JavHelper.cache import cache
 from JavHelper.scripts.emby_actors import send_emby_images as old_upload
 from JavHelper.core.emby_actors import EmbyActorUpload
 from JavHelper.utils import resource_path
-from JavHelper.model.jav_manager import JavManagerDB
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 local_manager = Blueprint('local_manager', __name__, url_prefix='/local_manager')
+
+@local_manager.route('/migrate_to_sqlite', methods=['GET'])
+def migrate_to_sqlite():
+    from JavHelper.model.jav_manager import migrate_blitz_to_sqlite
+    migrate_blitz_to_sqlite()
+
+    return 'ok'
 
 @local_manager.route('/directory_path', methods=['GET'])
 def directory_path():

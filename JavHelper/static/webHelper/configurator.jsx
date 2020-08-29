@@ -113,6 +113,11 @@ const JavConfigurator = (props) => {
           "ikoa_dmmc_server": {
             "type": "string",
             "title": t('set_ikoa_dmmc_server')
+          },
+          "db_type": {
+            "type": "string",
+            "title": t('db_type'),
+            "enum": ["blitz", "sqlite"]
           }
         }
     };
@@ -131,7 +136,10 @@ const JavConfigurator = (props) => {
         },
         "emby_address": {
             "ui:description": t('emby_addr_tip'),
-        }
+        },
+        "db_type": {
+          "ui:widget": "radio"
+      },
     };
 
     const handleOofJsonUpdate = (event) => {

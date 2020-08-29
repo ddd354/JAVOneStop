@@ -42,6 +42,7 @@ const StatButtonGroup = (props) => {
       <ToggleButton value={'2_'+props.car}>{t('no opinion')}</ToggleButton>
       <ToggleButton value={'3_'+props.car}>{t('local')}</ToggleButton>
       <ToggleButton value={'4_'+props.car}>{t('downloading')}</ToggleButton>
+      <ToggleButton value={'5_'+props.car}>{t('iceboxed')}</ToggleButton>
     </ToggleButtonGroup>
     <ToggleButtonGroup size="sm" type="radio" value={props.magnet_site} name="selectSourceSet" 
         onChange={(e) => props.setMagnetSite(e)} style={{marginTop: "5px", marginBottom: "5px"}}>

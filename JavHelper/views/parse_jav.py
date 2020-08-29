@@ -17,7 +17,11 @@ from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.jav321 import Jav321Scraper
 from JavHelper.core.file_scanner import EmbyFileStructure
 from JavHelper.core.utils import parsed_size_to_int
-from JavHelper.model.jav_manager import JavManagerDB
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 parse_jav = Blueprint('parse_jav', __name__, url_prefix='/parse_jav')

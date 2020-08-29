@@ -4,7 +4,7 @@ from flask import Flask, render_template, jsonify, send_from_directory
 from werkzeug.exceptions import HTTPException
 from traceback import format_exc, print_exc
 
-from JavHelper.core.ini_file import recreate_ini, DEFAULT_INI, verify_ini_file
+from JavHelper.core.ini_file import recreate_ini, DEFAULT_INI, verify_ini_file, return_default_config_string
 # init setting file
 if not os.path.isfile(DEFAULT_INI):
     print('ini file {} doesn\'t exists, recreate one and apply default settings'.format(DEFAULT_INI))
@@ -13,13 +13,17 @@ if not os.path.isfile(DEFAULT_INI):
 verify_ini_file()
 
 from JavHelper.cache import cache
-from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.views.emby_actress import emby_actress
 from JavHelper.views.parse_jav import parse_jav
 from JavHelper.views.jav_browser import jav_browser
 from JavHelper.views.local_manager import local_manager
 from JavHelper.views.scan_directory import directory_scan
 from JavHelper.utils import resource_path
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 def create_app():

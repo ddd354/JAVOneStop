@@ -206,7 +206,7 @@ const JavBroswerV2 = () => {
             </Container>
             <div>
                 <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
-                    defaultPageSize={1}
+                    defaultPageSize={1} showQuickJumper
                     onChange={current => setPageNum(String(current))}
                 />
             </div>

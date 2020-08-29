@@ -7,15 +7,21 @@ from lxml import html
 from traceback import print_exc
 
 from JavHelper.cache import cache
+from JavHelper.core.local_db import local_set_page
 from JavHelper.core.jav321 import jav321_set_page, jav321_search
 from JavHelper.core.javbus import javbus_set_page, javbus_search
 from JavHelper.core.javlibrary import javlib_set_page, javlib_search
 from JavHelper.core.javdb import javdb_set_page, javdb_search
 from JavHelper.core.jav777 import jav777_set_page
-from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.core.aria2_handler import verify_aria2_configs_exist
+from JavHelper.core.ini_file import return_default_config_string
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 # support for all jav scrape library
@@ -23,7 +29,15 @@ jav_browser = Blueprint('jav_browser', __name__, url_prefix='/jav_browser')
 
 # library map
 LIB_MAP = {
-    'javlib': {
+    'local': {
+        'set_func': local_set_page,
+        'supported_set': {
+            'still_wanted': 'stat=0&page={page_num}',
+            'still_downloading': 'stat=4&page={page_num}',
+            'iceboxed': 'stat=5&page={page_num}',
+        }
+    },
+    'javlibrary': {
         'set_func': javlib_set_page,
         'search_func': javlib_search,
         'supported_set': {

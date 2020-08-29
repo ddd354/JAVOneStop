@@ -9,9 +9,14 @@ import codecs
 from copy import deepcopy
 
 from JavHelper.core.backend_translation import BackendTranslation
-from JavHelper.model.jav_manager import JavManagerDB
 from JavHelper.core.nfo_parser import EmbyNfo
+
 from JavHelper.core.ini_file import return_default_config_string
+
+if return_default_config_string('db_type') == 'sqlite':
+    from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
+else:
+    from JavHelper.model.jav_manager import BlitzJavManagerDB as JavManagerDB
 
 
 POSTER_NAME = 'poster'

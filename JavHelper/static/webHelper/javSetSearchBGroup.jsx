@@ -24,10 +24,11 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
 
     const website_set_map = {
         'jav321': ['trending_updates', 'hot_downloads', 'new_release'],
-        'javlib': ['most_wanted', 'best_rated', 'trending_updates'],
+        'javlibrary': ['most_wanted', 'best_rated', 'trending_updates'],
         'javbus': ['subtitled', 'trending_updates'],
         'javdb': ['trending_updates', 'subtitled', 'daily_rank', 'weekly_rank', 'monthly_rank'],
-        'jav777': ['trending_updates']
+        'jav777': ['trending_updates'],
+        'local': ['still_wanted', 'still_downloading', 'iceboxed']
     }
     const [set_toggle_list, setToggleList] = useState(website_set_map[source_site]);
 
@@ -112,21 +113,17 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
         </ToggleButtonGroup>
         <ToggleButtonGroup size="sm" type="radio" value={source_site} name="selectSourceSet" 
             onChange={changeSourceSite} style={{flexWrap: "wrap", marginLeft: "5px", marginTop: "5px"}}>
-            <ToggleButton value={'javlib'}>
-                {"javlibrary"}
-            </ToggleButton>
-            <ToggleButton value={'jav321'}>
-                {"jav321"}
-            </ToggleButton>
-            <ToggleButton value={'javbus'}>
-                {"javbus"}
-            </ToggleButton>
-            <ToggleButton value={'javdb'}>
-                {"javdb"}
-            </ToggleButton>
-            <ToggleButton value={'jav777'}>
-                {"jav777"}
-            </ToggleButton>
+                {
+                    Object.keys(website_set_map).map(
+                        function(ind_lib) {
+                            return (
+                                <ToggleButton value={ind_lib}>
+                                    {t(ind_lib)}
+                                </ToggleButton>
+                            )
+                        }
+                    )
+                }
         </ToggleButtonGroup>
         </div>
   )};

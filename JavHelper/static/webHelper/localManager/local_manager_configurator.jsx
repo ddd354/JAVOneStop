@@ -34,10 +34,15 @@ const LocalManagerConfigurator = ({scan_path, rescan, loading,
     const [searchStr, setSearchStr] = useState();
     const { t, i18n } = useTranslation();
 
+    const searchDB = (search_string) => {
+        setSearchStr(search_string);
+        search_handler(search_string);
+    }
+
     return (
         <Container fluid>
         <Row>
-            <Col xs={12}>
+            <Col xs={12} md={4}>
                 <p>Scan Directory: </p>
                 <DebounceInput
                     minLength={1}
@@ -46,7 +51,7 @@ const LocalManagerConfigurator = ({scan_path, rescan, loading,
                     onChange={event => updateScanDirectory(event.target.value, rescan)} />
                 <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan, t)}>{'\u27F3'}</Button>
             </Col>
-            <Col xs={12}>
+            <Col xs={12} md={4}>
                 <Row>
                     <Col>
                     <Button variant="primary" size="sm" onClick={scrape_handler} disabled={loading}>
@@ -67,17 +72,16 @@ const LocalManagerConfigurator = ({scan_path, rescan, loading,
                     </Col>
                 </Row>
             </Col>
-            <Col xs={12}>
+            <Col xs={12} md={4}>
                 <p>Search DB: </p>
                 <DebounceInput
                     minLength={1}
                     value={searchStr}
                     debounceTimeout={3000}
                     onChange={event => {
-                        setSearchStr(event.target.value);
-                        search_handler(event.target.value);
-                        }} />
-                <Button variant="primary" size="sm" onClick={_ => updateScanDirectory(scan_path, rescan)}>{'\u27F3'}</Button>
+                        searchDB(event.target.value)
+                    }} />
+                <Button variant="primary" size="sm" onClick={_ => searchDB(searchStr)}>{'\u27F3'}</Button>
             </Col>
         </Row>
         </Container>
