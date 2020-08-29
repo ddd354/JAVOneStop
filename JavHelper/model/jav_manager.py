@@ -56,6 +56,9 @@ class SqliteJavManagerDB:
 
     @staticmethod
     def reverse_prepare_obj(input_obj: dict):
+        if input_obj is None:
+            return input_obj
+            
         rt = {}
         for k, v in input_obj.items():
             if k.startswith('_l_') and v:

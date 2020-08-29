@@ -13,10 +13,10 @@ docker cp $containerName:/usr/src/app/115_cookies.json .
 docker cp $containerName:/usr/src/app/javlib_cf_cookies.json .
 
 # use local back up 
-cp -r ./jav_manager.db ./"$(date +"%Y_%m_%d_%I_%M_%p")_db.backup"
+#cp -r ./jav_manager.db ./"$(date +"%Y_%m_%d_%I_%M_%p")_db.backup"
 # sync existing to local for build and backup
-#docker cp $containerName:/usr/src/app/jav_manager.db .
-#docker cp $containerName:/usr/src/app/jav_manager.db ./"$(date +"%Y_%m_%d_%I_%M_%p")_db.backup"
+docker cp $containerName:/usr/src/app/jav_manager.sqlite .
+docker cp $containerName:/usr/src/app/jav_manager.sqlite ./"$(date +"%Y_%m_%d_%I_%M_%p")_sqlite.backup"
 
 docker build -t $imageName -f Dockerfile  .
 
@@ -24,6 +24,6 @@ echo Delete old container...
 docker rm -f $containerName
 
 echo Run new container...
-docker run -d -p 8009:8009 -v "$1":/usr/data1 -v "$(pwd)"/jav_manager.db:/usr/src/app/jav_manager.db --name $containerName $imageName
+docker run -d -p 8009:8009 -v "$1":/usr/data1 -v --name $containerName $imageName
 
 fi
