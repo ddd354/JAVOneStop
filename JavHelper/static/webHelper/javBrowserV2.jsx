@@ -167,7 +167,7 @@ const JavBroswerV2 = () => {
             {isLoading ? <Spinner id='overlaySpinner' animation="border" size='lg'/> : <div></div>}
         <div>
             <JavBrowserChecker />
-            <Container>
+            <Container fluid>
                 <Row>
                 <Col xs={{span: 12, order: 1}} md={{span: 6, order: 1}}>
                     <JavSetSearchGroup jav_set_name={jav_set_name} 
@@ -204,7 +204,7 @@ const JavBroswerV2 = () => {
                     <Col><OofValidator /></Col>
                 </Row>
             </Container>
-            <div>
+            <div style={{padding: "5px"}}>
                 <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
                     defaultPageSize={1} showQuickJumper
                     onChange={current => setPageNum(String(current))}
@@ -220,10 +220,12 @@ const JavBroswerV2 = () => {
                                 }
                         )
                     }
+                    <div style={{padding: "5px"}}>
                     <Pagination simple current={parseInt(page_num)} total={parseInt(max_page)} 
                         defaultPageSize={1}
                         onChange={current => setPageNum(String(current))}
                     />
+                    </div>
                 </div> : <div>
                     <InfiniteScroll
                         dataLength={jav_obj_cards.length || 0}

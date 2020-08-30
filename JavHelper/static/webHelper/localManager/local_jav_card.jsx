@@ -80,8 +80,7 @@ const LocalJavCard = ({stateMachine, loading}) => {
             }
         </Row>
         <Row>
-            {//<Col><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
-            }
+            <Col><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
             <Col>
             {
                 // red high lighted text for new file rename

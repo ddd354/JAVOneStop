@@ -30,6 +30,7 @@ class Jav321Scraper(JavScraper):
                 #'year': processed from release date
                 'length': '//b[text()="播放时长"]/following-sibling::text()',
                 'image': '//video/@poster',
+                'backup_image': '//body/div[@class="row"][2]/div[2]/div/p/a/img/@src'
                 #'score': no good source
             },
             'search_list_field': {
@@ -45,6 +46,9 @@ class Jav321Scraper(JavScraper):
         if self.jav_obj.get('premiered'):
             self.jav_obj['premiered'] = self.jav_obj['premiered'].lstrip(':').lstrip(' ')
             self.jav_obj['year'] = self.jav_obj['premiered'][:4]
+        # use backup if no image
+        if not self.jav_obj.get('image') and self.jav_obj.get('backup_image'):
+            self.jav_obj['image'] = self.jav_obj['backup_image']
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')

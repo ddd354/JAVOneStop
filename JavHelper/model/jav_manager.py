@@ -5,6 +5,7 @@ import json
 from blitzdb import Document, FileBackend
 from blitzdb.document import DoesNotExist
 import dataset
+import sqlalchemy
 
 
 class JavObj(Document):
@@ -16,7 +17,7 @@ class SqliteJavManagerDB:
         retry = 0
         while retry < 3:
             try:
-                self.whole_db = dataset.connect('sqlite:///jav_manager.sqlite')
+                self.whole_db = dataset.connect('sqlite:///jav_manager.sqlite', engine_kwargs={'connect_args': {'check_same_thread': False}})
                 self.jav_db = self.whole_db['jav_obj']
                 break
             except Exception as e:

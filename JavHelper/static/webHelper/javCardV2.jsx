@@ -103,10 +103,10 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
     // use card_jav_obj.stat instead of internal jav_stat since we want to keep original state for easier button click
     if ((jav_stat_filter.length > 0 && jav_stat_filter.includes(card_jav_obj.stat)) || jav_stat_filter.length == 0) {
         return (
-            <Container>
-            <Row xs={1} md={2} style={border_style} key={card_jav_obj.javid} id="main-javcard">
+            <Container fluid>
+            <Row style={border_style} key={card_jav_obj.javid} id="main-javcard">
                 <Col xs={{span: 12, order: 1}} md={{span: 4, order: 1}}>
-                    <img style={{opacity: _manual_opacity, maxWidth: "100%"}} src={card_jav_obj.img || card_jav_obj.image}></img>
+                    <img style={{opacity: _manual_opacity, width: "70%"}} src={card_jav_obj.img || card_jav_obj.image}></img>
                 </Col>
                 <Col xs={{span: 12, order: 2}} md={{span: 8, order: 2}}>
                     <Row><Col><p>{card_jav_obj.car} {card_jav_obj.title}</p></Col></Row>
