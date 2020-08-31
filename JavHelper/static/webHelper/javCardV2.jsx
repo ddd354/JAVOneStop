@@ -76,6 +76,14 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
                 marginBottom: '20px',
                 background: 'rgba(255, 255, 0, 0.2)',
             })
+        } else if (jav_stat === 5) {
+            setBorderStyle({
+                borderColor: 'blue', 
+                borderWidth: '2px', 
+                borderStyle: 'solid',
+                marginBottom: '20px',
+                background: 'rgba(203, 225, 243, 0.5)',
+            })
         }
     }, [jav_stat]);
     

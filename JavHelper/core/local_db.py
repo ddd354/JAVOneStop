@@ -29,6 +29,14 @@ def local_set_page(page_template: str, page_num=1, url_parameter=None, config=No
     
     return s_result, max_page
 
+def local_multi_search(search_funcs: list, *args, **kwargs):
+    for search_func in search_funcs:
+        _rt, _max = search_func(*args, **kwargs)
+        if len(_rt) > 0:
+            return _rt, _max
+    
+    return [], 0
+
 #------------------------------------ utils ---------------------------------------------
 
 def find_images(car: str):

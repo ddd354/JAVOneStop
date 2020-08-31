@@ -5,9 +5,10 @@ from blitzdb.document import DoesNotExist
 import requests
 from lxml import html
 from traceback import print_exc
+from functools import partial
 
 from JavHelper.cache import cache
-from JavHelper.core.local_db import local_set_page
+from JavHelper.core.local_db import local_set_page, local_multi_search
 from JavHelper.core.jav321 import jav321_set_page, jav321_search
 from JavHelper.core.javbus import javbus_set_page, javbus_search
 from JavHelper.core.javlibrary import javlib_set_page, javlib_search
@@ -82,6 +83,9 @@ LIB_MAP = {
         }
     }
 }
+
+# back fill local search func
+LIB_MAP['local']['search_func'] = partial(local_multi_search, [LIB_MAP[lib]['search_func'] for lib in list(LIB_MAP.keys()) if lib != 'local'])
 
 
 @jav_browser.route('/get_set_javs', methods=['GET'])
