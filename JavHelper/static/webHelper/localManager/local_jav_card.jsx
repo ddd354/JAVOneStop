@@ -80,12 +80,13 @@ const LocalJavCard = ({stateMachine, loading}) => {
             }
         </Row>
         <Row>
-            <Col><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
-            <Col>
+            <Col xs={6}><Image src={localState.context.jav_info.image || localState.context.jav_info.img} fluid/></Col>
+            <Col xs={6}>
             {
                 // red high lighted text for new file rename
                 localState.context.new_file_name && <p style={{color: 'red'}}>new_name: {localState.context.new_file_name}</p>
             }
+            <Tabs>
             <TabList>
                 <Tab>{t('nfo_write_info')}</Tab>
                 {
@@ -97,15 +98,34 @@ const LocalJavCard = ({stateMachine, loading}) => {
                 }
             </TabList>
             <TabPanel>
-                <DataTable columns={[{selector:'key'}, {selector:'data'}]}/>
-            </TabPanel>
             {
                 Object.keys(localState.context.jav_info).map(function(key){
                     if (key != 'image' && key != 'img' && key != 'car' && !isDict(localState.context.jav_info[key])) {
                         return (<p key={`${localState.context.jav_info.car}_${key}`}>{key}: {`${localState.context.jav_info[key]}`}</p>)
                     }
                 })
-            }</Col>
+            }
+            </TabPanel>
+            {
+                Object.keys(localState.context.jav_info).map(function(key){
+                    if (isDict(localState.context.jav_info[key])) {
+                        let _data = [];
+                        for (var _k in localState.context.jav_info[key]) {
+                            _data.push({key: _k, value: localState.context.jav_info[key][_k]})
+                        }
+                        return (
+                            <TabPanel>
+                                <DataTable columns={[{name: 'key', selector:'key', compact: true, wrap: true, maxWidth: '30px'}, 
+                                {name: 'value', selector:'value', compact: true, wrap: true}]} 
+                                data={_data}
+                                 dense noTableHead/>
+                            </TabPanel>
+                        )
+                    }
+                })
+            }
+            </Tabs>
+            </Col>
         </Row>
         </Container>
     )

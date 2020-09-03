@@ -309,7 +309,6 @@ def parse_single_jav(jav_obj: dict, sources):
 
     for scrape in sources[::-1]:  # scrape low priority sources first
         try:
-            #import ipdb; ipdb.set_trace()
             scraped_info = SOURCES_MAP[scrape]({'car': jav_obj['car']}).scrape_jav()
         except Exception as e:
             errors = (jav_obj.get('errors') or [])

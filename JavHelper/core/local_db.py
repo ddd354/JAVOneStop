@@ -23,6 +23,12 @@ def local_set_page(page_template: str, page_num=1, url_parameter=None, config=No
     # search on both stat string and int
     s_result, max_page = db.query_on_filter({'stat': int(_stat)}, page=int(page_num))
     for jav_obj in s_result:
+        # get rid of invalid image url from javdb
+        if 'jdbimgs' in jav_obj.get('image', ''):
+            jav_obj.pop('image')
+        elif 'jdbimgs' in jav_obj.get('img', ''):
+            jav_obj.pop('img')
+
         if not jav_obj.get('image') and not jav_obj.get('img'):
             # need to refresh db to get image 
             jav_obj.update(find_images(jav_obj['car']))
@@ -31,9 +37,12 @@ def local_set_page(page_template: str, page_num=1, url_parameter=None, config=No
 
 def local_multi_search(search_funcs: list, *args, **kwargs):
     for search_func in search_funcs:
-        _rt, _max = search_func(*args, **kwargs)
-        if len(_rt) > 0:
-            return _rt, _max
+        try:
+            _rt, _max = search_func(*args, **kwargs)
+            if len(_rt) > 0:
+                return _rt, _max
+        except Exception as e:
+            print(f'error {e} occurs, continue to next')
     
     return [], 0
 
