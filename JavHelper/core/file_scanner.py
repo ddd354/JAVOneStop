@@ -69,12 +69,17 @@ class EmbyFileStructure:
         poster_path = os.path.join(directory, poster_name+image_ext)
         fanart_path = os.path.join(directory, fanart_name+image_ext)
 
-        r = requests.get(url_obj.geturl(), stream=True)
+        try:
+            r = requests.get(url_obj.geturl(), stream=True)
+        except Exception as e:
+            print('Image download failed for {} due to {}'.format(url_obj.geturl(), e))
+            return 
         if r.status_code != 200:
             # raise Exception('Image download failed for {}'.format(url_obj.geturl()))
             # print the error but not fail the write
             print('Image download failed for {}'.format(url_obj.geturl()))
             return 
+
         with open(fanart_path, 'wb') as pic:
             for chunk in r:
                 pic.write(chunk)
