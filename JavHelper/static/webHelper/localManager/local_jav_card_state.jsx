@@ -14,7 +14,7 @@ const invokeScrape = (ctx, evt) => {
         if (jsonData.success) {
             return jsonData.success
         } else {
-            throw ctx.jav_info.car
+            throw `${ctx.jav_info.file_name} \n ${jsonData.error}`
         }
     })
 }
@@ -48,6 +48,24 @@ const invokePreviewRename = (ctx, evt) => {
         .then(jsonData => jsonData.success)
 }
 
+const invokeWriteNfoFile = (ctx, evt) => {
+    return fetch('/local_manager/rewrite_nfo',
+                    {method: 'post',
+                    body: JSON.stringify({
+                            "update_dict": ctx.jav_info
+                    })})
+            .then(response => response.json())
+}
+
+const invokeWriteImageFile = (ctx, evt) => {
+    return fetch('/local_manager/rewrite_images',
+                    {method: 'post',
+                    body: JSON.stringify({
+                            "update_dict": ctx.jav_info
+                    })})
+            .then(response => response.json())
+}
+
 const hasFileName = (ctx, evt) => {
     let cond = Boolean(ctx.jav_info.file_name) && !ctx.jav_info.file_name.endsWith('.nfo');
     /*if (!cond) {
@@ -56,10 +74,17 @@ const hasFileName = (ctx, evt) => {
     return cond
 }
 
+const overwriteJavInfo = (input_dict, jav_info) => {
+    //console.log('input dict ', input_dict)
+    jav_info[input_dict['key']] = input_dict['value']
+    //console.log('updated ', jav_info)
+    return jav_info
+}
+
 const createLocalJacCardState = (jav_info, t) => {
     return  Machine({
             id: 'indLocalJavCard',
-            initial: 'show_info',
+            initial: 'initialize',
             context: {
                 loading: false,
                 new_file_name: '',
@@ -67,6 +92,76 @@ const createLocalJacCardState = (jav_info, t) => {
                 jav_info
             },
             states: {
+                initialize: {
+                    always: [
+                        {
+                            target: 'db_result', 
+                            cond: (context, event) => context.jav_info.directory
+                        },
+                        {
+                            // by default we use show_info
+                            target: 'show_info'
+                        }
+                    ]
+                },
+                db_result: {
+                    on: {
+                        WRITE_NFO: {
+                            target: 'write_nfo',
+                            actions: assign((ctx, evt) => {
+                                return {loading: true}
+                            }),
+                        },
+                        WRITE_IMAGE: {
+                            target: 'write_image',
+                            actions: assign((ctx, evt) => {
+                                return {loading: true}
+                            }),
+                        },
+                        OVERWRITE_JAV_INFO: {
+                            target: 'db_result',
+                            actions: assign((ctx, evt) => {
+                                return {jav_info: overwriteJavInfo(evt.update_dict, ctx.jav_info)}
+                            })
+                        }
+                    }
+                },
+                write_nfo: {
+                    invoke: {
+                        id: 'write-nfo-to-file',
+                        src: invokeWriteNfoFile,
+                        onDone: {
+                            target: 'db_result',
+                            actions: assign((ctx, evt) => {
+                                //console.log('ok', ctx, evt)
+                                if (evt.data.success === undefined) {
+                                    console.log(evt.data.error)
+                                } else {
+                                    console.log('nfo rewrite succeessful', ctx.jav_info.car)
+                                }
+                                return {loading: false}
+                            }),
+                        }
+                    }
+                },
+                write_image: {
+                    invoke: {
+                        id: 'write-image-to-file',
+                        src: invokeWriteImageFile,
+                        onDone: {
+                            target: 'db_result',
+                            actions: assign((ctx, evt) => {
+                                //console.log('ok', ctx, evt)
+                                if (evt.data.success === undefined) {
+                                    console.log(evt.data.error)
+                                } else {
+                                    console.log('image rewrite succeessful', ctx.jav_info.car)
+                                }
+                                return {loading: false}
+                            }),
+                        }
+                    }
+                },
                 show_info: {
                     on: {
                         SCRAPE_DB: {

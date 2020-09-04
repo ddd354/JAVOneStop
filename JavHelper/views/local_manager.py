@@ -166,6 +166,8 @@ def rewrite_nfo():
     req_data = json.loads(request.get_data() or '{}')
     update_dict = req_data['update_dict']
 
+    JavManagerDB().upcreate_jav(update_dict)
+
     file_writer = EmbyFileStructure(return_default_config_string('file_path'))
     # we can directly call this since it only writes top level key fields
     file_writer.write_nfo(update_dict, verify=True)
@@ -176,6 +178,8 @@ def rewrite_nfo():
 def rewrite_images():
     req_data = json.loads(request.get_data() or '{}')
     update_dict = req_data['update_dict']
+
+    JavManagerDB().upcreate_jav(update_dict)
 
     file_writer = EmbyFileStructure(return_default_config_string('file_path'))
     # we can directly call this since it only writes top level key fields
