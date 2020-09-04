@@ -106,6 +106,14 @@ const createLocalJacCardState = (jav_info, t) => {
                 },
                 db_result: {
                     on: {
+                        SCRAPE_DB: {
+                            // scrape for db, must have a car to start
+                            target: 'scrape_db_result',
+                            cond: (ctx, evt) => {return Boolean(ctx.jav_info.car)},
+                            actions: assign((ctx, evt) => {
+                                return {loading: true}
+                            }),
+                        },
                         WRITE_NFO: {
                             target: 'write_nfo',
                             actions: assign((ctx, evt) => {
@@ -187,6 +195,30 @@ const createLocalJacCardState = (jav_info, t) => {
                             target: 'preview_rename',
                             actions: assign((ctx, evt) => {return {new_file_name: ctx.jav_info.file_name}}),
                             cond: hasFileName
+                        }
+                    }
+                },
+                scrape_db_result: {
+                    // when enter, scrape car and update db
+                    invoke: {
+                        id: 'scrape-to-refresh-db',
+                        src: invokeScrapeForDB,
+                        onDone: {
+                            target: 'db_result',
+                            actions: assign((context, event) => {
+                                if (event.data.car) {
+                                    //console.log('updating context', event.data);
+                                    return {jav_info: event.data, loading: false}
+                                } else {
+                                    console.log(context.t('refresh_db_fail'))
+                                }
+                            })
+                        },
+                        onError: {
+                            target: 'db_result',
+                            actions: (ctx, evt) => {
+                                console.log(ctx.t('refresh_db_fail'))
+                            }
                         }
                     }
                 },
