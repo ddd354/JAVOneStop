@@ -190,7 +190,7 @@ def jav321_search(set_type: str, search_string: str, page_num=1):
             'page_num': page_num, 'url_parameter': search_string}
         },
         '系列': {'function': jav321_set_page, 'params': 
-            {'page_template': 'series/{url_parameter}?page={page_num}',
+            {'page_template': 'series/{url_parameter}/{page_num}',
             'page_num': page_num, 'url_parameter': search_string}
         }
     }
