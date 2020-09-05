@@ -186,7 +186,7 @@ def jav321_search(set_type: str, search_string: str, page_num=1):
         '女优': {'function': search_for_actress, 'params': {
             'javlib_actress_code': search_string, 'page_num': page_num}},
         '分类': {'function': jav321_set_page, 'params': 
-            {'page_template': 'tags?c6={url_parameter}&page={page_num}',
+            {'page_template': 'genre/{url_parameter}/{page_num}',
             'page_num': page_num, 'url_parameter': search_string}
         },
         '系列': {'function': jav321_set_page, 'params': 
