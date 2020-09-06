@@ -33,7 +33,7 @@ const JavTable = ({ car, magnet_site, stat, setJavStat }) => {
   useEffect(() => {
     if (stat === 0) {
       setJavData([]);  // set to empty to show spinner
-      fetch(`parse_jav/search_magnet_link?car=`+String(car)+`&source=`+magnet_site)
+      fetch(`/parse_jav/search_magnet_link?car=`+String(car)+`&source=`+magnet_site)
         .then(response => response.json())
         .then((jsonData) => {
           //console.log(jsonData);

@@ -44,8 +44,9 @@ def create_app():
     app.config['JSON_AS_ASCII'] = False
 
     # a simple page that says hello
+    @app.route('/p/<path:path>')
     @app.route('/')
-    def hello():
+    def hello(*args, **kwargs):
         return render_template('home.html')
 
     @app.route('/demo/<path:path>')

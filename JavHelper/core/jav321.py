@@ -131,8 +131,8 @@ def jav321_set_page(page_template: str, page_num=1, url_parameter=None, config=N
         pass
 
     # max page override
-    if 'type' in page_template:
-        max_page = max_page * 100
+    #if 'type' in page_template:
+    #    max_page = max_page * 100
     
     return jav_objs_raw, max_page
 

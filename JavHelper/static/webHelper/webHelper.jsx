@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { RoutedTabs, NavTab } from "react-router-tabs";
+
 import ndjsonStream from 'can-ndjson-stream';
 
 import { Hook, Console, Decode } from 'console-feed'
@@ -6,7 +9,7 @@ import { Hook, Console, Decode } from 'console-feed'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+//import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import Button from '@material-ui/core/Button';
 import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup'
@@ -251,43 +254,46 @@ class App extends Component {
         };
 
         return (
+          <Router>
           <Container fluid>
-              <Row className='javConsoleContainer'><Col id="consoleColumn">
-                <StyledLogDiv className='javConsole'>
-                  <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
-                </StyledLogDiv>
+            <Row className='javConsoleContainer'><Col id="consoleColumn">
+              <StyledLogDiv className='javConsole'>
+                <Console logs={this.state.logs} filter={['log', 'error']} variant="dark" />
+              </StyledLogDiv>
+            </Col></Row>
+            <Row><Col>
+              <Row><Col>
+              <NavTab exact to="/">{t('helper_page')}</NavTab>
+              <NavTab to="/p/javbroswer">{t('JavLibrary Manager')}</NavTab>
+              <NavTab to="/p/localmanager">{t('Main Tool')}</NavTab>
+              <NavTab to="/p/handytools">{t('Handy Features')}</NavTab>
+              <NavTab to="/p/configure">{t('Settings')}</NavTab>
               </Col></Row>
-              <Row><Col><Tabs>
-              <TabList>
-                <Tab>{t('helper_page')}</Tab>
-                <Tab>{t('JavLibrary Manager')}</Tab>
-                <Tab>{t('Main Tool')}</Tab>
-                <Tab>{t('Handy Features')}</Tab>
-                <Tab>{t('Settings')}</Tab>
-              </TabList>
 
-              <TabPanel>
-              <ToggleButtonGroup type="radio" name='language' value={this.state.language} onChange={this.changeLanguage}>
-                <ToggleButton value={'cn'}>中文</ToggleButton>
-                <ToggleButton value={'en'}>English</ToggleButton>
-              </ToggleButtonGroup>
-                <HelpDoc />
-              </TabPanel>
-              <TabPanel>
-                <JavBroswerV2 />
-              </TabPanel>
-              <TabPanel>
-                <LocalManager/>
-              </TabPanel>
-              <TabPanel>
-                <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
-                <IdmmMonitor server_addr={this.state.settings_form_data.ikoa_dmmc_server} />
-              </TabPanel>
-              <TabPanel>
-                <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
-              </TabPanel>
-              </Tabs></Col></Row>
+              <Row><Col>
+              <Switch>
+                <Route exact path="/">
+                  <ToggleButtonGroup type="radio" name='language' value={this.state.language} onChange={this.changeLanguage}>
+                    <ToggleButton value={'cn'}>中文</ToggleButton>
+                    <ToggleButton value={'en'}>English</ToggleButton>
+                  </ToggleButtonGroup>
+                  <HelpDoc />
+                </Route>
+                <Route path="/p/javbroswer" component={JavBroswerV2} />
+                <Route exact path="/p/localmanager" component={LocalManager} />
+                <Route exact path="/p/handytools">
+                  <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
+                  <IdmmMonitor server_addr={this.state.settings_form_data.ikoa_dmmc_server} />
+                </Route>
+                <Route exact path="/p/configure">
+                  <JavConfigurator settings_form_data={this.state.settings_form_data} settingsFormHandler={this.settingsFormHandler}/>
+                </Route>
+              </Switch>
+              </Col></Row>
+
+            </Col></Row>
           </Container>
+          </Router>
           )
         }
 }

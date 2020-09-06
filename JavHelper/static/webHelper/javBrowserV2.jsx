@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+//import { useParams } from "react-router-dom";
 
 import Pagination from 'rc-pagination'
 import index from 'rc-pagination/assets' // import for pagination styling do not remove
@@ -22,9 +23,11 @@ import OofValidator from "./oofValidator"
 import './javBrowserV2.css';
 
 
-const JavBroswerV2 = () => {
+const JavBroswerV2 = (props) => {
+    let params = new URLSearchParams(props.location.search);
+
     const { t, i18n } = useTranslation();
-    const [source_site, setSourceSite] = useState('javbus');
+    const [source_site, setSourceSite] = useState(params.get('lib_type') || 'javbus');
     const [isLoading, setLoading] = useState(true);
 
     const [jav_browser_batch_limiter, setUrlLimiter] = useState(new Bottleneck({maxConcurrent: 1}));
@@ -36,16 +39,28 @@ const JavBroswerV2 = () => {
     const [jav_obj_cards, setJavObjCards] = useState([]);
     const [has_more_obj, setHasMoreObj] = useState(true);
 
-    const [jav_set_name, setJavSet] = useState('subtitled');
-    const [page_num, setPageNum] = useState('1');
+    const [jav_set_name, setJavSet] = useState(params.get('set_type') || 'trending_updates');
+    const [page_num, setPageNum] = useState(params.get('page_num') || '1');
     const [max_page, setMaxPage] = useState('25');
     const scroll_trigger = 1.1;
     
     const [search_string, setSearchString] = useState('');
 
+    const updateUrlandLoading = (up_search_str=undefined, up_set_name=undefined) => {
+        console.log('ok', up_search_str, up_set_name);
+        let _params = new URLSearchParams(props.location.search);
+        _params.set('lib_type', source_site);
+        _params.set('set_type', up_set_name || jav_set_name);
+        _params.set('page_num', page_num);
+        if (up_search_str) { _params.set('search_string', up_search_str); }
+        else { _params.delete('search_string') }
+        props.history.push(props.location.pathname + "?" + _params.toString());
+    }
+
     // when switching from different site, force an update
     useEffect(() => {
-        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=${jav_set_name}`)
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+jav_set_name+
+        `&page_num=`+String(page_num)+`&search_string=`+String(search_string))
             .then(response => response.json())
             .then((jsonData) => {
                 if (jsonData.error) {
@@ -55,6 +70,7 @@ const JavBroswerV2 = () => {
                     setJavObjs(jsonData.success.jav_objs);
                     setMaxPage(jsonData.success.max_page);
                 }
+                updateUrlandLoading();
                 setLoading(false);
             });
     }, [source_site]);
@@ -86,6 +102,7 @@ const JavBroswerV2 = () => {
                             setHasMoreObj(false);
                         }
                     }
+                    updateUrlandLoading();
                     setLoading(false);
                 })
         }
@@ -119,27 +136,31 @@ const JavBroswerV2 = () => {
 
     const handleFormSearch = (event) => {
         event.preventDefault();
-        console.log(t('log_search_web_jav'), event.target.elements[0].value, event.target.elements[1].value);
+        let _search_set = event.target.elements[0].value;
+        let _search_str = event.target.elements[1].value;
+        console.log(t('log_search_web_jav'), _search_set, _search_str);
         // update react states
         setJavSet(event.target.elements[0].value);
-        setSearchString(event.target.elements[1].value);
+        setSearchString(_search_str);
 
         // initialize other state
         setLoading(true);
         setPageNum('1');  
         setHasMoreObj(true);
 
-        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+String(event.target.elements[0].value)+
-            `&page_num=`+String(1)+`&search_string=`+String(event.target.elements[1].value))
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+String(_search_set)+
+            `&page_num=`+String(1)+`&search_string=`+String(_search_str))
             .then(response => response.json())
             .then((jsonData) => {
                 if (jsonData.error) {
+                    updateUrlandLoading(_search_str, _search_set);
                     setLoading(false);
                     console.log('Error: ', jsonData.error);
                 }
                 //console.log(jsonData.success);
                 setJavObjs(jsonData.success.jav_objs);
                 setMaxPage(jsonData.success.max_page);
+                updateUrlandLoading(_search_str, _search_set);
                 setLoading(false);
             });
     };
@@ -171,7 +192,7 @@ const JavBroswerV2 = () => {
                 <Row>
                 <Col xs={{span: 12, order: 1}} md={{span: 6, order: 1}}>
                     <JavSetSearchGroup jav_set_name={jav_set_name} 
-                        isLoading={isLoading} setLoading={setLoading}
+                        isLoading={isLoading} setLoading={setLoading} updateUrlandLoading={updateUrlandLoading}
                         source_site={source_site} setSourceSite={setSourceSite}
                         setJavSet={setJavSet} setSearchString={setSearchString} 
                         setJavObjs={setJavObjs} setMaxPage={setMaxPage} setPageNum={setPageNum}

@@ -6,7 +6,7 @@ import ToggleButton from 'react-bootstrap/ToggleButton';
 import { useTranslation } from 'react-i18next';
 
 
-const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading, setLoading,
+const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading, setLoading, updateUrlandLoading,
     setJavSet, setSearchString, setJavObjs, setMaxPage, setPageNum, 
     jav_stat_filter, setJavStatFilter }) => {
     const { t, i18n } = useTranslation();
@@ -44,11 +44,12 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
     const clickJavSetName = (event) => {
         // triggered from toggle group which don't need search string
         console.log(t('log_switch_jav_set'), event);
+        let _set_name = String(event);
         setLoading(true);
         setJavSet(event);
         setSearchString(''); // clean out search string for future page clicks
         setPageNum('1'); // always get 1st page when switching jav sets
-        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+String(event)+`&page_num=`+String(1))
+        fetch(`/jav_browser/get_set_javs?lib_type=${source_site}&set_type=`+_set_name+`&page_num=`+String(1))
             .then(response => response.json())
             .then((jsonData) => {
                 //console.log(jsonData.success);
@@ -57,6 +58,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
                 if (jsonData.errors) {
                     console.log('Error: ', jsonData.error);
                 }
+                updateUrlandLoading(undefined, _set_name);
                 setLoading(false);
             });
     };
