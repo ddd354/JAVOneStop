@@ -159,7 +159,7 @@ def jav321_search(set_type: str, search_string: str, page_num=1):
         return [jav_obj], 1
 
     def search_for_actress(javlib_actress_code: str, page_num=1):
-        search_url = 'actors/{url_parameter}?page={page_num}'
+        search_url = 'star/{url_parameter}/{page_num}'
         db_conn = JavManagerDB()
 
         # get actress first page
