@@ -47,7 +47,7 @@ const JavBroswerV2 = (props) => {
     const [search_string, setSearchString] = useState('');
 
     const updateUrlandLoading = (up_search_str=undefined, up_set_name=undefined) => {
-        console.log('ok', up_search_str, up_set_name);
+        //console.log('ok', up_search_str, up_set_name);
         let _params = new URLSearchParams(props.location.search);
         _params.set('lib_type', source_site);
         _params.set('set_type', up_set_name || jav_set_name);

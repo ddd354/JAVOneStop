@@ -50,7 +50,7 @@ class SqliteJavManagerDB:
         print(max_page)
         rt_max_page = max_page['COUNT(*)'] // limit + 1
 
-        rt = self.whole_db.query("SELECT * FROM jav_obj WHERE {}={} ORDER BY car desc LIMIT {} OFFSET {}".format(
+        rt = self.whole_db.query("SELECT * FROM jav_obj WHERE {}={} ORDER BY id asc LIMIT {} OFFSET {}".format(
             list(filter_on.keys())[0], list(filter_on.values())[0], limit, (page-1)*limit
         ))
         return [self.reverse_prepare_obj(x) for x in rt], rt_max_page
