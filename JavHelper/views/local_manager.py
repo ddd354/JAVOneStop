@@ -183,7 +183,7 @@ def rewrite_images():
 
     file_writer = EmbyFileStructure(return_default_config_string('file_path'))
     # we can directly call this since it only writes top level key fields
-    file_writer.write_images(update_dict)
+    file_writer.write_images(update_dict, fail_on_error=True)
 
     return jsonify({'success': 'good'})
 

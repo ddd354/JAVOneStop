@@ -73,6 +73,8 @@ const resources = {
       'good_scrape': 'Scraped ',
       'fail_scrape': 'single scrape error: ',
       'nfo_write_info': 'NFO write Info',
+      'image_write_ok': 'image rewrite succeessful',
+      'nfo_write_ok': 'nfo rewrite succeessful',
 
       // configurator
       'db_type': 'DB Type',
@@ -199,6 +201,8 @@ const resources = {
       'good_scrape': '刮削完成 ',
       'fail_scrape': '刮削失败: ',
       'nfo_write_info': 'NFO写入值',
+      'image_write_ok': '成功写入图片',
+      'nfo_write_ok': '成功写入nfo文件',
 
       // configurator
       'db_type': '数据库类型',

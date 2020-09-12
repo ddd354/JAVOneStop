@@ -1,5 +1,4 @@
 import { Machine, assign, sendParent, actions } from 'xstate';
-import { useTranslation } from 'react-i18next';
 
 const { pure } = actions;
 
@@ -145,7 +144,7 @@ const createLocalJacCardState = (jav_info, t) => {
                                 if (evt.data.success === undefined) {
                                     console.log(evt.data.error)
                                 } else {
-                                    console.log('nfo rewrite succeessful', ctx.jav_info.car)
+                                    console.log(ctx.t('nfo_write_ok'), ctx.jav_info.car)
                                 }
                                 return {loading: false}
                             }),
@@ -163,7 +162,7 @@ const createLocalJacCardState = (jav_info, t) => {
                                 if (evt.data.success === undefined) {
                                     console.log(evt.data.error)
                                 } else {
-                                    console.log('image rewrite succeessful', ctx.jav_info.car)
+                                    console.log(t('image_write_ok'), ctx.jav_info.car)
                                 }
                                 return {loading: false}
                             }),

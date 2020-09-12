@@ -48,7 +48,7 @@ class EmbyFileStructure:
         # may encounter weird error
         return JavManagerDB()
 
-    def write_images(self, jav_obj):
+    def write_images(self, jav_obj, fail_on_error=False):
         poster_name = POSTER_NAME
         fanart_name = FANART_NAME
 
@@ -74,8 +74,10 @@ class EmbyFileStructure:
         except Exception as e:
             print('Image download failed for {} due to {}'.format(url_obj.geturl(), e))
             return 
-        if r.status_code != 200:
-            # raise Exception('Image download failed for {}'.format(url_obj.geturl()))
+        if r.status_code != 200 or "now_printing" in r.url:
+            if fail_on_error:
+                # raise error if we are just writing images
+                raise Exception('Image download failed for {}'.format(url_obj.geturl()))
             # print the error but not fail the write
             print('Image download failed for {}'.format(url_obj.geturl()))
             return 

@@ -93,7 +93,6 @@ const LocalJavCard = ({stateMachine, loading}) => {
                 </Button>
             </Col>
             }
-
             {
                 localState.matches('db_result') && <Col>
                     <Button variant="danger" size="sm" onClick={_ => setLocalState('WRITE_NFO')} disabled={localState.context.loading}>{(localState.context.loading) ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> :  t('rewrite_nfo')}</Button>
@@ -154,11 +153,14 @@ const LocalJavCard = ({stateMachine, loading}) => {
                                 <Col xs={6}><Image src={localState.context.jav_info[key].image || localState.context.jav_info[key].img} fluid/></Col>
                                 <Col xs={6}>
                                 <DataTable columns={[{name: 'key', selector:'key', compact: true, wrap: true, maxWidth: '30px'}, 
-                                {name: 'value', selector:'value', compact: true, wrap: true},
-                                {name: 'action', selector:'action', compact: true},
-                                ]} 
-                                data={_data}
-                                 dense noTableHead/>
+                                        {name: 'value', selector:'value', compact: true, wrap: true},
+                                        {name: 'action', selector:'action', compact: true},
+                                    ]} 
+                                data={_data} 
+                                customStyles={{rows: {style: {backgroundColor: 'transparent'}}, 
+                                                table: {style: {backgroundColor: 'transparent'}}
+                                            }}
+                                dense noTableHead noHeader/>
                                 </Col>
                                 </Row>
                             </TabPanel>

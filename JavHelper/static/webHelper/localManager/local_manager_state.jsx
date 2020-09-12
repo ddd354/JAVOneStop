@@ -65,7 +65,7 @@ export const localManagerState = Machine({
                 onDone: {
                     target: 'show_directory',
                     actions: assign((context, event) => { 
-                        //console.log(event);
+                        //console.log(context.t);
                         let show_list = context.show_list;
                         let _car_list = show_list.map(x => x.car);
 
@@ -147,7 +147,7 @@ export const localManagerState = Machine({
                         event.data.forEach(jav_obj => {
                             show_list.push({
                                 car: jav_obj.car,
-                                machine: spawn(createLocalJacCardState(jav_obj))
+                                machine: spawn(createLocalJacCardState(jav_obj, context.t))
                             })
                         })
 
