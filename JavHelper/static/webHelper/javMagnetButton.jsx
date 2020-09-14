@@ -4,6 +4,16 @@ import Spinner from 'react-bootstrap/Spinner'
 
 import { useTranslation } from 'react-i18next';
 
+const copyToClipboard = (i_text) => {
+  console.log('copied', i_text)
+  var textField = document.createElement('textarea')
+  textField.innerText = i_text
+  document.body.appendChild(textField)
+  textField.select()
+  document.execCommand('copy')
+  textField.remove()
+}
+
 const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
   const { t, i18n } = useTranslation();
 
@@ -79,7 +89,7 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
     )
   } else {
     return(
-      <a href={_download_link} rel="noreferrer" target="_blank">{t('download_web_button')}</a>
+      <a onClick={() => {copyToClipboard(car)}} href={_download_link} rel="noreferrer" target="_blank">{t('download_web_button')}</a>
     )
   }
   };

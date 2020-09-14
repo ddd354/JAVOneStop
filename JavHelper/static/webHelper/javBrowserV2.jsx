@@ -33,7 +33,7 @@ const JavBroswerV2 = (props) => {
     const [jav_browser_batch_limiter, setUrlLimiter] = useState(new Bottleneck({maxConcurrent: 1}));
 
     const [jav_objs, setJavObjs] = useState([]);
-    const [mark_1, setMarkOne] = useState(0);
+    const [mark_to, setMarkTo] = useState(99);
     const [jav_stat_filter, setJavStatFilter] = useState([0, 2]);
 
     const [jav_obj_cards, setJavObjCards] = useState([]);
@@ -168,19 +168,27 @@ const JavBroswerV2 = (props) => {
     const keyMap = {
         next_page: 'd',
         previous_page: 'a',
-        mark_all_1: '1'
+        mark_all_1: '1',
+        mark_all_0: '`'
     };
 
     function handle_mark_1 () {
         //console.log('pressed 1');
-        setMarkOne(1);
-        setTimeout(setMarkOne(0), 1000);
+        setMarkTo(1);
+        setTimeout(setMarkTo(0), 1000);
+    }
+
+    function handle_mark_0 () {
+        //console.log('pressed 1');
+        setMarkTo(0);
+        setTimeout(setMarkTo(0), 1000);
     }
 
     const hotkey_handlers = {
         next_page: event => setPageNum(prevIndex => String(parseInt(prevIndex)+1)),
         previous_page: event => setPageNum(prevIndex => String(parseInt(prevIndex)-1)),
         mark_all_1: event => handle_mark_1(),
+        mark_all_0: event => handle_mark_0(),
     }
 
     return (
@@ -237,7 +245,7 @@ const JavBroswerV2 = (props) => {
                         jav_objs.map(
                             function(jav_obj){
                                 return <JavCardV2 key={jav_obj.car} update_obj={jav_obj} source_site={source_site} jav_stat_filter={jav_stat_filter}
-                                    url_access={jav_browser_batch_limiter} mark_1={mark_1} />
+                                    url_access={jav_browser_batch_limiter} mark_to={mark_to} />
                                 }
                         )
                     }

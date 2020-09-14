@@ -15,7 +15,7 @@ import './javBrowserV2.css';
 import { useEffect } from 'react';
 
 
-const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_1 }) => {
+const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_to }) => {
     const { t, i18n } = useTranslation();
     
     const [card_jav_obj, setCardJavObj] = useState(update_obj);
@@ -28,7 +28,7 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
 
     // trigger by parent shortcut key to mark jav read
     useEffect(() => {
-        if (mark_1 === 1 && jav_stat === 2) {
+        if (mark_to === 1 && jav_stat === 2) {
             //console.log('updating to 1 for: ', _obj.car);
             url_access.schedule(() => fetch(`/local_manager/update_car_ikoa_stat?car=`+String(update_obj.car)+`&stat=`+String(1)))
             .then(response => response.json())
@@ -40,8 +40,20 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
                     console.log('Fail to update stat: ', _obj.car, stat_map[1]);
                 }
             });
+        } else if (mark_to === 0 && jav_stat !== 3 && jav_stat !== 2) {
+            //console.log('updating to 1 for: ', _obj.car);
+            url_access.schedule(() => fetch(`/local_manager/update_car_ikoa_stat?car=`+String(update_obj.car)+`&stat=`+String(0)))
+            .then(response => response.json())
+            .then((jsonData) => {
+                //console.log(jsonData.success);
+                if (jsonData.success) {
+                    setJavStat(0)
+                } else {
+                    console.log('Fail to update stat: ', _obj.car, stat_map[1]);
+                }
+            });
         }
-    }, [mark_1])
+    }, [mark_to])
     
     useEffect(() => {
         if (jav_stat === 3) {
