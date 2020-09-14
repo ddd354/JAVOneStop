@@ -175,13 +175,13 @@ const JavBroswerV2 = (props) => {
     function handle_mark_1 () {
         //console.log('pressed 1');
         setMarkTo(1);
-        setTimeout(setMarkTo(0), 1000);
+        setTimeout(setMarkTo(99), 1000);
     }
 
     function handle_mark_0 () {
         //console.log('pressed 1');
         setMarkTo(0);
-        setTimeout(setMarkTo(0), 1000);
+        setTimeout(setMarkTo(99), 1000);
     }
 
     const hotkey_handlers = {
