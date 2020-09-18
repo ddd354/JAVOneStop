@@ -35,6 +35,7 @@ def directory_path():
 @local_manager.route('/readme', methods=['GET'])
 def readme():
     source_filename_map = {
+        'changelog': 'CHANGELOG',
         'main_readme': 'README.md',
         'javdownloader_readme': 'JAV_HELP.md'
     }

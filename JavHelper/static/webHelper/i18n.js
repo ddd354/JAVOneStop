@@ -47,6 +47,9 @@ const resources = {
       'personal_wanted': 'still wanted',
       'search_car_allow_partial': 'Search car (allow partial search)',
 
+      // doc page
+      'changelog': 'Change Log',
+
       // jav browser
       'still_wanted': 'Wanted', 
       'still_downloading': 'Downloading', 
@@ -169,6 +172,9 @@ const resources = {
       'downloading': '下载中',
       'personal_wanted': '还未下载',
       'search_car_allow_partial': '搜索番号(支持部分搜索)',
+
+      // doc page
+      'changelog': '更新日志',
 
       // jav browser
       'still_wanted': '想要的', 

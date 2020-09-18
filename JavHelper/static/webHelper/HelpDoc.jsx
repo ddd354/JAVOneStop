@@ -13,7 +13,7 @@ const HelpDoc = () => {
   const { t, i18n } = useTranslation();
 
   const [markdown, setMarkdown] = useState('');
-  const [markdown_source, setMarkdownSource]= useState('main_readme');
+  const [markdown_source, setMarkdownSource]= useState('changelog');
 
   // init with github markdown
   useEffect(() => {
@@ -29,6 +29,9 @@ const HelpDoc = () => {
       <Row><Col>
       <ToggleButtonGroup size="sm" type="radio" value={markdown_source} name="selectMarkdown" 
           onChange={(e) => setMarkdownSource(e)} style={{flexWrap: "wrap", marginLeft: "5px"}}>
+          <ToggleButton value={'changelog'}>
+              {t('changelog')}
+          </ToggleButton>
           <ToggleButton value={'main_readme'}>
               {t('main_readme')}
           </ToggleButton>

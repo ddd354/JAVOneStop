@@ -125,10 +125,10 @@ const JavCardV2 = ({ update_obj, source_site, jav_stat_filter, url_access, mark_
         return (
             <Container fluid>
             <Row style={border_style} key={card_jav_obj.javid} id="main-javcard">
-                <Col xs={{span: 12, order: 1}} md={{span: 4, order: 1}}>
-                    <img style={{opacity: _manual_opacity, width: "70%"}} src={card_jav_obj.img || card_jav_obj.image}></img>
+                <Col lg={{span: 12, order: 1}} xl={{order: 1}}>
+                    <img style={{opacity: _manual_opacity, maxWidth: "100%", minWidth: "70%"}} src={card_jav_obj.img || card_jav_obj.image}></img>
                 </Col>
-                <Col xs={{span: 12, order: 2}} md={{span: 8, order: 2}}>
+                <Col lg={{span: 12, order: 2}} xl={{order: 2}}>
                     <Row><Col><p>{card_jav_obj.car} {card_jav_obj.title}</p></Col></Row>
                     <Row><Col>
                     <StatButtonGroup 

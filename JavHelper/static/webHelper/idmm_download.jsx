@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import useInterval from '@use-it/interval';
+
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import Container from 'react-bootstrap/Container'
 import Col from 'react-bootstrap/Col'
@@ -8,14 +10,17 @@ import './idmm_download.css'
 import { useTranslation } from 'react-i18next';
 
 const IdmmMonitor = ({ server_addr }) => {
+    const [good_to_fetch, setFetch] = useState(true);
     const [ikoa_jobs, setIkoaJobs] = useState([]);
     const [dmmc_jobs, setDmmcJobs] = useState([]);
 
     const { t, i18n } = useTranslation();
 
     // update job progress every 20s
-    useEffect(() => {
-        const interval = setInterval(() => {
+    useInterval(() => {
+        //console.log(server_addr)
+        if (good_to_fetch) {
+            setFetch(false)
             fetch(server_addr+`flask_celery/list_all_jobs`)
             .then(response => response.json())
             .then((jsonData) => {
@@ -50,10 +55,10 @@ const IdmmMonitor = ({ server_addr }) => {
                     setIkoaJobs(ikoa_jobs);
                     setDmmcJobs(dmmc_jobs);
                 }
+                setFetch(true)
             });
-        }, 20000);
-        return () => clearInterval(interval);
-      }, []);
+        }
+      }, 10000);
 
     return (
     <Container fluid>
