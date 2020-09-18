@@ -2,6 +2,35 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [0.8.0] - 2020-09-17
+### 新增
+- 支持sqlite数据库后端
+    - 如何从blitz转移数据至sqlite:
+        - 在配置表单, 数据库类型里保持选中blitz; 请备份已有的blitz数据库
+        - 访问 127.0.0.1:8009/migrate_to_sqlite 等待完成, 切勿打断
+        - 进入配置表单, 切换数据库类型至sqlite, 并重启程序
+    - 将来的新功能将不再测试blitz数据库而只保证支持sqlite
+- 增加115限额读取
+- 新增jav321网站支持
+- 新增本地数据库访问至JAV下载器以用于重新下载
+- 添加更新日志至工具首页
+- 部分页面现在支持url构建, 用户可以刷新页面而不用从头开始
+- 新增全部标记为"想要"的快捷键
+- 重写刮削工具已有视频逻辑
+    - 支持原有的"重写nfo", "重写图片", "更新nfo"功能
+- 新增车牌状态"冷冻箱", 用来分辨不在本地但是找不到下载链接的状况
+- 新增中英文语言切换
+### 改进 / 修复
+- 优化dockerfile构建顺序
+- 优化后端结构, 合并各大jav刮削和访问节点
+- 改进图片写入逻辑
+- 修复jav777车牌处理的问题
+- 修复javdb访问问题
+- 改进idmm进度工具访问逻辑
+- jav777的下载链接现在可以复制车牌至粘贴板
+- 改进各种界面比例
+
+
 ## [0.7.6] - 2020-08-17
 ### Added
 - Able to scrape multiple jav in jav scraper
