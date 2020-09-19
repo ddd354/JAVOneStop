@@ -1,0 +1,70 @@
+.javConsole li {
+    line-height: 1.1 !important;
+    font-size: 18px !important;
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
+}
+
+.javConsole span {
+    line-height: 1.1 !important;
+    font-size: 18px !important;
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
+}
+
+.javConsole a {
+    line-height: 1.1 !important;
+    font-size: 18px !important;
+    font-family: '.SFNSDisplay-Regular', 'Helvetica Neue' !important;
+}
+
+div[id="consoleColumn"] {
+    position: fixed;
+    z-index: 900;
+    -webkit-transform: translateZ(0);
+}
+
+div.cgarle {
+    margin: 0px;
+}
+
+@media only screen and (min-width: 600px) {
+    div.javConsoleContainer {
+        height: 260px;
+    }
+    div.cgarle {
+        height: 250px;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    div.javConsoleContainer {
+        height: 160px;
+    }
+    div.cgarle {
+        height: 150px;
+    }
+}
+
+/* react tab css */
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+.nav-tab {
+    font-family: 'Roboto', sans-serif;
+    background-color: #fff;
+    display: inline-block;
+    padding: 10px 25px;
+    color: #bbb;
+    border-bottom: 1px solid #ddd;
+    text-decoration: none;
+}
+
+.nav-tab:hover {
+    background-color: oldlace;
+}
+
+.nav-tab.active {
+    background-color: #fff;
+    color: #555;
+    border: 1px solid #ddd;
+    border-top: 2px solid orange;
+    border-bottom: 1px solid #fff;
+    cursor: default;
+}

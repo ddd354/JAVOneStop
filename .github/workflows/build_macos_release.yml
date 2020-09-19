@@ -1,0 +1,69 @@
+name: build_macos_release
+
+on:
+  push:
+    tags:
+      - 'v*'
+#on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Install Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7.9
+
+    - name: Install Python Packages
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: build macos pkg
+      run: |
+        pyinstaller --onedir \
+          --add-data="demo:demo" \
+          --add-data="translation.json:." \
+          --add-data="README.md:." \
+          --add-data="JAV_HELP.md:." \
+          --add-data="JavHelper/templates:JavHelper/templates" \
+          --add-data="JavHelper/static:JavHelper/static" \
+          --add-data="/Users/runner/hostedtoolcache/Python/3.7.9/x64/lib/python3.7/site-packages/cloudscraper:cloudscraper" \
+          --hidden-import="js2py" \
+          --hidden-import="cloudscraper" \
+          --hidden-import="cloudscraper_exception" \
+          --exclude-module="FixTk" \
+          --exclude-module="tcl" \
+          --exclude-module="tk" \
+          --exclude-module="_tkinter" \
+          --exclude-module="tkinter" \
+          --exclude-module="Tkinter" \
+          --noconfirm \
+          --distpath JAVOneStop_${GITHUB_REF##*/} \
+          JavHelper/run.py
+
+        tar -czf Jav_OneStop_macos.tar.gz JAVOneStop_${GITHUB_REF##*/}
+
+    - name: Create MacOS Release
+      id: create_release_macos
+      uses: actions/create-release@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}_macos
+        release_name: Release ${{ github.ref }} MacOS
+        draft: false
+        prerelease: false
+    
+    - name: Upload Release Asset MacOS
+      id: upload-release-asset-macos
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release_macos.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./Jav_OneStop_macos.tar.gz
+        asset_name: Jav_OneStop_macos.tar.gz
+        asset_content_type: application/zip

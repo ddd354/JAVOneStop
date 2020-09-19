@@ -1,0 +1,11 @@
+div.warning-toasts {
+    position: fixed;
+    top: 0;
+    left: 40%;
+    z-index: 999;
+}
+
+div.ind-download-checker-toast {
+    background-color: #ffc107;
+    font-weight: bold;
+}

@@ -1,0 +1,38 @@
+div[id="javBrowserToggleGroup"] {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: 100%;
+    max-height: max-content;
+}
+
+.jav-content {
+    flex-direction: column;
+}
+
+.flex-container .rdt_Table {
+    max-height: 250px;
+    height: auto;
+    overflow-y: auto;
+}
+
+.magnetTable div {
+    background: transparent;
+    max-height: max-content;
+}
+
+div.detail-image-button {
+    padding: 0;
+}
+
+div.detail-image-section {
+    margin-top: 15px;
+}
+
+div#overlaySpinner {
+    position: fixed;
+    width: 40%;
+    padding-bottom: 40%;
+    z-index: 999;
+    margin: 0 30%;
+}

@@ -1,0 +1,53 @@
+{
+  "name": "JAVOneStop",
+  "version": "0.7.4",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack --config webpack.prod.js",
+    "dev-build": "webpack --progress -d --config webpack.config.js",
+    "watch": "webpack --progress -d --config webpack.config.js --watch"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "7",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^3.4.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "style-loader": "^1.1.2",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.8.1",
+    "@use-it/interval": "^0.1.3",
+    "@xstate/react": "^0.8.1",
+    "bootstrap": "^4.4.1",
+    "bottleneck": "^2.19.5",
+    "can-ndjson-stream": "^1.0.2",
+    "console-feed": "^2.8.11",
+    "i18next": "^19.1.0",
+    "prop-types": "^15.7.2",
+    "rc-pagination": "^2.0.1",
+    "react-bootstrap": "^1.0.0-beta.16",
+    "react-data-table-component": "^6.0.4",
+    "react-debounce-input": "^3.2.2",
+    "react-hotkeys": "^2.0.0-pre9",
+    "react-i18next": "^11.3.1",
+    "react-iframe": "^1.8.0",
+    "react-infinite-scroll-component": "^5.0.4",
+    "react-json-editor-ajrm": "^2.5.9",
+    "react-jsonschema-form": "^1.8.1",
+    "react-markdown": "^4.3.1",
+    "react-router-dom": "^5.2.0",
+    "react-router-tabs": "^1.3.2",
+    "react-tabs": "^3.1.0",
+    "styled-components": "^4.4.1",
+    "xstate": "^4.10.0"
+  }
+}

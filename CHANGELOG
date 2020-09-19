@@ -1,0 +1,200 @@
+# Changelog
+JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
+communicate with Emby to add actresses images.
+
+## [0.8.0] - 2020-09-17
+### 新增
+- 支持sqlite数据库后端
+    - 如何从blitz转移数据至sqlite:
+        - 在配置表单, 数据库类型里保持选中blitz; 请备份已有的blitz数据库
+        - 访问 127.0.0.1:8009/migrate_to_sqlite 等待完成, 切勿打断
+        - 进入配置表单, 切换数据库类型至sqlite, 并重启程序
+    - 将来的新功能将不再测试blitz数据库而只保证支持sqlite
+- 增加115限额读取
+- 新增jav321网站支持
+- 新增本地数据库访问至JAV下载器以用于重新下载
+- 添加更新日志至工具首页
+- 部分页面现在支持url构建, 用户可以刷新页面而不用从头开始
+- 新增全部标记为"想要"的快捷键
+- 重写刮削工具已有视频逻辑
+    - 支持原有的"重写nfo", "重写图片", "更新nfo"功能
+- 新增车牌状态"冷冻箱", 用来分辨不在本地但是找不到下载链接的状况
+- 新增中英文语言切换
+### 改进 / 修复
+- 优化dockerfile构建顺序
+- 优化后端结构, 合并各大jav刮削和访问节点
+- 改进图片写入逻辑
+- 修复jav777车牌处理的问题
+- 修复javdb访问问题
+- 改进idmm进度工具访问逻辑
+- jav777的下载链接现在可以复制车牌至粘贴板
+- 改进各种界面比例
+
+
+## [0.7.6] - 2020-08-17
+### Added
+- Able to scrape multiple jav in jav scraper
+- Add UI language toggle
+### Updated
+- Update docker build script to use local db to reduce build time
+- Fix image expired bug when accessing javdb
+- Added retry logic when accessing db
+- Update javdb url link
+- Directory scan now will return files sort by filename
+
+## [0.7.5] - 2020-07-28
+### Updated
+- Fix pyinstaller issue
+- Update Pillow for security
+
+## [0.7.4] - 2020-07-25
+### Updated
+- Major rewrite with the local manager tab
+- Try to fix macos release build
+
+## [0.7.2] - 2020-06-08
+### Added
+- testing new keyboard shortcut for jav browser
+- added javdb to jav browser and parser
+### Updated
+- added ignore for cloudflare cookies json
+- up the allowable 115 file size from 100 to 200MB
+- better error handling for 115 downloader
+- no genres will no longer be copied from tags nfo
+- update cloudflare scraper handling
+- reshape a lot of jav browser layout for small screens
+
+## [0.7.1] - 2020-04-17
+### Added
+- alpha version of jav777 support as a download source
+- add configuration to allow user remove certain string when renaming files
+- add UI support for user custom ikoa / dmmc downloader
+- add a overall download search to optimize download flow
+- add an endpoint for car that requires ikoa credit
+### Updated
+- fixed some read and write database issue with car
+- upgrade pillow for security reason
+- upgrade cloudscraper for newer chanllenges
+
+## [0.7.0] - 2020-03-15
+### Added
+- readme tab to teach user how to
+- toast error messages for misconfigured 115 / aria2 server
+### Updated
+- brand new pagination
+- better 115 & aria2 downloader logging
+- full localization on jav download tool
+- magnet sorting based on size and subtitled (flawed though)
+- bug fix for not infinite scroll when switch between fully loaded page and new page
+- remove cache from reading the source site (since we need newest db stat)
+
+## [0.6.4] - 2020-03-13
+### Added
+- 115 downloader error message translations
+- ui elements to switch between different sources for magnet link search
+- add 115 validator when manual validation is necessary
+### Updated
+- retry logic for 115 downloader
+- fix bug for release date (changes to "premiered" in nfo)
+
+## [0.6.3] - 2020-03-09
+### Updated
+- fix cloudscraper import issue
+
+## [0.6.2] - 2020-03-09
+### Updated
+- fix opacity issue
+
+## [0.6.1] - 2020-03-09
+### Added
+- now user can configure jav sources and priority in the configuration tool
+### Updated
+- better loading animation since javlibrary now is very slow
+- fixed detailed image tab when browsing javbus
+
+## [0.6.0] - 2020-03-08
+### Added
+- added javbus support (user needs to manually edit settings.ini for now to add javbus scrape)
+### Updated
+- updated the docker related script to resolve slow build issue
+- javlibrary now uses cloudscraper to bypass cloudflare
+- some localization improvements
+### Removed
+- completely removed older javbrower code (now only v2 exists)
+
+## [0.5.3] - 2020-03-04
+### Added
+- [JavBrowserV2] jav browser now has a detailed image tab for each jav
+- add role when writing nfo for better visual
+- language now is configurable
+- user now can manually choose which data source to use for individual source
+### Updated
+- add infinite scroll back to jav browser
+- update the migrating logic so now the tool will look for an actual video file instead of just nfo
+- small updates to the translation
+- fix the pagenation issue where sometimes it won't get updated
+- pin log console to the top for better log viewing
+
+## [0.5.0] - 2020-02-27
+### Added
+- local jav manager
+- new scraper class to ease new implementation
+- user can configure scraper sources directly in the configure tool
+### Updated
+- restructure javlibrary and arzon scraper
+- better windows and linux (macos) os path support
+- user can configure saved folder structure in the configure tool
+- fix a bug to rebuild index when doing db search locally
+
+## [0.4.2] - 2020-02-17
+### Added
+- docker deployment script
+- now use chinese by default
+- add tool to configure 115 cookies directly inside of the tool
+### Updated
+- 115 download grace failure
+- better jav search functions
+- alpha mobile view version
+
+## [0.4.1] - 2020-02-12
+### Updated
+- fix T28 R18 jav scrape
+- fix problematic rename for subtitled video
+- upgrade pyinstaller version for security reason
+- backend only will handle one request at a time to avoid concurrency issue for blitzDB and 115 download
+
+## [0.4.0] - 2020-02-12
+### Added
+- local blitzDB to handle jav file status look up
+- jav manager - 115 - aria2 download support
+- flask cache for faster web response
+- new function to parse two javlibrary most wanted and best rated pages
+- new readme with demo gifs
+### Updated
+- nfo parser now by default capitalize "car"
+- production webpack react compile to reduce warnings
+### Removed
+- no longer support "C" as cd postfix
+
+## [0.3.0] - 2020-02-05
+### Added
+- warashi scraper which is used for emby actor images
+- Handle multiple CD filename postfix
+- Handle Chinese subtitle filename postfix
+### Updated
+- Fix bug when writing images
+- Fix read from ini file so no restart is needed
+
+## [0.2.0] - 2019-12-31
+### Updated
+- update README for new usage
+### Removed
+- remove flaskwebgui package usage
+
+## [0.1.0] - 2019-12-29
+### Added
+- Basic Architecture for front and back end
+- javLibrary parser
+- arzon plot parser
+- emby actress image upload
+- jav file organization and generate nfo

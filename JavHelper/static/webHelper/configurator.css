@@ -1,0 +1,7 @@
+div[name="outer-box"] {
+    width: 100% !important;
+}
+
+div[name="container"] {
+    width: 100% !important;
+}
