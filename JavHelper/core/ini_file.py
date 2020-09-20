@@ -48,7 +48,7 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'display_language': 'cn',
     'remove_string': '',
     'ikoa_dmmc_server': '',
-    'db_type': 'blitz'
+    'db_type': 'sqlite'
 }
 
 def verify_ini_file(ini_file_name=DEFAULT_INI):
@@ -169,5 +169,6 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("其他设置", "ikoa_dmmc", "")
     config_settings.set("其他设置", "扫描文件类型", "mp4、mkv、avi、wmv、iso、rmvb、MP4")
     config_settings.set("其他设置", "重命名中的标题长度（50~150）", "50")
+    config_settings.set("其他设置", "数据库类型", "sqlite")
     config_settings.write(open(ini_file_name, "w", encoding='utf-8-sig'))
     print('写入ini文件成功')
