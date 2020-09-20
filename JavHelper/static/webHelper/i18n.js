@@ -81,6 +81,9 @@ const resources = {
 
       // configurator
       'db_type': 'DB Type',
+      'magnet_downloader': 'Magnet Downloader Type',
+      'deluge_address': 'Deluge server address',
+      'deluge_secret': 'Deluge secret (don\'t support username / password)',
 
       'scrape_all': 'Scrape All',
       'local': 'Local',
@@ -212,6 +215,9 @@ const resources = {
 
       // configurator
       'db_type': '数据库类型',
+      'magnet_downloader': '磁链下载器类型',
+      'deluge_address': 'Deluge服务器地址和端口',
+      'deluge_secret': 'Deluge secret (暂不支持用户名密码类型)',
 
 
       'local': '本地',

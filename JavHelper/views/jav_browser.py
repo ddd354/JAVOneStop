@@ -15,6 +15,7 @@ from JavHelper.core.javlibrary import javlib_set_page, javlib_search
 from JavHelper.core.javdb import javdb_set_page, javdb_search
 from JavHelper.core.jav777 import jav777_set_page
 from JavHelper.core.OOF_downloader import OOFDownloader
+from JavHelper.core.deluge_downloader import DelugeDownloader
 from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.core.aria2_handler import verify_aria2_configs_exist
 from JavHelper.core.ini_file import return_default_config_string
@@ -220,10 +221,8 @@ def oof_quota():
     except FileNotFoundError:
         return jsonify({'error': BackendTranslation()['oof_cookies_not_found']}), 500
 
-    
-
-@jav_browser.route('/download_via_aria', methods=['POST'])
-def download_via_aria():
+@jav_browser.route('/download_magnet', methods=['POST'])
+def download_magnet():
     req_data = json.loads(request.get_data() or '{}')
     car = req_data.get('car')
     magnet = req_data.get('magnet')
@@ -231,9 +230,13 @@ def download_via_aria():
     if not car or not magnet:
         return jsonify({'error': 'required fields are not found in posted json'}), 400
 
-    oof_downloader = OOFDownloader()
-
-    jav_obj = oof_downloader.handle_jav_download(car, magnet)
+    if return_default_config_string('magnet_downloader') == 'aria2':
+        _downloader = OOFDownloader()
+    else:
+        # use deluge client
+        _downloader = DelugeDownloader()
+    
+    jav_obj = _downloader.handle_jav_download(car, magnet)
     if not jav_obj.get('error'):
         return jsonify({'success': jav_obj})
     else:

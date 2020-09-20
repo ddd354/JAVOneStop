@@ -94,6 +94,19 @@ const JavConfigurator = (props) => {
             "type": "string",
             "title": t('set_javlib_url_title')
           },
+          "magnet_downloader": {
+            "type": "string",
+            "title": t('magnet_downloader'),
+            "enum": ["aria2", "deluge"]
+          },
+          "deluge_address": {
+            "type": "string",
+            "title": t('deluge_address'),
+          },
+          "deluge_secret": {
+            "type": "string",
+            "title": t('deluge_secret'),
+          },
           "aria_address": {
             "type": "string",
             "title": t('set_aria2_url_title')
@@ -139,6 +152,12 @@ const JavConfigurator = (props) => {
         },
         "db_type": {
           "ui:widget": "radio"
+        },
+        "magnet_downloader": {
+          "ui:widget": "radio"
+        },
+        "deluge_address": {
+          "ui:description": t('emby_addr_tip'),
       },
     };
 

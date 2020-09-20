@@ -53,6 +53,9 @@ class App extends Component {
         console.log('initialized');
         // load ini from file
         fetch(`/directory_scan/read_local_ini?filter_dict={
+            'magnet_downloader': ["下载设置", "下载器"],
+            'deluge_address': ["下载设置", "deluge地址"],
+            'deluge_secret': ["下载设置", "deluge密钥"],
             'aria_address': ["Aria2设置", "Aria2地址"],
             'aria_port': ["Aria2设置", "Aria2端口"],
             'aria_token': ["Aria2设置", "Aria2 Token"],
