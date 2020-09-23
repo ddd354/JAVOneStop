@@ -5,6 +5,9 @@ from JavHelper.core import IniNotFoundException
 
 DEFAULT_INI = resource_path('settings.ini')
 DEFAULT_UPDATE_MAPPING = {
+    'magnet_downloader': ["下载设置", "下载器"],
+    'deluge_address': ["下载设置", "deluge地址"],
+    'deluge_secret': ["下载设置", "deluge密钥"],
     'aria_address': ["Aria2设置", "Aria2地址"],
     'aria_port': ["Aria2设置", "Aria2端口"],
     'aria_token': ["Aria2设置", "Aria2 Token"],
@@ -25,6 +28,9 @@ DEFAULT_UPDATE_MAPPING = {
     'db_type': ["其他设置", "数据库类型"],
 }
 DEFAULT_UPDATE_VALUE_MAPPING = {
+    'magnet_downloader': "aria2",
+    'deluge_address': "",
+    'deluge_secret': "",
     'aria_address': "",
     'aria_port': "",
     'aria_token': "",
@@ -42,7 +48,7 @@ DEFAULT_UPDATE_VALUE_MAPPING = {
     'display_language': 'cn',
     'remove_string': '',
     'ikoa_dmmc_server': '',
-    'db_type': 'blitz'
+    'db_type': 'sqlite'
 }
 
 def verify_ini_file(ini_file_name=DEFAULT_INI):
@@ -110,6 +116,10 @@ def return_config_string(field_path: list, config=None):
 def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings = configparser.RawConfigParser()
     print('正在重写ini...')
+    config_settings.add_section("下载设置")
+    config_settings.set("下载设置", "下载器", "aria2")
+    config_settings.set("下载设置", "deluge地址", "")
+    config_settings.set("下载设置", "deluge密钥", "")
     config_settings.add_section("Aria2设置")
     config_settings.set("Aria2设置", "Aria2地址", "")
     config_settings.set("Aria2设置", "Aria2端口", "")
@@ -159,5 +169,6 @@ def recreate_ini(ini_file_name=DEFAULT_INI):
     config_settings.set("其他设置", "ikoa_dmmc", "")
     config_settings.set("其他设置", "扫描文件类型", "mp4、mkv、avi、wmv、iso、rmvb、MP4")
     config_settings.set("其他设置", "重命名中的标题长度（50~150）", "50")
+    config_settings.set("其他设置", "数据库类型", "sqlite")
     config_settings.write(open(ini_file_name, "w", encoding='utf-8-sig'))
     print('写入ini文件成功')

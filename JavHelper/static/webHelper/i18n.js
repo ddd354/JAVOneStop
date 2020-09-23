@@ -81,6 +81,9 @@ const resources = {
 
       // configurator
       'db_type': 'DB Type',
+      'magnet_downloader': 'Magnet Downloader Type',
+      'deluge_address': 'Deluge server address',
+      'deluge_secret': 'Deluge secret (don\'t support username / password)',
 
       'scrape_all': 'Scrape All',
       'local': 'Local',
@@ -108,11 +111,13 @@ const resources = {
       'download_magnet_button': 'Download',
       'download_web_button': 'Web Download',
       'download_iframe_button': 'Downloader',
+
+      // Console logs
       'log_search_web_jav': 'Searching: ',
       'log_switch_jav_set': 'Change jav set to: ',
       'log_error': 'Error: ',
       'log_change_website': 'change website source to: ',
-      'log_aria2_download': 'aria2 downloadeding: ',
+      'log_magnet_download': 'Magnet link added to downloader: ',
       'log_idmm_download': 'idmm downloader job added: ',
       'log_update_jav_stat': 'Update DB Stat: ',
       'log_filter': 'filter on: ',
@@ -212,6 +217,9 @@ const resources = {
 
       // configurator
       'db_type': '数据库类型',
+      'magnet_downloader': '磁链下载器类型',
+      'deluge_address': 'Deluge服务器地址和端口',
+      'deluge_secret': 'Deluge secret (暂不支持用户名密码类型)',
 
 
       'local': '本地',
@@ -237,11 +245,13 @@ const resources = {
       'download_magnet_button': '下载',
       'download_web_button': '网页下载',
       'download_iframe_button': '下载器',
+
+      // Console logs
       'log_search_web_jav': '搜索: ',
       'log_switch_jav_set': '更改搜索页面: ',
       'log_error': '发生错误: ',
       'log_change_website': '更换网站来源: ',
-      'log_aria2_download': '下载添加至aria2: ',
+      'log_magnet_download': '磁链下载成功添加至下载器: ',
       'log_idmm_download': '下载添加至idmm下载器',
       'log_update_jav_stat': '更新数据库文档: ',
       'log_filter': '启用过滤器: ',

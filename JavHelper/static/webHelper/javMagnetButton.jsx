@@ -39,7 +39,7 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
           setLoading(false);
         })
       } else if (isLoading) {
-        fetch('/jav_browser/download_via_aria',
+        fetch('/jav_browser/download_magnet',
               {method: 'post',
               body: JSON.stringify({
                       "car": _car,
@@ -53,7 +53,7 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
           } else {
             fetch(`/local_manager/update_car_ikoa_stat?car=${jsonData.success.car}&stat=4`)
               .then(() => {
-                console.log(t('log_aria2_download'), jsonData.success.car);
+                console.log(t('log_magnet_download'), jsonData.success.car);
                 setJavStat(4);
               })
             setLoading(false);
