@@ -2,6 +2,10 @@
 JavOneStop which is a small tool that helps users rename, parse, generate nfo, organize jav video files and
 communicate with Emby to add actresses images.
 
+## [Unreleased]
+### 新增
+- 增加deluge磁链下载支持
+
 ## [0.8.0] - 2020-09-17
 ### 新增
 - 支持sqlite数据库后端
