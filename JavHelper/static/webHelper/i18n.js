@@ -20,7 +20,6 @@ const resources = {
       "set_enable_proxy_title": "Enable Proxy or Not",
       "set_proxy_addr_port_title": "Proxy address and port",
       "set_emby_addr_port_title": "Emby Server Address and Port",
-      "set_javlib_url_title": "Url for Accessing JavLibrary",
       "set_aria2_url_title": "Url for Aria2; Example: http://192.168.1.9",
       "set_aria2_port_title": "Port for Aria2",
       "set_remove_string": "Remove following strings (comma separated)",
@@ -84,6 +83,8 @@ const resources = {
       'magnet_downloader': 'Magnet Downloader Type',
       'deluge_address': 'Deluge server address',
       'deluge_secret': 'Deluge secret (don\'t support username / password)',
+      "set_javlib_url_title": "Url for Accessing JavLibrary",
+      "set_javbus_url_title": "Url for Accessing Javbus",
 
       'scrape_all': 'Scrape All',
       'local': 'Local',
@@ -151,7 +152,6 @@ const resources = {
       "set_enable_proxy_title": "是否启用代理",
       "set_proxy_addr_port_title": "代理 的地址和端口",
       "set_emby_addr_port_title": "Emby服务器的地址和端口",
-      "set_javlib_url_title": "JavLibrary可用网址",
       "set_aria2_url_title": "Aria2网址 例如: http://192.168.1.9",
       "set_aria2_port_title": "Aria2端口",
       "set_remove_string": "文件名移除以下字符(英文逗号隔开)",
@@ -220,6 +220,8 @@ const resources = {
       'magnet_downloader': '磁链下载器类型',
       'deluge_address': 'Deluge服务器地址和端口',
       'deluge_secret': 'Deluge secret (暂不支持用户名密码类型)',
+      "set_javlib_url_title": "JavLibrary可用网址",
+      "set_javbus_url_title": "Javbus可用网址",
 
 
       'local': '本地',
