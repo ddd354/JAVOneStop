@@ -113,7 +113,7 @@ def jav777_set_page(page_template: str, page_num=1, url_parameter=None, config=N
             # need to extract car from title, reusing file_scanner function
             if k == 'car':
                 # remove hd prefixes
-                _value = _value.lstrip('(HD)')
+                _value = _value.replace('(HD)', '').replace('(FHD)', '').strip()
 
                 name_group = re.search(DEFAULT_FILENAME_PATTERN, _value)
                 name_digits = name_group.group('digit')
