@@ -8,7 +8,7 @@ pillow==7.1.0
 PyInstaller==3.6
 Flask==1.1.1
 pylint==2.4.4
-lxml==4.4.2
+lxml==4.6.2
 smart-open==1.9.0
 blitzdb==0.4.4
 aria2p==0.7.1
