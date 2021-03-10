@@ -10,6 +10,7 @@ from copy import deepcopy
 
 from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.core.nfo_parser import EmbyNfo
+from JavHelper.core.requester_proxy import return_get_res
 
 from JavHelper.core.ini_file import return_default_config_string
 
@@ -70,7 +71,7 @@ class EmbyFileStructure:
         fanart_path = os.path.join(directory, fanart_name+image_ext)
 
         try:
-            r = requests.get(url_obj.geturl(), stream=True)
+            r = return_get_res(url_obj.geturl(), stream=True)
         except Exception as e:
             print('Image download failed for {} due to {}'.format(url_obj.geturl(), e))
             return 

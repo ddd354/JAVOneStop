@@ -112,7 +112,7 @@ def javbus_magnet_search(car: str):
             magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
             if k == 'size':
                 magnets[_i].update({'size_sort': parsed_size_to_int(_value.strip('\t').strip('\r').strip('\n').strip())})
-    
+
     return magnets
 
 

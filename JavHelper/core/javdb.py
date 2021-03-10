@@ -26,7 +26,7 @@ class JavDBScraper(JavScraper):
             'search_field': {
                 'title': '//h2[@class="title is-4"]/strong/text()',
                 'studio': '//div[strong="片商:"]/a/text()',
-                'premiered': '//div[strong="時間:"]/span/text()',
+                'premiered': '//div[strong="日期:"]/span/text()',
                 #'year': processed from release date
                 'length': '//div[strong="時長:"]/span/text()',
                 # 'director': no good source

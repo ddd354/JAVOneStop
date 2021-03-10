@@ -205,7 +205,7 @@ def search_ikoa_dmmc(car: str):
 def priority_download_search(car: str):
     search_list = [
         search_ikoa_dmmc,
-        jav777_download_search,
+        #jav777_download_search,
         search_javbus_magnet,
         search_nyaa_magnet,
         search_torrentkitty_magnet

@@ -51,6 +51,9 @@ const JavMagnetButton = ({ car, download_link, setJavStat, type }) => {
             console.log(t('log_error'), jsonData.error)
             // don't allow redownload if failed
           } else {
+            for (var i = 0; i < jsonData.success.down_list.length; i++) {
+              window.browserInterface.CreateDownloadTask(JSON.stringify(jsonData.success.down_list[i]));
+            }
             fetch(`/local_manager/update_car_ikoa_stat?car=${jsonData.success.car}&stat=4`)
               .then(() => {
                 console.log(t('log_magnet_download'), jsonData.success.car);

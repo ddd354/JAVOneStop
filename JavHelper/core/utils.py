@@ -18,7 +18,7 @@ def parsed_size_to_int(size_str: str):
     else:
         multiplier = 1
 
-    size_int = float(re.search(r'(\d*\.\d*)', size_str).group()) * multiplier
+    size_int = float(re.search(r'(\d*\.*\d*)', size_str).group()) * multiplier
 
     return size_int
 

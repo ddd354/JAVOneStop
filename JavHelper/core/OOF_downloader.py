@@ -18,7 +18,7 @@ else:
 
 
 LOCAL_OOF_COOKIES = '115_cookies.json'
-STANDARD_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+STANDARD_UA = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 115Browser/24.0.2.2'
 STANDARD_HEADERS = {"Content-Type": "application/x-www-form-urlencoded", 'User-Agent': STANDARD_UA}
 
 
@@ -127,6 +127,7 @@ class OOFDownloader:
         in_shas = []
         for file_obj in task_detail.get('data', []):
             processed_file_obj = {
+                'name': file_obj.get('n'),  # name for the file
                 'cid': file_obj.get('cid'),
                 'sha': file_obj.get('sha'),
                 'pickup_code': file_obj.get('pc'),  # IMPORTANT, used for download
@@ -142,6 +143,7 @@ class OOFDownloader:
         return rt
 
     def download_aria_on_pcode(self, cid: str, pickup_code: str):
+        """ no longer support"""
         referer_url = f'https://115.com/?ct=file&ac=userfile&is_wl_tpl=1&aid=1&cid={cid}'
         download_header = ''
         url = 'http://webapi.115.com/files/download?pickcode={}'.format(pickup_code)
@@ -194,8 +196,8 @@ class OOFDownloader:
                 if not download_files:
                     return {'error': self.translate_map['oof_no_file'] + f' {car}'}
                 break
-            except NoTaskException as _e:
-                return {'error': self.translate_map['oof_no_task_found'].format(car)}
+            #except NoTaskException as _e:
+            #    return {'error': self.translate_map['oof_no_task_found'].format(car)}
             except Exception as _e:
                 retry_num += 1
                 sleep(15)
@@ -204,13 +206,16 @@ class OOFDownloader:
 
         # send download info to aria2
         try:
+            down_file_list = []
             for download_file in download_files:
-                self.download_aria_on_pcode(download_file['cid'], 
-                    download_file['pickup_code'])
+                _single_file = {'list': [{
+                    'n': download_file.get('name'),
+                    'pc': download_file.get('pickup_code'),
+                    'is_dir': False
+                }], 'count': 1}
+                down_file_list.append(_single_file)
 
-            # if everything went well, update stat
-            jav_obj['stat'] = 4
-            db_conn.upcreate_jav(jav_obj)
+            jav_obj['down_list'] = down_file_list
             return jav_obj
         except Exception as _e:
             print_exc()
