@@ -4,7 +4,7 @@ idna==2.8
 requests==2.22.0
 urllib3==1.25.7
 ipdb==0.12.3
-pillow==7.1.0
+pillow==8.1.1
 PyInstaller==3.6
 Flask==1.1.1
 pylint==2.4.4
