@@ -200,7 +200,7 @@ class EmbyFileStructure:
         """
         allowed_postfixes = {
             r'^(.+?)([ABab])$': {'a': 'cd1', 'b': 'cd2'},
-            r'^(.+?)(CD\d|cd\d)$': None,
+            r'^(.+?)(CD\d+|cd\d+)$': None,
         }
         cd_postfix = ''
         if not self.handle_multi_cds:

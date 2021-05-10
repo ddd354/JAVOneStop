@@ -7,6 +7,7 @@ from lxml import html
 from traceback import print_exc
 from functools import partial
 
+from JavHelper.core.requester_proxy import return_get_res
 from JavHelper.cache import cache
 from JavHelper.core.local_db import local_set_page, local_multi_search
 from JavHelper.core.jav321 import jav321_set_page, jav321_search
@@ -171,7 +172,7 @@ def search_magnet_link():
         pass
 
     try:
-        respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
+        respBT = return_get_res('https://sukebei.nyaa.fun/?f=0&c=0_0&q=' + car)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//*/tbody/tr/td[@class="text-center"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:

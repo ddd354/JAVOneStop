@@ -6,12 +6,13 @@ from traceback import print_exc
 import json
 from blitzdb.document import DoesNotExist
 
+from JavHelper.core.requester_proxy import return_get_res
 from JavHelper.cache import cache
 from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
-from JavHelper.core.javdb import JavDBScraper
+from JavHelper.core.javdb import JavDBScraper, javdb_magnet_search
 from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.jav321 import Jav321Scraper
@@ -149,7 +150,7 @@ def parse_single():
 
 
 @parse_jav.route('/search_magnet_link', methods=['GET'])
-@cache.cached(timeout=3600, query_string=True)
+#@cache.cached(timeout=3600, query_string=True)
 def search_magnet_link():
     car = request.args.get('car')
     source = request.args.get('source')
@@ -161,6 +162,7 @@ def search_magnet_link():
         'torrentkitty': search_torrentkitty_magnet,
         'nyaa': search_nyaa_magnet,
         'javbus': search_javbus_magnet,
+        'javdb': search_javdb_magnet,
         'jav777': jav777_download_search
     }
     
@@ -207,6 +209,7 @@ def priority_download_search(car: str):
         search_ikoa_dmmc,
         #jav777_download_search,
         search_javbus_magnet,
+        search_javdb_magnet,
         search_nyaa_magnet,
         search_torrentkitty_magnet
     ]
@@ -251,10 +254,19 @@ def search_javbus_magnet(car: str):
 
     return rt
 
+def search_javdb_magnet(car: str):
+    try:
+        rt = javdb_magnet_search(car)
+    except Exception:
+        print_exc()
+        rt = []
+
+    return rt
+
 def search_nyaa_magnet(car: str):
     rt = []
     try:
-        respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
+        respBT = return_get_res('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//*/tbody/tr/td[@class="text-center"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:
@@ -280,7 +292,7 @@ def search_torrentkitty_magnet(car: str):
     rt = []
     try:
         # torrent kitty is good for chinese subtitled movies
-        respBT = requests.get('https://www.torrentkitty.tv/search/' + car)
+        respBT = return_get_res('https://www.torrentkitty.tv/search/' + car, behind_cloudflare=True, retry=1)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//html/body//table[@id="archiveResult"]//td[@class="action"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:
@@ -308,6 +320,7 @@ def parse_single_jav(jav_obj: dict, sources):
             return {'error': f'{scrape} is not a valid source'}
 
     for scrape in sources[::-1]:  # scrape low priority sources first
+        print(f'scraping {scrape}')
         try:
             scraped_info = SOURCES_MAP[scrape]({'car': jav_obj['car']}).scrape_jav()
         except Exception as e:

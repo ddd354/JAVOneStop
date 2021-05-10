@@ -110,8 +110,14 @@ def single_scrape():
     # write nfo
     emby_folder.write_nfo(jav_obj)
     # move video file
-    jav_obj = emby_folder.put_processed_file(jav_obj)
+    try:
+        jav_obj = emby_folder.put_processed_file(jav_obj)
+    except FileExistsError as e:
+        _car = each_jav.get('car', 'Unknown')
+        errors.append(json.dumps({'log': f'error: {e}, skipping {_car}'}))
 
+    #if errors:
+    #    return jsonify({'error': errors}), 401
     return jsonify({'success': jav_obj, 'error': errors})
 
 @local_manager.route('/update_jav_dict', methods=['POST'])

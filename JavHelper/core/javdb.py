@@ -69,7 +69,7 @@ class JavDBScraper(JavScraper):
             for i, _rst in enumerate(jav_search_result):
                 if _rst['number'] == self.car.upper():
                     result_first_url = self.jav_url + 'v/{}'.format(_rst['uid'])
-                    return return_get_res(result_first_url).content.decode('utf-8'), self.total_index
+                    return return_get_res(result_first_url, behind_cloudflare=True).content.decode('utf-8'), self.total_index
         except Exception as e:
             print(f'issue encounter when autocomplete search javdb {self.car} - {e}')
             pass
@@ -97,34 +97,6 @@ class JavDBScraper(JavScraper):
         return return_get_res(result_first_url).content.decode('utf-8'), self.total_index
 
 
-def javbus_magnet_search(car: str):
-    jav_url = return_config_string(['其他设置', 'javbus网址'])
-    gid_match = r'.*?var gid = (\d*);.*?'
-    magnet_xpath = {
-        'magnet': '//tr/td[position()=1]/a[1]/@href',
-        'title': '//tr/td[position()=1]/a[1]/text()',
-        'size': '//tr/td[position()=2]/a[1]/text()'
-    }
-    main_url_template = jav_url+'{car}'
-    magnet_url_template = jav_url+'ajax/uncledatoolsbyajax.php?gid={gid}&uc=0'
-
-    res = return_get_res(main_url_template.format(car=car)).text
-    gid = re.search(gid_match, res).groups()[0]
-
-    res = return_get_res(magnet_url_template.format(gid=gid), headers={'referer': main_url_template.format(car=car)}).content
-    root = etree.HTML(res)
-
-    magnets = defaultlist(dict)
-    for k, v in magnet_xpath.items():
-        _values = root.xpath(v)
-        for _i, _value in enumerate(_values):
-            magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
-            if k == 'size':
-                magnets[_i].update({'size_sort': parsed_size_to_int(_value.strip('\t').strip('\r').strip('\n').strip())})
-    
-    return magnets
-
-
 def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:
     """
     website parse function
@@ -138,7 +110,7 @@ def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=No
     xpath_max_page = '//ul[@class="pagination-list"]/li/a[@class="pagination-link"][last()]/text()'
 
     # force to get url from ini file each time
-    javdb_url = 'https://javdb4.com/'
+    javdb_url = 'https://javdb.com/'
     set_url = javdb_url + page_template.format(page_num=page_num, url_parameter=url_parameter)
     print(f'accessing {set_url}')
 
@@ -226,3 +198,29 @@ def javdb_search(set_type: str, search_string: str, page_num=1):
 
     jav_objs, max_page = search_map[set_type]['function'](**search_map[set_type]['params'])
     return jav_objs, max_page
+
+
+def javdb_magnet_search(car: str):
+    size_match = r'(\d*.*\d*((GB)|(MB)))'
+    magnet_xpath = {
+        'magnet': '//tr/td[@class="magnet-name"]/a[1]/@href',
+        'title': '//tr/td[@class="magnet-name"]/a[1]/span[1]/text()',
+        'size': '//tr/td[@class="magnet-name"]/a[1]/span[@class="meta"]/text()'
+    }
+
+    car = car.upper()
+    res, page = JavDBScraper({'car': car}).get_single_jav_page()
+    root = etree.HTML(res)
+
+    magnets = defaultlist(dict)
+    for k, v in magnet_xpath.items():
+        _values = root.xpath(v)
+        for _i, _value in enumerate(_values):
+            if k == 'size':
+                _size = re.search(size_match, _value.strip('\t').strip('\r').strip('\n').strip().lstrip('(').strip()).groups()[0]
+                magnets[_i].update({'size_sort': parsed_size_to_int(_size)})
+                magnets[_i].update({'size': _size})
+            else:
+                magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
+    #import ipdb; ipdb.set_trace()
+    return magnets

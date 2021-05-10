@@ -67,8 +67,7 @@ def return_html_text(url, cookies={}, proxies=None, encoding='utf-8', behind_clo
     res.encoding = encoding
     return res.text
 
-def cloudflare_get(url, cookies={}, proxies=None):
-    retry = 6
+def cloudflare_get(url, cookies={}, proxies=None, retry=6, **kwargs):
     from JavHelper.core.javlibrary import JavLibraryScraper
     while retry > 0:
         try:
@@ -84,8 +83,7 @@ def cloudflare_get(url, cookies={}, proxies=None):
     
     raise Exception(f'cloudflare get {url} failed')
 
-def cloudflare_post(url, data=None, cookies={}, proxies=None):
-    retry = 6
+def cloudflare_post(url, data=None, cookies={}, proxies=None, retry=6, **kwargs):
     from JavHelper.core.javlibrary import JavLibraryScraper
     while retry > 0:
         try:
