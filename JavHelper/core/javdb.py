@@ -60,8 +60,11 @@ class JavDBScraper(JavScraper):
 
     def get_single_jav_page(self):
         # new autocomplete search, no rate limit
+        #
+        # autocomplete endpoint no longer there
+        #
         # https://javdb.com/videos/search_autocomplete.json?q=luxu-1298
-        search_url = self.jav_url + 'videos/search_autocomplete.json?q={}'.format(self.car)
+        """search_url = self.jav_url + 'videos/search_autocomplete.json?q={}'.format(self.car)
         jav_search_result = return_html_text(search_url, behind_cloudflare=True)
         try:
             jav_search_result = json.loads(jav_search_result)
@@ -72,7 +75,7 @@ class JavDBScraper(JavScraper):
                     return return_get_res(result_first_url, behind_cloudflare=True).content.decode('utf-8'), self.total_index
         except Exception as e:
             print(f'issue encounter when autocomplete search javdb {self.car} - {e}')
-            pass
+            pass"""
 
         # perform search first, not reliable at all, often multiple results
         # https://javdb4.com/search?q=MILK-08&f=all
@@ -80,7 +83,6 @@ class JavDBScraper(JavScraper):
 
         jav_search_content = return_get_res(search_url, behind_cloudflare=True).content
         search_root = etree.HTML(jav_search_content)
-        #import ipdb; ipdb.set_trace()
 
         search_results = search_root.xpath('//a[@class="box"]/@href')
 
@@ -223,5 +225,4 @@ def javdb_magnet_search(car: str):
                 magnets[_i].update({'size': _size})
             else:
                 magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
-    #import ipdb; ipdb.set_trace()
     return magnets

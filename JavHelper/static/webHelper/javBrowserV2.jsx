@@ -27,7 +27,7 @@ const JavBroswerV2 = (props) => {
     let params = new URLSearchParams(props.location.search);
 
     const { t, i18n } = useTranslation();
-    const [source_site, setSourceSite] = useState(params.get('lib_type') || 'javbus');
+    const [source_site, setSourceSite] = useState(params.get('lib_type') || 'javlibrary');
     const [isLoading, setLoading] = useState(true);
 
     const [jav_browser_batch_limiter, setUrlLimiter] = useState(new Bottleneck({maxConcurrent: 1}));

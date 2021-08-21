@@ -260,8 +260,9 @@ def diagnose_downloader_setup():
     except FileNotFoundError:
         error_list['oof_cookies'] = BackendTranslation()['oof_cookies_not_found']
 
-    if not verify_aria2_configs_exist():
-        error_list['aria2_setup'] = BackendTranslation()['aria2_setup_error']
+    # remove aria2 support
+    #if not verify_aria2_configs_exist():
+    #    error_list['aria2_setup'] = BackendTranslation()['aria2_setup_error']
 
     if error_list:
         return jsonify({'error': error_list}), 500
