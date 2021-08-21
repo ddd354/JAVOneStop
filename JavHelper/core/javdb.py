@@ -7,7 +7,7 @@ import json
 from JavHelper.core.jav_scraper import JavScraper
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text, return_post_res, return_get_res
-from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
+from JavHelper.core.utils import defaultlist, CloudFlareError
 from JavHelper.core.ini_file import return_config_string, return_default_config_string
 from JavHelper.core.utils import parsed_size_to_int
 from JavHelper.core.backend_translation import BackendTranslation
@@ -84,8 +84,11 @@ class JavDBScraper(JavScraper):
         jav_search_content = return_get_res(search_url, behind_cloudflare=True).content
         search_root = etree.HTML(jav_search_content)
 
-        search_results = search_root.xpath('//a[@class="box"]/@href')
+        if b'Please turn JavaScript on' in jav_search_content:
+            import ipdb; ipdb.set_trace()
+            raise CloudFlareError(f'cloudflare failure on {self.car}')
 
+        search_results = search_root.xpath('//a[@class="box"]/@href')
 
         self.total_index = len(search_results)
         # need to match car
@@ -96,6 +99,7 @@ class JavDBScraper(JavScraper):
             raise Exception(f'{self.car} does not match javdb search result: {matched_car}')
 
         result_first_url = self.jav_url + search_results[self.pick_index][1:]
+        print(f'javdb found {self.car} at {result_first_url}')
 
         return return_get_res(result_first_url, behind_cloudflare=True).content.decode('utf-8'), self.total_index
 

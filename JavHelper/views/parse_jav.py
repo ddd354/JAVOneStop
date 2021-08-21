@@ -17,7 +17,7 @@ from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.jav321 import Jav321Scraper
 from JavHelper.core.file_scanner import EmbyFileStructure
-from JavHelper.core.utils import parsed_size_to_int
+from JavHelper.core.utils import parsed_size_to_int, CloudFlareError
 
 if return_default_config_string('db_type') == 'sqlite':
     from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
@@ -350,9 +350,14 @@ def parse_single_jav(jav_obj: dict, sources):
             scraped_info = SOURCES_MAP[scrape]({'car': jav_obj['car']}).scrape_jav()
         except Exception as e:
             errors = (jav_obj.get('errors') or [])
-            errors.append(
-                '{} cannot be found in {}'.format(jav_obj['car'], scrape)
-            )
+            if e.__class__ == CloudFlareError:
+                errors.append(
+                    '{} scrape failed in {} due to cloudflare issue'.format(jav_obj['car'], scrape)
+                )
+            else:
+                errors.append(
+                    '{} scrape encountered an error in {}'.format(jav_obj['car'], scrape)
+                )
             scraped_info = {'errors': errors}
             print(scraped_info, e)
         jav_obj.update(scraped_info)
