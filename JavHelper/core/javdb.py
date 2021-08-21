@@ -78,8 +78,9 @@ class JavDBScraper(JavScraper):
         # https://javdb4.com/search?q=MILK-08&f=all
         search_url = self.jav_url + 'search?q={}&f=all'.format(self.car)
 
-        jav_search_content = return_get_res(search_url).content
+        jav_search_content = return_get_res(search_url, behind_cloudflare=True).content
         search_root = etree.HTML(jav_search_content)
+        #import ipdb; ipdb.set_trace()
 
         search_results = search_root.xpath('//a[@class="box"]/@href')
 
@@ -94,7 +95,7 @@ class JavDBScraper(JavScraper):
 
         result_first_url = self.jav_url + search_results[self.pick_index][1:]
 
-        return return_get_res(result_first_url).content.decode('utf-8'), self.total_index
+        return return_get_res(result_first_url, behind_cloudflare=True).content.decode('utf-8'), self.total_index
 
 
 def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:

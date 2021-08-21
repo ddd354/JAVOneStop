@@ -115,7 +115,7 @@ class SqliteJavManagerDB:
             return True
         else:
             return False
-
+         
 
 class BlitzJavManagerDB:
     def __init__(self):

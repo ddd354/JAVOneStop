@@ -159,7 +159,7 @@ def search_magnet_link():
     source_func_map = {
         'overall': priority_download_search,
         'ikoa_dmmc': search_ikoa_dmmc,
-        'torrentkitty': search_torrentkitty_magnet,
+        'zhongziso': search_zhongziso_magnet,
         'nyaa': search_nyaa_magnet,
         'javbus': search_javbus_magnet,
         'javdb': search_javdb_magnet,
@@ -211,7 +211,7 @@ def priority_download_search(car: str):
         search_javbus_magnet,
         search_javdb_magnet,
         search_nyaa_magnet,
-        search_torrentkitty_magnet
+        search_zhongziso_magnet
     ]
 
     for search_function in search_list:
@@ -283,6 +283,31 @@ def search_nyaa_magnet(car: str):
                 rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 
                 'car': car, 'size_sort': parsed_size_to_int(file_sizes[i])})
     except Exception:
+        print_exc()
+        pass
+
+    return rt
+
+def search_zhongziso_magnet(car: str):
+    rt = []
+    try:
+        respBT = return_get_res(f'https://zhongziso20.xyz/list/{car}/1')
+        BTTree = html.fromstring(respBT.content)
+        bt_xpath = '//html/body//div[contains(@class, "panel-body")]//table[contains(@class, "table")]/tbody/tr[2]/td[@class="ls-magnet"]/a/@href'
+        
+        if len(BTTree.xpath(bt_xpath)) > 0:
+            print(f'{car} found in zhongziso')
+            name_xpath = '//html/body//div[contains(@class, "panel-body")]//table[contains(@class, "table")]/tbody/tr[1]//a/text()'
+            titles = [ind.strip() for ind in BTTree.xpath(name_xpath)]
+
+            file_xpath = '//html/body//div[contains(@class, "panel-body")]//table[contains(@class, "table")]/tbody/tr[2]/td[2]/strong/text()'
+            file_sizes = [ind for ind in BTTree.xpath(file_xpath)]
+            magnets = BTTree.xpath(bt_xpath)
+            
+            for i in range(len(titles)):
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 
+                'car': car, 'size_sort': parsed_size_to_int(file_sizes[i])})
+    except Exception as e:
         print_exc()
         pass
 

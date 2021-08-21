@@ -83,9 +83,13 @@ class EmbyFileStructure:
             print('Image download failed for {}'.format(url_obj.geturl()))
             return 
 
-        with open(fanart_path, 'wb') as pic:
-            for chunk in r:
-                pic.write(chunk)
+        try:
+            with open(fanart_path, 'wb') as pic:
+                for chunk in r:
+                    pic.write(chunk)
+        except PermissionError as e:
+            print('Fanart write error {} due to {}'.format(fanart_path, e))
+            return 
 
         # 裁剪生成 poster
         img = Image.open(fanart_path)

@@ -16,3 +16,4 @@ Flask-Caching==1.8.0
 cloudscraper==1.2.58
 setuptools==44.0.0
 dataset==1.3.2
+jmespath==0.10.0

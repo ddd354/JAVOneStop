@@ -61,8 +61,8 @@ const StatButtonGroup = (props) => {
         <ToggleButton value={'jav777'}>
             {"jav777"}
         </ToggleButton>
-        <ToggleButton value={'torrentkitty'}>
-            {"torrentkitty"}
+        <ToggleButton value={'zhongziso'}>
+            {"zhongziso"}
         </ToggleButton>
         <ToggleButton value={'nyaa'}>
             {"nyaa"}

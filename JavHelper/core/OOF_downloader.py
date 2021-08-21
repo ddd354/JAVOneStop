@@ -106,6 +106,25 @@ class OOFDownloader:
                 oof_file_id = task.get('file_id')  # this is actually cid
                 break
 
+        if not oof_file_id and task.get('err', 0)==10016:
+            # download is failing but good file could be there still
+            _task_name = task.get('name')
+            print('magnet task {} is failing, trying directory search'.format(_task_name))
+            # standard file list for "云下载", cid is static
+            _cloud_down_url_template = """https://webapi.115.com/files?aid=1&cid=2099631682968616080&o=user_ptime&asc=0&offset=0
+            &show_dir=1&limit=10&code=&scid=&snap=0&natsort=1&record_open_time=1&source=&format=json"""
+            req = requests.get(_cloud_down_url_template, headers=STANDARD_HEADERS, cookies=self.cookies)
+            try:
+                for _file in req.json().get('data', []):
+                    if _file.get('n') == _task_name:
+                        oof_file_id = _file.get('cid')
+                        break
+                    #else:
+                    #    print(_file.get('n'))
+            except Exception as other_e:
+                print(req.text)
+                raise other_e
+
         if not oof_file_id:
             raise NoTaskException(f'cannot find {hash_str} task from task list')
 
@@ -186,6 +205,7 @@ class OOFDownloader:
         except Exception as create_magnet_e:
             return {'error': self.translate_map['oof_fail_magnet'].format(car=car, create_magnet_e=create_magnet_e)}
 
+        download_files = None  # declare var to check later
         while retry_num < 3:
             try:
                 # get task detail from list page
@@ -193,8 +213,6 @@ class OOFDownloader:
                 task_detail = self.get_task_detail_from_hash(search_hash)
                 # filter out unwanted files
                 download_files = self.filter_task_details(task_detail)
-                if not download_files:
-                    return {'error': self.translate_map['oof_no_file'] + f' {car}'}
                 break
             #except NoTaskException as _e:
             #    return {'error': self.translate_map['oof_no_task_found'].format(car)}
@@ -203,6 +221,9 @@ class OOFDownloader:
                 sleep(15)
                 print(f'current error: {_e}, retrying')
                 e = _e
+
+        if not download_files:
+            return {'error': self.translate_map['oof_no_file'] + f' {car}'}
 
         # send download info to aria2
         try:

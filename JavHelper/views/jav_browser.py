@@ -15,6 +15,7 @@ from JavHelper.core.javbus import javbus_set_page, javbus_search
 from JavHelper.core.javlibrary import javlib_set_page, javlib_search
 from JavHelper.core.javdb import javdb_set_page, javdb_search
 from JavHelper.core.jav777 import jav777_set_page
+from JavHelper.core.tushyraw import tushyraw_set_page
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core.deluge_downloader import DelugeDownloader
 from JavHelper.core.backend_translation import BackendTranslation
@@ -82,6 +83,14 @@ LIB_MAP = {
             'trending_updates': 'type/1/{page_num}',
             'hot_downloads': 'list/hot_download/{page_num}',
             'new_release': 'list/release_date/{page_num}'
+        }
+    },
+    'tushyraw': {
+        'set_func': tushyraw_set_page,
+        'search_func': jav321_search,
+        'supported_set': {
+            'all': 'videos/?page={page_num}',
+            'top_rated': 'videos/?page={page_num}&sort=rating'
         }
     }
 }

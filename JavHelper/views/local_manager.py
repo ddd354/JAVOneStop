@@ -105,10 +105,14 @@ def single_scrape():
     except KeyError as e:
         _car = each_jav.get('car', 'Unknown')
         errors.append(json.dumps({'log': f'error: {e}, skipping {_car}'}))
-    # write images
-    emby_folder.write_images(jav_obj)
-    # write nfo
-    emby_folder.write_nfo(jav_obj)
+    try:
+        # write images
+        emby_folder.write_images(jav_obj)
+        # write nfo
+        emby_folder.write_nfo(jav_obj)
+    except Exception as e:
+        _car = each_jav.get('car', 'Unknown')
+        errors.append(json.dumps({'log': f'error: {e}, skipping {_car}'}))
     # move video file
     try:
         jav_obj = emby_folder.put_processed_file(jav_obj)

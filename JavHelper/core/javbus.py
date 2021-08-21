@@ -39,7 +39,8 @@ class JavBusScraper(JavScraper):
             },
         }
 
-        self.jav_url = return_config_string(['其他设置', 'javbus网址'])
+        #self.jav_url = return_config_string(['其他设置', 'javbus网址'])
+        self.jav_url = 'https://www.dmmbus.bar/'
 
     def postprocess(self):
         if self.jav_obj.get('premiered'):
@@ -48,6 +49,8 @@ class JavBusScraper(JavScraper):
         if self.jav_obj.get('image'):
             # get rid of https to have consistent format with other sources
             self.jav_obj['image'] = self.jav_obj['image'].lstrip('https:').lstrip('http:')
+            # new local image logic
+            self.jav_obj['image'] = self.jav_url.lstrip('http').lstrip('s://').rstrip('/') + self.jav_obj['image']
         if self.jav_obj.get('length'):
             self.jav_obj['length'] = self.jav_obj['length'].lstrip(' ')[:-2]
         if self.jav_obj.get('title'):
@@ -137,6 +140,11 @@ def javbus_set_page(page_template: str, page_num=1, url_parameter=None, config=N
     jav_objs_raw = defaultlist(dict)
     for k, v in xpath_dict.items():
         _values = root.xpath(v)
+
+        # new logic for local images
+        if k == 'img':
+            _values = ['//www.javbus.com'+_ind for _ind in _values if 'dmm.co.jp' not in _ind]
+
         for _i, _value in enumerate(_values):
             jav_objs_raw[_i].update({k: _value})
 
