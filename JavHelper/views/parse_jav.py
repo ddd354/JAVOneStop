@@ -6,17 +6,18 @@ from traceback import print_exc
 import json
 from blitzdb.document import DoesNotExist
 
+from JavHelper.core.requester_proxy import return_get_res
 from JavHelper.cache import cache
 from JavHelper.core.ini_file import return_default_config_string
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.javlibrary import JavLibraryScraper
 from JavHelper.core.javbus import JavBusScraper, javbus_magnet_search
-from JavHelper.core.javdb import JavDBScraper
+from JavHelper.core.javdb import JavDBScraper, javdb_magnet_search
 from JavHelper.core.arzon import ArzonScraper
 from JavHelper.core.jav777 import jav777_download_search
 from JavHelper.core.jav321 import Jav321Scraper
 from JavHelper.core.file_scanner import EmbyFileStructure
-from JavHelper.core.utils import parsed_size_to_int
+from JavHelper.core.utils import parsed_size_to_int, CloudFlareError
 
 if return_default_config_string('db_type') == 'sqlite':
     from JavHelper.model.jav_manager import SqliteJavManagerDB as JavManagerDB
@@ -149,7 +150,7 @@ def parse_single():
 
 
 @parse_jav.route('/search_magnet_link', methods=['GET'])
-@cache.cached(timeout=3600, query_string=True)
+#@cache.cached(timeout=3600, query_string=True)
 def search_magnet_link():
     car = request.args.get('car')
     source = request.args.get('source')
@@ -158,9 +159,10 @@ def search_magnet_link():
     source_func_map = {
         'overall': priority_download_search,
         'ikoa_dmmc': search_ikoa_dmmc,
-        'torrentkitty': search_torrentkitty_magnet,
+        'zhongziso': search_zhongziso_magnet,
         'nyaa': search_nyaa_magnet,
         'javbus': search_javbus_magnet,
+        'javdb': search_javdb_magnet,
         'jav777': jav777_download_search
     }
     
@@ -205,10 +207,11 @@ def search_ikoa_dmmc(car: str):
 def priority_download_search(car: str):
     search_list = [
         search_ikoa_dmmc,
-        jav777_download_search,
+        #jav777_download_search,
         search_javbus_magnet,
+        search_javdb_magnet,
         search_nyaa_magnet,
-        search_torrentkitty_magnet
+        search_zhongziso_magnet
     ]
 
     for search_function in search_list:
@@ -251,10 +254,19 @@ def search_javbus_magnet(car: str):
 
     return rt
 
+def search_javdb_magnet(car: str):
+    try:
+        rt = javdb_magnet_search(car)
+    except Exception:
+        print_exc()
+        rt = []
+
+    return rt
+
 def search_nyaa_magnet(car: str):
     rt = []
     try:
-        respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
+        respBT = return_get_res('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//*/tbody/tr/td[@class="text-center"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:
@@ -276,11 +288,36 @@ def search_nyaa_magnet(car: str):
 
     return rt
 
+def search_zhongziso_magnet(car: str):
+    rt = []
+    try:
+        respBT = return_get_res(f'https://zhongziso20.xyz/list/{car}/1')
+        BTTree = html.fromstring(respBT.content)
+        bt_xpath = '//html/body//div[contains(@class, "panel-body")]//table[contains(@class, "table")]/tbody/tr[2]/td[@class="ls-magnet"]/a/@href'
+        
+        if len(BTTree.xpath(bt_xpath)) > 0:
+            print(f'{car} found in zhongziso')
+            name_xpath = '//html/body//div[contains(@class, "panel-body")]//table[contains(@class, "table")]/tbody/tr[1]//a/text()'
+            titles = [ind.strip() for ind in BTTree.xpath(name_xpath)]
+
+            file_xpath = '//html/body//div[contains(@class, "panel-body")]//table[contains(@class, "table")]/tbody/tr[2]/td[2]/strong/text()'
+            file_sizes = [ind for ind in BTTree.xpath(file_xpath)]
+            magnets = BTTree.xpath(bt_xpath)
+            
+            for i in range(len(titles)):
+                rt.append({'title': titles[i], 'size': file_sizes[i], 'magnet': magnets[i], 
+                'car': car, 'size_sort': parsed_size_to_int(file_sizes[i])})
+    except Exception as e:
+        print_exc()
+        pass
+
+    return rt
+
 def search_torrentkitty_magnet(car: str):
     rt = []
     try:
         # torrent kitty is good for chinese subtitled movies
-        respBT = requests.get('https://www.torrentkitty.tv/search/' + car)
+        respBT = return_get_res('https://www.torrentkitty.tv/search/' + car, behind_cloudflare=True, retry=1)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//html/body//table[@id="archiveResult"]//td[@class="action"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:
@@ -308,13 +345,19 @@ def parse_single_jav(jav_obj: dict, sources):
             return {'error': f'{scrape} is not a valid source'}
 
     for scrape in sources[::-1]:  # scrape low priority sources first
+        print(f'scraping {scrape}')
         try:
             scraped_info = SOURCES_MAP[scrape]({'car': jav_obj['car']}).scrape_jav()
         except Exception as e:
             errors = (jav_obj.get('errors') or [])
-            errors.append(
-                '{} cannot be found in {}'.format(jav_obj['car'], scrape)
-            )
+            if e.__class__ == CloudFlareError:
+                errors.append(
+                    '{} scrape failed in {} due to cloudflare issue'.format(jav_obj['car'], scrape)
+                )
+            else:
+                errors.append(
+                    '{} scrape encountered an error in {}'.format(jav_obj['car'], scrape)
+                )
             scraped_info = {'errors': errors}
             print(scraped_info, e)
         jav_obj.update(scraped_info)

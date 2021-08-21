@@ -7,6 +7,7 @@ from lxml import html
 from traceback import print_exc
 from functools import partial
 
+from JavHelper.core.requester_proxy import return_get_res
 from JavHelper.cache import cache
 from JavHelper.core.local_db import local_set_page, local_multi_search
 from JavHelper.core.jav321 import jav321_set_page, jav321_search
@@ -14,6 +15,7 @@ from JavHelper.core.javbus import javbus_set_page, javbus_search
 from JavHelper.core.javlibrary import javlib_set_page, javlib_search
 from JavHelper.core.javdb import javdb_set_page, javdb_search
 from JavHelper.core.jav777 import jav777_set_page
+from JavHelper.core.tushyraw import tushyraw_set_page
 from JavHelper.core.OOF_downloader import OOFDownloader
 from JavHelper.core.deluge_downloader import DelugeDownloader
 from JavHelper.core.backend_translation import BackendTranslation
@@ -81,6 +83,14 @@ LIB_MAP = {
             'trending_updates': 'type/1/{page_num}',
             'hot_downloads': 'list/hot_download/{page_num}',
             'new_release': 'list/release_date/{page_num}'
+        }
+    },
+    'tushyraw': {
+        'set_func': tushyraw_set_page,
+        'search_func': jav321_search,
+        'supported_set': {
+            'all': 'videos/?page={page_num}',
+            'top_rated': 'videos/?page={page_num}&sort=rating'
         }
     }
 }
@@ -171,7 +181,7 @@ def search_magnet_link():
         pass
 
     try:
-        respBT = requests.get('https://sukebei.nyaa.si/?f=0&c=0_0&q=' + car)
+        respBT = return_get_res('https://sukebei.nyaa.fun/?f=0&c=0_0&q=' + car)
         BTTree = html.fromstring(respBT.content)
         bt_xpath = '//*/tbody/tr/td[@class="text-center"]/a[2]/@href'
         if len(BTTree.xpath(bt_xpath)) > 0:
@@ -250,8 +260,9 @@ def diagnose_downloader_setup():
     except FileNotFoundError:
         error_list['oof_cookies'] = BackendTranslation()['oof_cookies_not_found']
 
-    if not verify_aria2_configs_exist():
-        error_list['aria2_setup'] = BackendTranslation()['aria2_setup_error']
+    # remove aria2 support
+    #if not verify_aria2_configs_exist():
+    #    error_list['aria2_setup'] = BackendTranslation()['aria2_setup_error']
 
     if error_list:
         return jsonify({'error': error_list}), 500

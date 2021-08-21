@@ -83,11 +83,12 @@ class JavLibraryScraper(JavScraper):
             return return_get_res(lib_search_url, behind_cloudflare=True).content, 1
         # 第二种情况：搜索结果可能是两个以上，所以这种匹配找不到标题，None！
         else:  # 继续找标题，但匹配形式不同，这是找“可能是多个结果的网页”上的第一个标题
-            search_results = re.findall(r'v=javli(.+?)" title=".+?-\d+?[a-z]? ', jav_html)
+            #import ipdb; ipdb.set_trace()
+            search_results = re.findall(r'v=jav(.+?)" title=".+?-\d+?[a-z]? ', jav_html)
             # 搜索有几个结果，用第一个AV的网页，打开它
             if search_results:
                 self.total_index = len(search_results)
-                result_first_url = self.jav_url + '?v=javli' + search_results[self.pick_index]
+                result_first_url = self.jav_url + '?v=jav' + search_results[self.pick_index]
                 return return_get_res(result_first_url, behind_cloudflare=True).content, self.total_index
             # 第三种情况：搜索不到这部影片，搜索结果页面什么都没有
             else:

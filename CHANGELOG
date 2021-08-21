@@ -3,8 +3,28 @@ JavOneStop which is a small tool that helps users rename, parse, generate nfo, o
 communicate with Emby to add actresses images.
 
 ## [Unreleased]
+
+
+## [0.9.0] - 2021-08-21
 ### 新增
 - 增加deluge磁链下载支持
+- 增加tushyraw站点
+- 增加javdb的磁链搜索
+- 增加zhongziso磁链搜索
+### 改进 / 修复
+- 更新nyaa磁链搜索路径
+- 默认JAV浏览切换至JavLibrary
+- 修复新的115下载失败的逻辑
+- 修复下载图片失败
+- 改进文件写入逻辑
+- 修正部分节点不使用代理
+- 修复后缀命名逻辑
+- 修复各站点的xpath数据路径
+- 修复部分节点不支持cloudflare
+- 修复一些刮削失败情况下的处理
+### 移除
+- 移除torrentkitty搜索
+- 移除添加115任务至Aria2下载器
 
 ## [0.8.0] - 2020-09-17
 ### 新增

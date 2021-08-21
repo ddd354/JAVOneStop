@@ -28,6 +28,7 @@ const JavSetSearchGroup = ({ jav_set_name, source_site, setSourceSite, isLoading
         'javbus': ['subtitled', 'trending_updates'],
         'javdb': ['trending_updates', 'subtitled', 'daily_rank', 'weekly_rank', 'monthly_rank'],
         'jav777': ['trending_updates'],
+        'tushyraw': ['all', 'top_rated'],
         'local': ['still_wanted', 'still_downloading', 'iceboxed']
     }
     const [set_toggle_list, setToggleList] = useState(website_set_map[source_site]);

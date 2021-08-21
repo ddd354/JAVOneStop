@@ -10,6 +10,7 @@ from copy import deepcopy
 
 from JavHelper.core.backend_translation import BackendTranslation
 from JavHelper.core.nfo_parser import EmbyNfo
+from JavHelper.core.requester_proxy import return_get_res
 
 from JavHelper.core.ini_file import return_default_config_string
 
@@ -70,7 +71,7 @@ class EmbyFileStructure:
         fanart_path = os.path.join(directory, fanart_name+image_ext)
 
         try:
-            r = requests.get(url_obj.geturl(), stream=True)
+            r = return_get_res(url_obj.geturl(), stream=True)
         except Exception as e:
             print('Image download failed for {} due to {}'.format(url_obj.geturl(), e))
             return 
@@ -82,9 +83,13 @@ class EmbyFileStructure:
             print('Image download failed for {}'.format(url_obj.geturl()))
             return 
 
-        with open(fanart_path, 'wb') as pic:
-            for chunk in r:
-                pic.write(chunk)
+        try:
+            with open(fanart_path, 'wb') as pic:
+                for chunk in r:
+                    pic.write(chunk)
+        except PermissionError as e:
+            print('Fanart write error {} due to {}'.format(fanart_path, e))
+            return 
 
         # 裁剪生成 poster
         img = Image.open(fanart_path)
@@ -199,7 +204,7 @@ class EmbyFileStructure:
         """
         allowed_postfixes = {
             r'^(.+?)([ABab])$': {'a': 'cd1', 'b': 'cd2'},
-            r'^(.+?)(CD\d|cd\d)$': None,
+            r'^(.+?)(CD\d+|cd\d+)$': None,
         }
         cd_postfix = ''
         if not self.handle_multi_cds:

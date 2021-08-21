@@ -18,7 +18,7 @@ else:
 
 
 LOCAL_OOF_COOKIES = '115_cookies.json'
-STANDARD_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36'
+STANDARD_UA = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36 115Browser/24.0.2.2'
 STANDARD_HEADERS = {"Content-Type": "application/x-www-form-urlencoded", 'User-Agent': STANDARD_UA}
 
 
@@ -106,6 +106,25 @@ class OOFDownloader:
                 oof_file_id = task.get('file_id')  # this is actually cid
                 break
 
+        if not oof_file_id and task.get('err', 0)==10016:
+            # download is failing but good file could be there still
+            _task_name = task.get('name')
+            print('magnet task {} is failing, trying directory search'.format(_task_name))
+            # standard file list for "云下载", cid is static
+            _cloud_down_url_template = """https://webapi.115.com/files?aid=1&cid=2099631682968616080&o=user_ptime&asc=0&offset=0
+            &show_dir=1&limit=10&code=&scid=&snap=0&natsort=1&record_open_time=1&source=&format=json"""
+            req = requests.get(_cloud_down_url_template, headers=STANDARD_HEADERS, cookies=self.cookies)
+            try:
+                for _file in req.json().get('data', []):
+                    if _file.get('n') == _task_name:
+                        oof_file_id = _file.get('cid')
+                        break
+                    #else:
+                    #    print(_file.get('n'))
+            except Exception as other_e:
+                print(req.text)
+                raise other_e
+
         if not oof_file_id:
             raise NoTaskException(f'cannot find {hash_str} task from task list')
 
@@ -127,6 +146,7 @@ class OOFDownloader:
         in_shas = []
         for file_obj in task_detail.get('data', []):
             processed_file_obj = {
+                'name': file_obj.get('n'),  # name for the file
                 'cid': file_obj.get('cid'),
                 'sha': file_obj.get('sha'),
                 'pickup_code': file_obj.get('pc'),  # IMPORTANT, used for download
@@ -142,6 +162,7 @@ class OOFDownloader:
         return rt
 
     def download_aria_on_pcode(self, cid: str, pickup_code: str):
+        """ no longer support"""
         referer_url = f'https://115.com/?ct=file&ac=userfile&is_wl_tpl=1&aid=1&cid={cid}'
         download_header = ''
         url = 'http://webapi.115.com/files/download?pickcode={}'.format(pickup_code)
@@ -184,6 +205,7 @@ class OOFDownloader:
         except Exception as create_magnet_e:
             return {'error': self.translate_map['oof_fail_magnet'].format(car=car, create_magnet_e=create_magnet_e)}
 
+        download_files = None  # declare var to check later
         while retry_num < 3:
             try:
                 # get task detail from list page
@@ -191,26 +213,30 @@ class OOFDownloader:
                 task_detail = self.get_task_detail_from_hash(search_hash)
                 # filter out unwanted files
                 download_files = self.filter_task_details(task_detail)
-                if not download_files:
-                    return {'error': self.translate_map['oof_no_file'] + f' {car}'}
                 break
-            except NoTaskException as _e:
-                return {'error': self.translate_map['oof_no_task_found'].format(car)}
+            #except NoTaskException as _e:
+            #    return {'error': self.translate_map['oof_no_task_found'].format(car)}
             except Exception as _e:
                 retry_num += 1
                 sleep(15)
                 print(f'current error: {_e}, retrying')
                 e = _e
 
+        if not download_files:
+            return {'error': self.translate_map['oof_no_file'] + f' {car}'}
+
         # send download info to aria2
         try:
+            down_file_list = []
             for download_file in download_files:
-                self.download_aria_on_pcode(download_file['cid'], 
-                    download_file['pickup_code'])
+                _single_file = {'list': [{
+                    'n': download_file.get('name'),
+                    'pc': download_file.get('pickup_code'),
+                    'is_dir': False
+                }], 'count': 1}
+                down_file_list.append(_single_file)
 
-            # if everything went well, update stat
-            jav_obj['stat'] = 4
-            db_conn.upcreate_jav(jav_obj)
+            jav_obj['down_list'] = down_file_list
             return jav_obj
         except Exception as _e:
             print_exc()

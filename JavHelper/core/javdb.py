@@ -7,7 +7,7 @@ import json
 from JavHelper.core.jav_scraper import JavScraper
 from JavHelper.core import JAVNotFoundException
 from JavHelper.core.requester_proxy import return_html_text, return_post_res, return_get_res
-from JavHelper.core.utils import re_parse_html, re_parse_html_list_field, defaultlist
+from JavHelper.core.utils import defaultlist, CloudFlareError
 from JavHelper.core.ini_file import return_config_string, return_default_config_string
 from JavHelper.core.utils import parsed_size_to_int
 from JavHelper.core.backend_translation import BackendTranslation
@@ -26,7 +26,7 @@ class JavDBScraper(JavScraper):
             'search_field': {
                 'title': '//h2[@class="title is-4"]/strong/text()',
                 'studio': '//div[strong="片商:"]/a/text()',
-                'premiered': '//div[strong="時間:"]/span/text()',
+                'premiered': '//div[strong="日期:"]/span/text()',
                 #'year': processed from release date
                 'length': '//div[strong="時長:"]/span/text()',
                 # 'director': no good source
@@ -60,8 +60,11 @@ class JavDBScraper(JavScraper):
 
     def get_single_jav_page(self):
         # new autocomplete search, no rate limit
+        #
+        # autocomplete endpoint no longer there
+        #
         # https://javdb.com/videos/search_autocomplete.json?q=luxu-1298
-        search_url = self.jav_url + 'videos/search_autocomplete.json?q={}'.format(self.car)
+        """search_url = self.jav_url + 'videos/search_autocomplete.json?q={}'.format(self.car)
         jav_search_result = return_html_text(search_url, behind_cloudflare=True)
         try:
             jav_search_result = json.loads(jav_search_result)
@@ -69,20 +72,23 @@ class JavDBScraper(JavScraper):
             for i, _rst in enumerate(jav_search_result):
                 if _rst['number'] == self.car.upper():
                     result_first_url = self.jav_url + 'v/{}'.format(_rst['uid'])
-                    return return_get_res(result_first_url).content.decode('utf-8'), self.total_index
+                    return return_get_res(result_first_url, behind_cloudflare=True).content.decode('utf-8'), self.total_index
         except Exception as e:
             print(f'issue encounter when autocomplete search javdb {self.car} - {e}')
-            pass
+            pass"""
 
         # perform search first, not reliable at all, often multiple results
         # https://javdb4.com/search?q=MILK-08&f=all
         search_url = self.jav_url + 'search?q={}&f=all'.format(self.car)
 
-        jav_search_content = return_get_res(search_url).content
+        jav_search_content = return_get_res(search_url, behind_cloudflare=True).content
         search_root = etree.HTML(jav_search_content)
 
-        search_results = search_root.xpath('//a[@class="box"]/@href')
+        if b'Please turn JavaScript on' in jav_search_content:
+            import ipdb; ipdb.set_trace()
+            raise CloudFlareError(f'cloudflare failure on {self.car}')
 
+        search_results = search_root.xpath('//a[@class="box"]/@href')
 
         self.total_index = len(search_results)
         # need to match car
@@ -93,36 +99,9 @@ class JavDBScraper(JavScraper):
             raise Exception(f'{self.car} does not match javdb search result: {matched_car}')
 
         result_first_url = self.jav_url + search_results[self.pick_index][1:]
+        print(f'javdb found {self.car} at {result_first_url}')
 
-        return return_get_res(result_first_url).content.decode('utf-8'), self.total_index
-
-
-def javbus_magnet_search(car: str):
-    jav_url = return_config_string(['其他设置', 'javbus网址'])
-    gid_match = r'.*?var gid = (\d*);.*?'
-    magnet_xpath = {
-        'magnet': '//tr/td[position()=1]/a[1]/@href',
-        'title': '//tr/td[position()=1]/a[1]/text()',
-        'size': '//tr/td[position()=2]/a[1]/text()'
-    }
-    main_url_template = jav_url+'{car}'
-    magnet_url_template = jav_url+'ajax/uncledatoolsbyajax.php?gid={gid}&uc=0'
-
-    res = return_get_res(main_url_template.format(car=car)).text
-    gid = re.search(gid_match, res).groups()[0]
-
-    res = return_get_res(magnet_url_template.format(gid=gid), headers={'referer': main_url_template.format(car=car)}).content
-    root = etree.HTML(res)
-
-    magnets = defaultlist(dict)
-    for k, v in magnet_xpath.items():
-        _values = root.xpath(v)
-        for _i, _value in enumerate(_values):
-            magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
-            if k == 'size':
-                magnets[_i].update({'size_sort': parsed_size_to_int(_value.strip('\t').strip('\r').strip('\n').strip())})
-    
-    return magnets
+        return return_get_res(result_first_url, behind_cloudflare=True).content.decode('utf-8'), self.total_index
 
 
 def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=None) -> dict:
@@ -138,7 +117,7 @@ def javdb_set_page(page_template: str, page_num=1, url_parameter=None, config=No
     xpath_max_page = '//ul[@class="pagination-list"]/li/a[@class="pagination-link"][last()]/text()'
 
     # force to get url from ini file each time
-    javdb_url = 'https://javdb4.com/'
+    javdb_url = 'https://javdb.com/'
     set_url = javdb_url + page_template.format(page_num=page_num, url_parameter=url_parameter)
     print(f'accessing {set_url}')
 
@@ -226,3 +205,28 @@ def javdb_search(set_type: str, search_string: str, page_num=1):
 
     jav_objs, max_page = search_map[set_type]['function'](**search_map[set_type]['params'])
     return jav_objs, max_page
+
+
+def javdb_magnet_search(car: str):
+    size_match = r'(\d*.*\d*((GB)|(MB)))'
+    magnet_xpath = {
+        'magnet': '//tr/td[@class="magnet-name"]/a[1]/@href',
+        'title': '//tr/td[@class="magnet-name"]/a[1]/span[1]/text()',
+        'size': '//tr/td[@class="magnet-name"]/a[1]/span[@class="meta"]/text()'
+    }
+
+    car = car.upper()
+    res, page = JavDBScraper({'car': car}).get_single_jav_page()
+    root = etree.HTML(res)
+
+    magnets = defaultlist(dict)
+    for k, v in magnet_xpath.items():
+        _values = root.xpath(v)
+        for _i, _value in enumerate(_values):
+            if k == 'size':
+                _size = re.search(size_match, _value.strip('\t').strip('\r').strip('\n').strip().lstrip('(').strip()).groups()[0]
+                magnets[_i].update({'size_sort': parsed_size_to_int(_size)})
+                magnets[_i].update({'size': _size})
+            else:
+                magnets[_i].update({k: _value.strip('\t').strip('\r').strip('\n').strip()})
+    return magnets

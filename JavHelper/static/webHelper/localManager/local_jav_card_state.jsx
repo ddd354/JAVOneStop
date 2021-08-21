@@ -10,11 +10,13 @@ const invokeScrape = (ctx, evt) => {
         })})
     .then(response => response.json())
     .then(jsonData => {
-        if (jsonData.success) {
+        return jsonData
+        /*if (jsonData.success) {
             return jsonData.success
         } else {
-            throw `${ctx.jav_info.file_name} \n ${jsonData.error}`
-        }
+            //throw `${ctx.jav_info.file_name} \n ${jsonData.error}`
+            return jsonData.error
+        }*/
     })
 }
 
@@ -327,9 +329,16 @@ const createLocalJacCardState = (jav_info, t) => {
                         onDone: {
                             target: 'finish',
                             actions: [
-                                (ctx, evt) => console.log(ctx.t('good_scrape'), evt.data.car),
+                                pure((ctx, evt) => {
+                                    if (evt.data.error.length != 0) {
+                                        console.log(ctx.t('fail_scrape'), evt.data.success.car, evt.data.error)
+                                    } else {
+                                        console.log(ctx.t('good_scrape'), evt.data.success.car)
+                                    }
+                                    return
+                                }),
                                 assign((context, event) => {return {jav_info: {}, loading: false}}),
-                                pure((ctx, evt) => sendParent({type: 'SCRAPE_COMPLETE', data: evt.data})),
+                                pure((ctx, evt) => sendParent({type: 'SCRAPE_COMPLETE', data: evt.data.success})),
                             ]
                         },
                         onError: {

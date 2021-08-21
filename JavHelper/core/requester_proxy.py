@@ -19,7 +19,7 @@ def return_post_res(url, data=None, cookies={}, proxies=None, headers=None, enco
 
     # prioritize passed in proxies
     if use_proxy == '是' and not proxies:
-        proxies = return_config_string(['代理', '代理IP及端口'])
+        proxies = {'https': return_config_string(['代理', '代理IP及端口']), 'http': return_config_string(['代理', '代理IP及端口'])}
     else:
         pass
         #print('not using proxy for requests')
@@ -31,7 +31,7 @@ def return_post_res(url, data=None, cookies={}, proxies=None, headers=None, enco
     res.encoding = encoding
     return res
 
-def return_get_res(url, cookies={}, proxies=None, headers=None, encoding='utf-8', behind_cloudflare=False):
+def return_get_res(url, cookies={}, proxies=None, headers=None, encoding='utf-8', behind_cloudflare=False, **kwargs):
     #print(f'accessing {url}')
     if not headers:
         headers = DEFAULT_HEADERS
@@ -41,12 +41,12 @@ def return_get_res(url, cookies={}, proxies=None, headers=None, encoding='utf-8'
 
     # prioritize passed in proxies
     if use_proxy == '是' and not proxies:
-        proxies = return_config_string(['代理', '代理IP及端口'])
+        proxies = {'https': return_config_string(['代理', '代理IP及端口']), 'http': return_config_string(['代理', '代理IP及端口'])}
 
     if behind_cloudflare:
-        res = cloudflare_get(url, cookies=cookies, proxies=proxies)
+        res = cloudflare_get(url, cookies=cookies, proxies=proxies, **kwargs)
     else:
-        res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies)
+        res = requests.get(url, headers=headers, cookies=cookies, proxies=proxies, **kwargs)
     res.encoding = encoding
     return res
 
@@ -58,7 +58,7 @@ def return_html_text(url, cookies={}, proxies=None, encoding='utf-8', behind_clo
 
     # prioritize passed in proxies
     if use_proxy == '是' and not proxies:
-        proxies = return_config_string(['代理', '代理IP及端口'])
+        proxies = {'https': return_config_string(['代理', '代理IP及端口']), 'http': return_config_string(['代理', '代理IP及端口'])}
 
     if behind_cloudflare:
         res = cloudflare_get(url, cookies=cookies, proxies=proxies)
@@ -67,8 +67,7 @@ def return_html_text(url, cookies={}, proxies=None, encoding='utf-8', behind_clo
     res.encoding = encoding
     return res.text
 
-def cloudflare_get(url, cookies={}, proxies=None):
-    retry = 6
+def cloudflare_get(url, cookies={}, proxies=None, retry=6, **kwargs):
     from JavHelper.core.javlibrary import JavLibraryScraper
     while retry > 0:
         try:
@@ -84,8 +83,7 @@ def cloudflare_get(url, cookies={}, proxies=None):
     
     raise Exception(f'cloudflare get {url} failed')
 
-def cloudflare_post(url, data=None, cookies={}, proxies=None):
-    retry = 6
+def cloudflare_post(url, data=None, cookies={}, proxies=None, retry=6, **kwargs):
     from JavHelper.core.javlibrary import JavLibraryScraper
     while retry > 0:
         try:

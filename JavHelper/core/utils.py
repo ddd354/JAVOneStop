@@ -4,6 +4,10 @@ from PIL import Image
 import re
 
 
+class CloudFlareError(Exception):
+    # error exception when cloudflare readout is failing
+    pass
+
 def byte_to_MB(some_input):
     if isinstance(some_input, int) or str(some_input).isdigit():
         return int(some_input)/1024/1024
@@ -18,7 +22,7 @@ def parsed_size_to_int(size_str: str):
     else:
         multiplier = 1
 
-    size_int = float(re.search(r'(\d*\.\d*)', size_str).group()) * multiplier
+    size_int = float(re.search(r'(\d*\.*\d*)', size_str).group()) * multiplier
 
     return size_int
 

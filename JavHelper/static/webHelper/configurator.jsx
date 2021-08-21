@@ -94,6 +94,10 @@ const JavConfigurator = (props) => {
             "type": "string",
             "title": t('set_javlib_url_title')
           },
+          "javbus_url": {
+            "type": "string",
+            "title": t('set_javbus_url_title')
+          },
           "magnet_downloader": {
             "type": "string",
             "title": t('magnet_downloader'),
