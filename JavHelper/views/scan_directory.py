@@ -29,16 +29,57 @@ def remove_existing_tag():
 
     return 'ok'
 
-@directory_scan.route('/rescan_emby_folder', methods=['GET'])
-def rescan_emby_folder():
+@directory_scan.route('/scan_path_for_nfo_infos', methods=['GET'])
+def scan_path_for_nfo_infos():
     """
     This endpoint is used to scan javs already exist locally and update db
+    use %2F for slashes in the parameter
     """
+    by_path = request.args.get('by_path') or None
     emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
     # scan folder
-    emby_folder.scan_emby_root_path()
+    emby_folder.scan_path_for_nfo_infos(by_path=by_path)
 
     return jsonify({'success': [jav_obj['directory'] for jav_obj in emby_folder.file_list]})
+
+@directory_scan.route('/scan_by_path_for_nfo_infos', methods=['GET'])
+def scan_by_path_for_nfo_infos():
+    """
+    This endpoint is used to scan javs already exist locally and update db
+    use %2F for slashes in the parameter
+    """
+    by_path = request.args.get('by_path') or None
+    emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
+    # scan folder
+    result = emby_folder.scan_by_path_for_nfo_infos(by_path)
+
+    return jsonify({'success': {'scan_result': result}})
+
+@directory_scan.route('/scan_path_for_checks', methods=['GET'])
+def scan_path_for_checks():
+    """
+    This endpoint is used to scan javs already exist locally and update db
+    use %2F for slashes in the parameter
+    """
+    by_path = request.args.get('by_path') or None
+    emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
+    # scan folder
+    scanned_objs = emby_folder.scan_path_for_checks(by_path=by_path)
+
+    return jsonify({'success': [emby_folder.vid_structure_verifier(x) for x in scanned_objs]})
+
+@directory_scan.route('/scan_path_vid_level_only', methods=['GET'])
+def scan_path_vid_level_only():
+    """
+    This endpoint is used to scan javs already exist locally and update db
+    use %2F for slashes in the parameter
+    """
+    by_path = request.args.get('by_path') or None
+    emby_folder = EmbyFileStructure(return_default_config_string('file_path'))
+    # scan folder
+    scanned_objs = emby_folder.scan_path_vid_level_only(by_path=by_path)
+
+    return jsonify({'success': scanned_objs})
 
 @directory_scan.route('/verify_local_nfo', methods=['GET'])
 def verify_local_nfo():

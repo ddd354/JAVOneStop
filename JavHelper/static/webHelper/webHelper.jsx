@@ -25,6 +25,7 @@ import { StyledDiv, StyledLogDiv } from "./styling";
 import './webHelper.css'
 import HelpDoc from "./HelpDoc"
 import LocalManager from './localManager/local_manager_app'
+import LocalDbScanner from './LocalDbScanner/local_db_scanner_app'
 
 class App extends Component {
     constructor(props) {
@@ -270,6 +271,7 @@ class App extends Component {
               <NavTab exact to="/">{t('helper_page')}</NavTab>
               <NavTab to="/p/javbroswer">{t('JavLibrary Manager')}</NavTab>
               <NavTab to="/p/localmanager">{t('Main Tool')}</NavTab>
+              <NavTab to="/p/localdbscanner">{t('Db Scanner')}</NavTab>
               <NavTab to="/p/handytools">{t('Handy Features')}</NavTab>
               <NavTab to="/p/configure">{t('Settings')}</NavTab>
               </Col></Row>
@@ -285,6 +287,7 @@ class App extends Component {
                 </Route>
                 <Route path="/p/javbroswer" component={JavBroswerV2} />
                 <Route exact path="/p/localmanager" component={LocalManager} />
+                <Route exact path="/p/localdbscanner" component={LocalDbScanner} />
                 <Route exact path="/p/handytools">
                   <Button variant="outlined" color="primary" onClick={this.embyImageHandler}>{t('Upload actress images to Emby')}</Button>
                   <IdmmMonitor server_addr={this.state.settings_form_data.ikoa_dmmc_server} />

@@ -2,7 +2,6 @@
 import os
 from urllib.parse import urlparse
 from PIL import Image
-import requests
 import re
 import traceback
 import codecs
@@ -25,6 +24,10 @@ FANART_NAME = 'fanart'
 DEFAULT_FILENAME_PATTERN = r'^.*?(?P<pre>[a-zA-Z]{2,6})\W*(?P<digit>\d{1,6}).*?$'
 
 
+def path_sep_unifier(input: str):
+    return input.replace('/', os.sep).replace('\\', os.sep)
+
+
 class EmbyFileStructure:
     def __init__(self, root_path=return_default_config_string('file_path')):
         if not os.path.exists(root_path):
@@ -32,16 +35,16 @@ class EmbyFileStructure:
         if not os.path.isdir(root_path):
             raise Exception(f'{root_path} is not a valid directory for scan')
 
-        self.root_path = root_path
+        self.root_path = path_sep_unifier(root_path)
         self.file_list = []
-        self.folder_structure = return_default_config_string('folder_structure')
+        self.folder_structure = path_sep_unifier(return_default_config_string('folder_structure'))
+        self.standard_path = os.path.join(self.root_path, self.folder_structure)
 
         # settings from ini file
         self.handle_multi_cds = ( return_default_config_string('handle_multi_cds')== '是' )
         self.preserve_subtitle_filename = ( return_default_config_string('preserve_subtitle_filename')== '是' )
         self.subtitle_filename_postfix = return_default_config_string('subtitle_filename_postfix').split(',')
         self.remove_string = return_default_config_string('remove_string').split(',')
-        print(self.remove_string)
 
     @property
     def jav_manage(self):
@@ -49,7 +52,7 @@ class EmbyFileStructure:
         # may encounter weird error
         return JavManagerDB()
 
-    def write_images(self, jav_obj, fail_on_error=False):
+    def write_images(self, jav_obj, fail_on_error=False, directory=None):
         poster_name = POSTER_NAME
         fanart_name = FANART_NAME
 
@@ -57,11 +60,13 @@ class EmbyFileStructure:
             raise Exception('no image field in jav_obj')
         image_url = jav_obj['image']
 
-        if 'directory' not in jav_obj:
-            raise Exception('no directory field in jav_obj')
-        # windows and linux compatible
-        directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
-        directory = os.path.join(self.root_path, directory)
+        if 'directory' not in jav_obj and not directory:
+            raise Exception('no directory field in jav_obj and no given directory')
+
+        if not directory:
+            # windows and linux compatible
+            directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
+            directory = os.path.join(self.root_path, directory)
 
         # 下载海报的地址 cover
         url_obj = urlparse(image_url, scheme='http')
@@ -74,7 +79,7 @@ class EmbyFileStructure:
             r = return_get_res(url_obj.geturl(), stream=True)
         except Exception as e:
             print('Image download failed for {} due to {}'.format(url_obj.geturl(), e))
-            return 
+            return False
         if r.status_code != 200 or "now_printing" in r.url:
             if fail_on_error:
                 # raise error if we are just writing images
@@ -109,15 +114,20 @@ class EmbyFileStructure:
 
         return
 
-    def write_nfo(self, jav_obj: dict, verify=False):
-        if 'file_name' not in jav_obj:
-            raise Exception('no file_name field in jav_obj')
-        file_name = jav_obj['file_name']
-        if 'directory' not in jav_obj:
-            raise Exception('no directory field in jav_obj')
-        # windows and linux compatible
-        directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
-        directory = os.path.join(self.root_path, directory)
+    def write_nfo(self, jav_obj: dict, verify=False, directory=None):
+        if directory:
+            # extract file_name directly from supplied directory
+            file_name = os.path.split(directory)[-1]
+        else:
+            if 'file_name' not in jav_obj:
+                raise Exception('no file_name field in jav_obj')
+            file_name = jav_obj['file_name']
+            if 'directory' not in jav_obj:
+                raise Exception('no directory field in jav_obj')
+        
+            # windows and linux compatible
+            directory = jav_obj['directory'].replace('/', os.sep).replace('\\', os.sep)
+            directory = os.path.join(self.root_path, directory)
 
         if verify:
             # verify there is a corresponding video file
@@ -191,7 +201,7 @@ class EmbyFileStructure:
         if self.preserve_subtitle_filename:
             for postfix in self.subtitle_filename_postfix:
                 if file_name.endswith(postfix):
-                    print(f'find subtitle postfix {postfix} in {file_name}')
+                    #print(f'find subtitle postfix {postfix} in {file_name}')
                     #subtitle_postfix = postfix
                     subtitle_postfix = '-C'
                     file_name = file_name[:-len(postfix)]
@@ -215,7 +225,7 @@ class EmbyFileStructure:
             if file_name_match:
                 file_name = file_name_match.group(1)
                 cd_postfix = file_name_match.group(2).lower()
-                print(file_name, cd_postfix)
+                #print(file_name, cd_postfix)
                 if part_map:
                     cd_postfix = part_map[cd_postfix]
                 break
@@ -358,12 +368,21 @@ class EmbyFileStructure:
                 jav_obj.setdefault('genres', []).append('中字')
             self.file_list.append(jav_obj)
 
-    def scan_emby_root_path(self):
+    def scan_path_for_nfo_infos(self, by_level=None, by_path=None):
         """
         This function is used to scan processed emby profile, so it will only
         scan correct directories and their nfo files
+
+        by_level: tbd
+        by_path: scan only the given path, support layered path: abc/dew/sdc
+
         """
-        for (root, dirs, files) in os.walk(self.root_path):
+        if by_path:
+            scan_path = os.path.join(self.root_path, path_sep_unifier(by_path))
+        else:
+            scan_path = self.root_path
+
+        for (root, dirs, files) in os.walk(scan_path):
             for each_file in files:
                 # we only process nfo file from here
                 # also ignore file starts with . (auto generated by macos)
@@ -378,6 +397,124 @@ class EmbyFileStructure:
                     self.file_list.append(nfo_obj.jav_obj)
                     print('scanned {}'.format(nfo_obj.jav_obj['directory']))
 
+    def scan_by_path_for_nfo_infos(self, by_path, by_level=None):
+        """
+        This function is used to scan processed emby profile, so it will only
+        scan correct directories and their nfo files
+
+        by_level: tbd
+        by_path: scan only the given path, support layered path: abc/dew/sdc
+
+        """
+        scan_path = os.path.join(self.root_path, path_sep_unifier(by_path))
+
+        for (root, dirs, files) in os.walk(scan_path):
+            for each_file in files:
+                # we only process nfo file from here
+                # also ignore file starts with . (auto generated by macos)
+                if os.path.splitext(each_file)[1] == '.nfo' and \
+                        not os.path.splitext(each_file)[0].startswith('.'):
+                    nfo_obj = EmbyNfo()
+                    nfo_obj.parse_emby_nfo(os.path.join(root, each_file))
+                    # we only save Relative path to the root in db to make the db work across different machine
+                    nfo_obj.jav_obj['directory'] = os.path.relpath(root, self.root_path)
+                    nfo_obj.jav_obj['stat'] = 3
+                    self.jav_manage.upcreate_jav(nfo_obj.jav_obj)
+                    self.file_list.append(nfo_obj.jav_obj)
+                    print('scanned {}'.format(nfo_obj.jav_obj['directory']))
+                    return True
+        return False
+
+    def at_vid_level(self, input_path: str):
+        """
+        Compare input path to self.standard_path to
+        determine whether input_path is at final video level
+
+        does not support filename with double slashes \\
+        """
+        ss_count = [1 for x in self.standard_path.replace('\\', '/') if x is '/']
+        is_count = [1 for x in input_path.replace('\\', '/') if x is '/']
+        if ss_count == is_count:
+            return True
+        else:
+            return False
+
+    def scan_path_vid_level_only(self, by_path=None):
+        """
+        Similar to scan_path_for_checks, but this function only returns list of vid level
+        directory / path
+        """
+        vid_file_objs = []
+        if by_path:
+            scan_path = os.path.join(self.root_path, path_sep_unifier(by_path))
+        else:
+            scan_path = self.root_path
+
+        for (root, dirs, files) in os.walk(scan_path):
+            if len(dirs)==0 and self.at_vid_level(root):
+                # due to by_path, scan_path is already at vid level
+                vid_file_objs.append({'path': root})
+            else:
+                for each_dir in dirs:
+                    verify_path = os.path.join(root, each_dir)
+                    if self.at_vid_level(verify_path):
+                        vid_file_objs.append({'path': verify_path})
+            
+            if len(vid_file_objs) > 0:
+                # when vid level reached, exit loop to avoid scan the file
+                break
+        
+        return vid_file_objs
+
+    def scan_path_for_checks(self, by_level=None, by_path=None):
+        """
+        This function is used to scan processed emby profile, and find problematic
+        video structures
+
+        by_level: tbd
+        by_path: scan only the given path, support layered path: abc/dew/sdc
+
+        """
+        vid_file_objs = []
+        if by_path:
+            scan_path = os.path.join(self.root_path, path_sep_unifier(by_path))
+        else:
+            scan_path = self.root_path
+
+        for (root, dirs, files) in os.walk(scan_path):
+            if self.at_vid_level(root):
+                vid_file_objs.append({'path': root, 'files': files})
+        
+        return vid_file_objs
+
+    @staticmethod
+    def vid_structure_verifier(vid_obj):
+        """
+        This function verifies the necessary files are there for correct parse
+        will assume input obj has path and files attributes
+        """
+        errors = [
+            'missing nfo',
+            'missing video',
+            'missing fanart',
+            'missing poster'
+        ]
+        for f in vid_obj.get('files', []):
+            if 'nfo' in f and 'missing nfo' in errors:
+                errors.remove('missing nfo')
+            elif 'fanart' in f:
+                errors.remove('missing fanart')
+            elif 'poster' in f:
+                errors.remove('missing poster')
+            else:
+                if 'missing video' in errors:
+                    errors.remove('missing video')
+
+        if errors:
+            vid_obj['errors'] = errors
+
+        return vid_obj
+        
     def remove_tags(self):
         """
         This function is used to scan processed emby profile, so it will only

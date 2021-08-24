@@ -231,6 +231,14 @@ def oof_quota():
     except FileNotFoundError:
         return jsonify({'error': BackendTranslation()['oof_cookies_not_found']}), 500
 
+@jav_browser.route('/oof_task_clear', methods=['GET'])
+def oof_task_clear():
+    mode = request.args.get('mode') or 'all'
+    try:
+        return jsonify({'success': OOFDownloader().clear_task(mode=mode)})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @jav_browser.route('/download_magnet', methods=['POST'])
 def download_magnet():
     req_data = json.loads(request.get_data() or '{}')

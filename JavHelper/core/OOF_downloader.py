@@ -37,6 +37,16 @@ class OOFDownloader:
             r['surplus'], r['count']
         )
 
+    def clear_task(self, mode='all'):
+        if mode=='all':
+            r = requests.post('https://115.com/web/lixian/?ct=lixian&ac=task_clear', cookies=self.cookies)
+            if r.status_code == 200:
+                return 'oof task cleared'
+            else:
+                raise Exception(f'{mode} task clear failed due to {r.status_code}')
+        else:
+            raise Exception(f'mode {mode} is not supported')
+
     def get_oof_userid(self):
         r = requests.get('https://115.com/?cid=0&offset=0&mode=wangpan', cookies=self.cookies)
         userid_filter = r'.*user_id\ \=\ \'(\d*)\'\;'
@@ -105,8 +115,8 @@ class OOFDownloader:
             if task.get('info_hash') == hash_str:
                 oof_file_id = task.get('file_id')  # this is actually cid
                 break
-
-        if not oof_file_id and task.get('err', 0)==10016:
+        #print(task)
+        if not oof_file_id and (task.get('err', 0)==10016 or task.get('percentDone', 0)>=99):
             # download is failing but good file could be there still
             _task_name = task.get('name')
             print('magnet task {} is failing, trying directory search'.format(_task_name))

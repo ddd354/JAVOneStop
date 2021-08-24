@@ -7,6 +7,7 @@ const resources = {
   en: {
     translation: {
       "Main Tool": "Main Tool",
+      "Db Scanner": "Local DB Scanner",
       "JavLibrary Manager": "JAV Downloader",
       "Handy Features": "Handy Features",
       "Settings": "Settings",
@@ -47,6 +48,14 @@ const resources = {
       'downloading': 'downloading',
       'personal_wanted': 'still wanted',
       'search_car_allow_partial': 'Search car (allow partial search)',
+
+      // local db scanner
+      'scan_local': 'Scan Local Only',
+      'scan_local_update_db': 'Scan Local and Update Database',
+      'update_db': 'Update Database',
+      'fix_nfo': 'Fix nfo',
+      'fix_fanart': 'Fix fanart',
+      'fix_poster': 'Fix poster',
 
       // doc page
       'changelog': 'Change Log',
@@ -139,6 +148,7 @@ const resources = {
   cn: {
     translation: {
       "Main Tool": "刮削工具",
+      "Db Scanner": "本地扫描工具",
       "JavLibrary Manager": "JAV下载器",
       "Handy Features": "小工具",
       "Settings": "配置表单",
@@ -179,6 +189,14 @@ const resources = {
       'downloading': '下载中',
       'personal_wanted': '还未下载',
       'search_car_allow_partial': '搜索番号(支持部分搜索)',
+
+      // local db scanner
+      'scan_local': '只扫描本地',
+      'scan_local_update_db': '扫描本地并更新数据库',
+      'update_db': '更新数据库',
+      'fix_nfo': '修复nfo',
+      'fix_fanart': '修复图片背景',
+      'fix_poster': '修复海报',
 
       // doc page
       'changelog': '更新日志',

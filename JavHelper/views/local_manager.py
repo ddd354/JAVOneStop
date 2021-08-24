@@ -198,6 +198,36 @@ def rewrite_images():
 
     return jsonify({'success': 'good'})
 
+@local_manager.route('/fix_errors', methods=['GET'])
+def fix_errors():
+    path = request.args.get('path')
+    mode = request.args.get('mode')
+
+    # extract car from path
+    car = os.path.split(path)[-1]
+    jav_obj = JavManagerDB().get_by_pk(car)
+    if not jav_obj or 'image' not in jav_obj:
+        sources = return_default_config_string('jav_obj_priority').split(',')
+        jav_obj = parse_single_jav({'car': car, 'stat': 3}, sources)
+        JavManagerDB().upcreate_jav(jav_obj)
+
+    file_writer = EmbyFileStructure(return_default_config_string('file_path'))
+
+    # run different mode
+    if 'fanart' in mode or 'poster' in mode:
+        # we can directly call this since it only writes top level key fields
+        status = file_writer.write_images(jav_obj, fail_on_error=True, directory=path)
+        if status is False:
+            # re-scrape and download again
+            sources = return_default_config_string('jav_obj_priority').split(',')
+            jav_obj = parse_single_jav({'car': car, 'stat': 3}, sources)
+            JavManagerDB().upcreate_jav(jav_obj)
+            file_writer.write_images(jav_obj, fail_on_error=True, directory=path)
+    if 'nfo' in mode:
+        file_writer.write_nfo(jav_obj, directory=path)
+
+    return jsonify({'success': {'path': path, 'mode': mode}})
+
 @local_manager.route('/get_necessary_sources', methods=['GET'])
 def get_necessary_sources():
     return jsonify({'success': return_default_config_string('jav_obj_priority').split(',')})
