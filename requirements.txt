@@ -4,7 +4,7 @@ idna==2.8
 requests==2.22.0  # do not upgrade for now
 urllib3==1.25.7  # issue with cloudscraper
 ipdb==0.12.3
-pillow==8.2.0
+pillow==9.3.0
 PyInstaller==3.6
 Flask==1.1.1
 pylint==2.4.4
