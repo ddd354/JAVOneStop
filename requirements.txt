@@ -1,4 +1,4 @@
-certifi==2019.11.28
+certifi==2022.12.7
 chardet==3.0.4
 idna==2.8
 requests==2.22.0  # do not upgrade for now
