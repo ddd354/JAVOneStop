@@ -14,6 +14,6 @@ blitzdb==0.4.4
 aria2p==0.7.1
 Flask-Caching==1.8.0
 cloudscraper==1.2.58
-setuptools==44.0.0
+setuptools==65.5.1
 dataset==1.3.2
 jmespath==0.10.0
